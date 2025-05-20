@@ -12,7 +12,7 @@ session_start();
 <div class="dashboard-layout">
     <aside class="sidebar">
         <div class="logo">
-            <h2>REM</h2>
+            <h2>Real Estate Management Application</h2>
         </div>
         <nav class="nav-links">
             <a href="dashboard.php">Dashboard</a>
