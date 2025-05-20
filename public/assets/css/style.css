@@ -1,0 +1,215 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f5f7fa;
+}
+
+.dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 240px;
+    background-color: #1e2a38;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.nav-links a {
+    color: #cfd8dc;
+    text-decoration: none;
+    padding: 10px 0;
+    display: block;
+    border-left: 4px solid transparent;
+    transition: 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: white;
+    border-left: 4px solid #42a5f5;
+    background-color: #263544;
+    padding-left: 12px;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 2rem;
+}
+
+.top-bar h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.top-bar p {
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+.cards {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    width: 300px;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+.card h3 {
+    margin-top: 0;
+}
+
+.btn-link {
+    display: inline-block;
+    margin-top: 1rem;
+    background-color: #42a5f5;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.btn-link:hover {
+    background-color: #1e88e5;
+}
+
+.dashboard-footer {
+    margin-top: 3rem;
+    color: #888;
+    font-size: 14px;
+    text-align: center;
+}
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f2f4f7;
+}
+
+.auth-card {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.auth-card h2 {
+    margin-bottom: 1.5rem;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: #42a5f5;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    width: 100%;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #1e88e5;
+}
+
+.switch-link {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.error {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+.property-details {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    max-width: 600px;
+    margin-top: 1.5rem;
+}
+
+.property-details p {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+.property-form {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    max-width: 600px;
+}
+
+.property-form label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+.property-form input[type="text"],
+.property-form input[type="number"],
+.property-form select,
+.property-form textarea {
+    width: 100%;
+    padding: 0.6rem;
+    margin-top: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.property-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.checkbox-group {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-section {
+    margin-top: 1.5rem;
+}
