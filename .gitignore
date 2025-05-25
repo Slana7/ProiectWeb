@@ -1,0 +1,29 @@
+# Environment variables
+.env
+
+# Composer dependencies
+/vendor/
+
+# Temporary files
+/tmp/
+*.tmp
+*.swp
+*.swo
+
+# Logs
+/logs/
+*.log
+
+# User uploaded content (dacă este cazul)
+/uploads/
+
+# Fișiere de configurare locale
+*.local.php
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+.DS_Store
+Thumbs.db 
