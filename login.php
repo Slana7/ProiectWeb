@@ -12,6 +12,15 @@ require_once __DIR__ . '/src/config/config.php';
     <div class="auth-card">
         <h2>Welcome Back</h2>
 
+        <?php if (isset($_GET['updated'])): ?>
+        <p class="success">Your profile was updated. Please log in again.</p>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['error']) && $_GET['error'] === 'email_taken'): ?>
+        <p class="error">Email already in use. Please use a different one.</p>
+        <?php endif; ?>
+
+
         <?php if (isset($_GET['error'])): ?>
             <p class="error">Login failed. Please try again.</p>
         <?php endif; ?>

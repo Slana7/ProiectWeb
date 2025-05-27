@@ -2,6 +2,9 @@
 require_once __DIR__ . '/src/config/config.php';
 require_once __DIR__ . '/src/db/Database.php';
 
+session_start();
+
+
 if (!isset($_GET['id'])) {
     die("Missing property ID.");
 }
@@ -52,6 +55,29 @@ $lng = $conn->query("SELECT ST_X(location::geometry) AS lng FROM properties WHER
             <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($property['description'])) ?></p>
             <p><strong>Posted at:</strong> <?= $property['posted_at'] ?></p>
             <p><strong>Location:</strong> <?= $lat ?>, <?= $lng ?></p>
+
+            <?php if (isset($_SESSION['user_id'])): ?>
+    <?php
+    $check = $conn->prepare("SELECT 1 FROM saved_properties WHERE user_id = :uid AND property_id = :pid");
+    $check->execute(['uid' => $_SESSION['user_id'], 'pid' => $id]);
+    $isSaved = $check->fetch();
+    ?>
+
+    <form method="post" action="src/controllers/FavoriteController.php">
+    <input type="hidden" name="property_id" value="<?= $id ?>">
+    <button type="submit" name="action" value="<?= $isSaved ? 'Unsave' : 'Save' ?>"
+            class="favorite-heart <?= $isSaved ? 'saved' : '' ?>">
+        ♥
+    </button>
+</form>
+
+<?php if ($_SESSION['user_id'] !== $property['user_id']): ?>
+    <a href="chat.php?property_id=<?= $property['id'] ?>&receiver_id=<?= $property['user_id'] ?>" class="btn-link">Contact landlord</a>
+<?php endif; ?>
+
+<?php endif; ?>
+
+
         </section>
 
         <footer class="dashboard-footer">

@@ -134,3 +134,25 @@ END $$;
 
 -- 14. Test sugestie preț
 SELECT suggest_price(70, 'for_sale');
+ ---
+ CREATE TABLE saved_properties (
+    user_id INT REFERENCES users(id),
+    property_id INT REFERENCES properties(id),
+    PRIMARY KEY (user_id, property_id)
+);
+----
+CREATE TABLE interested (
+    user_id INT REFERENCES users(id),
+    property_id INT REFERENCES properties(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+-----
+CREATE TABLE messages (
+    id SERIAL PRIMARY KEY,
+    sender_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    receiver_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    property_id INT NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
+    content TEXT,
+    attachment TEXT,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
