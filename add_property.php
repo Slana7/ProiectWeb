@@ -74,6 +74,7 @@ $facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
             <a href="map.php">Map</a>
             <a href="add_property.php" class="active">Add Property</a>
             <a href="profile.php">Profile</a>
+            <a href="chat_overview.php">My Chats</a>
             <a href="logout.php">Logout</a>
         </nav>
     </aside>
