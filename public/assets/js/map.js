@@ -1,10 +1,10 @@
-const map = L.map('map').setView([47.1585, 27.6014], 12); // Centrat pe Iași
+const map = L.map('map').setView([47.1585, 27.6014], 12); // Centrat pe Iasi
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Încarcă proprietățile din API
+// Incarca proprietatile din API
 fetch('public/api/get_property.php')
   .then(res => res.json())
   .then(data => {
@@ -12,7 +12,7 @@ fetch('public/api/get_property.php')
       list.innerHTML = '';
 
       data.forEach(property => {
-          // Adaugă marker pe hartă
+          // Adauga marker pe harta
           const marker = L.marker([property.lat, property.lng]).addTo(map);
           marker.bindPopup(`
               <b>${property.title}</b><br>
@@ -20,7 +20,7 @@ fetch('public/api/get_property.php')
               <a href="property_details.php?id=${property.id}">View Details</a>
           `);
 
-          // Adaugă element în listă cu link
+          // Adauga element in lista cu link
           const li = document.createElement('li');
           const link = document.createElement('a');
           link.href = `property_details.php?id=${property.id}`;

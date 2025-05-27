@@ -20,44 +20,34 @@ if (!$property) {
     die("Property not found.");
 }
 
-// extragem lat/lng dacă vrem să le afișăm
+// Extragem coordonatele proprietatii
 $lat = $conn->query("SELECT ST_Y(location::geometry) AS lat FROM properties WHERE id = $id")->fetchColumn();
 $lng = $conn->query("SELECT ST_X(location::geometry) AS lng FROM properties WHERE id = $id")->fetchColumn();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($property['title']) ?> - <?= APP_NAME ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
 </head>
 <body>
-<div class="dashboard-layout">
-    <aside class="sidebar">
-        <div class="logo"><h2>REM</h2></div>
-        <nav class="nav-links">
-            <a href="dashboard.php">Dashboard</a>
-            <a href="map.php">Map</a>
-            <a href="add_property.php">Add Property</a>
-            <a href="profile.php">Profile</a>
-            <a href="chat_overview.php">My Chats</a>
-            <a href="logout.php">Logout</a>
-        </nav>
-    </aside>
+<?php include_once 'public/includes/dashboard_header.php'; ?>
 
-    <main class="main-content">
-        <header class="top-bar">
-            <h1><?= htmlspecialchars($property['title']) ?></h1>
-        </header>
+<header class="top-bar">
+    <h1><?= htmlspecialchars($property['title']) ?></h1>
+</header>
 
-        <section class="property-details">
-            <p><strong>Price:</strong> €<?= number_format($property['price']) ?></p>
-            <p><strong>Area:</strong> <?= $property['area'] ?> m²</p>
-            <p><strong>Status:</strong> <?= htmlspecialchars($property['status']) ?></p>
-            <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($property['description'])) ?></p>
-            <p><strong>Posted at:</strong> <?= $property['posted_at'] ?></p>
-            <p><strong>Location:</strong> <?= $lat ?>, <?= $lng ?></p>
+<section class="property-details">
+    <p><strong>Price:</strong> €<?= number_format($property['price']) ?></p>
+    <p><strong>Area:</strong> <?= $property['area'] ?> m²</p>
+    <p><strong>Status:</strong> <?= htmlspecialchars($property['status']) ?></p>
+    <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($property['description'])) ?></p>
+    <p><strong>Posted at:</strong> <?= $property['posted_at'] ?></p>
+    <p><strong>Location:</strong> <?= $lat ?>, <?= $lng ?></p>
 
-            <?php if (isset($_SESSION['user_id'])): ?>
+    <?php if (isset($_SESSION['user_id'])): ?>
     <?php
     $check = $conn->prepare("SELECT 1 FROM saved_properties WHERE user_id = :uid AND property_id = :pid");
     $check->execute(['uid' => $_SESSION['user_id'], 'pid' => $id]);
@@ -73,18 +63,17 @@ $lng = $conn->query("SELECT ST_X(location::geometry) AS lng FROM properties WHER
 </form>
 
 <?php if ($_SESSION['user_id'] !== $property['user_id']): ?>
-    <a href="chat.php?property_id=<?= $property['id'] ?>&receiver_id=<?= $property['user_id'] ?>" class="btn-link">Contact landlord</a>
+    <a href="chat.php?property=<?= $property['id'] ?>&with=<?= $property['user_id'] ?>" class="btn-link">Contact landlord</a>
 <?php endif; ?>
 
 <?php endif; ?>
 
+</section>
 
-        </section>
+<footer class="dashboard-footer">
+    &copy; <?= date('Y') ?> REM Project. All rights reserved.
+</footer>
 
-        <footer class="dashboard-footer">
-            &copy; <?= date('Y') ?> REM Project. All rights reserved.
-        </footer>
-    </main>
-</div>
+<?php include_once 'public/includes/dashboard_footer.php'; ?>
 </body>
 </html>

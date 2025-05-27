@@ -69,3 +69,90 @@ function validatePropertyData($data) {
     
     return $errors;
 }
+
+function removeProperty($propertyId, $userId) {
+    global $conn;
+    
+    try {
+        // Verifica existenta proprietatii
+        $sql = "SELECT user_id FROM properties WHERE id = :id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([':id' => $propertyId]);
+        $property = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$property) {
+            return [
+                'success' => false,
+                'errors' => ['Property not found']
+            ];
+        }
+        
+        // Verifica daca utilizatorul este proprietarul
+        if ($property['user_id'] != $userId) {
+            return [
+                'success' => false,
+                'errors' => ['You do not have permission to remove this property']
+            ];
+        }
+        
+        // Porneste tranzactia
+        $conn->beginTransaction();
+        
+        // Sterge relatiile cu facilitatile
+        $sql = "DELETE FROM property_facility WHERE property_id = :property_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([':property_id' => $propertyId]);
+        
+        // Sterge proprietatea
+        $sql = "DELETE FROM properties WHERE id = :id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([':id' => $propertyId]);
+        
+        // Finalizeaza tranzactia
+        $conn->commit();
+        
+        // Returneaza succes
+        return [
+            'success' => true,
+            'message' => 'Property removed successfully'
+        ];
+        
+    } catch (PDOException $e) {
+        // Anuleaza tranzactia in caz de eroare
+        $conn->rollBack();
+        error_log("Error removing property: " . $e->getMessage());
+        return [
+            'success' => false,
+            'errors' => ['Database error occurred while removing the property']
+        ];
+    }
+}
+
+function getUserProperties($userId) {
+    global $conn;
+    
+    try {
+        // Obtine proprietatile utilizatorului
+        $sql = "SELECT p.*, 
+                ST_X(location::geometry) as lng, 
+                ST_Y(location::geometry) as lat
+                FROM properties p 
+                WHERE p.user_id = :user_id
+                ORDER BY id DESC";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Adauga facilitatile pentru fiecare proprietate
+        foreach ($properties as &$property) {
+            $property['facilities'] = getPropertyFacilities($property['id']);
+        }
+        
+        // Returneaza lista de proprietati
+        return $properties;
+    } catch (PDOException $e) {
+        // Logeaza eroarea
+        error_log("Error getting user properties: " . $e->getMessage());
+        return [];
+    }
+}
