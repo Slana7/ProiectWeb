@@ -1,55 +1,85 @@
 <?php
 require_once __DIR__ . '/src/config/config.php';
 session_start();
+
+// Verifica autentificarea
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Pregateste mesajul flash
+$flashMessage = null;
+if (isset($_SESSION['flash_message'])) {
+    $flashMessage = $_SESSION['flash_message'];
+    unset($_SESSION['flash_message']);
+}
 ?>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="/REM/public/assets/css/style.css">
-
+    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
 </head>
 <body>
-<div class="dashboard-layout">
-    <aside class="sidebar">
-        <div class="logo">
-            <h2>Real Estate Management Application</h2>
-        </div>
-        <nav class="nav-links">
-            <a href="dashboard.php" class="active">Dashboard</a>
-            <a href="map.php">Map</a>
-            <a href="add_property.php">Add Property</a>
-            <a href="profile.php">Profile</a>
-            <a href="chat_overview.php">My Chats</a>
-            <a href="logout.php">Logout</a>
-        </nav>
-    </aside>
+<?php include_once 'public/includes/dashboard_header.php'; ?>
 
-    <main class="main-content">
-        <header class="top-bar">
-            <h1>Welcome to your Dashboard</h1>
-            <p>Here you can explore properties, add new listings or manage your profile.</p>
-        </header>
+<header class="top-bar">
+    <h1>Dashboard</h1>
+    <p>Welcome to your real estate management dashboard.</p>
+</header>
 
-        <section class="cards">
-            <div class="card">
-                <h3>View Property Map</h3>
-                <a href="map.php" class="btn-link">Open Map</a>
-            </div>
-            <div class="card">
-                <h3>Add New Property</h3>
-                <a href="add_property.php" class="btn-link">Add Property</a>
-            </div>
-            <div class="card">
-                <h3>Edit Profile</h3>
-                <a href="profile.php" class="btn-link">Update Info</a>
-            </div>
-        </section>
+<!-- Afiseaza mesajul flash daca exista -->
+<?php if ($flashMessage): ?>
+    <div class="alert alert-info">
+        <?= htmlspecialchars($flashMessage) ?>
+    </div>
+<?php endif; ?>
 
-        <footer class="dashboard-footer">
-            &copy; <?= date('Y') ?> REM Project. All rights reserved.
-        </footer>
-    </main>
-</div>
+<!-- Carduri cu functionalitati principale -->
+<section class="cards">
+    <!-- Cautare proprietati -->
+    <div class="card">
+        <h3>Browse Properties</h3>
+        <p>Explore available properties for sale or rent.</p>
+        <a href="map.php" class="btn-link">View Map</a>
+    </div>
+    
+    <!-- Proprietatile mele -->
+    <div class="card">
+        <h3>My Properties</h3>
+        <p>Manage your listed properties.</p>
+        <a href="my_properties.php" class="btn-link">View Properties</a>
+    </div>
+    
+    <!-- Adaugare proprietate noua -->
+    <div class="card">
+        <h3>Add Property</h3>
+        <p>List your own property for sale or rent.</p>
+        <a href="add_property.php" class="btn-link">Add New</a>
+    </div>
+    
+    <!-- Profil utilizator -->
+    <div class="card">
+        <h3>Your Profile</h3>
+        <p>View and edit your profile details.</p>
+        <a href="profile.php" class="btn-link">View Profile</a>
+    </div>
+    
+    <!-- Mesaje -->
+    <div class="card">
+        <h3>Messages</h3>
+        <p>Check your messages with property owners or buyers.</p>
+        <a href="chat_overview.php" class="btn-link">View Messages</a>
+    </div>
+</section>
+
+<footer class="dashboard-footer">
+    &copy; <?= date('Y') ?> REM Project. All rights reserved.
+</footer>
+
+<?php include_once 'public/includes/dashboard_footer.php'; ?>
 </body>
 </html>

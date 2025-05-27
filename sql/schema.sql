@@ -1,4 +1,3 @@
-
 -- REM - Real Estate Management Database Schema (PostgreSQL + PostGIS)
 
 -- 0. Activare extensii
@@ -134,19 +133,24 @@ END $$;
 
 -- 14. Test sugestie preț
 SELECT suggest_price(70, 'for_sale');
- ---
- CREATE TABLE saved_properties (
+
+-- Tabele noi adăugate:
+
+-- 15. Tabelul pentru proprietăți salvate
+CREATE TABLE saved_properties (
     user_id INT REFERENCES users(id),
     property_id INT REFERENCES properties(id),
     PRIMARY KEY (user_id, property_id)
 );
-----
+
+-- 16. Tabelul pentru utilizatori interesați de proprietăți
 CREATE TABLE interested (
     user_id INT REFERENCES users(id),
     property_id INT REFERENCES properties(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
------
+
+-- 17. Tabelul pentru mesaje între utilizatori despre proprietăți
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
     sender_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,

@@ -7,6 +7,10 @@ body {
 .dashboard-layout {
     display: flex;
     min-height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .sidebar {
@@ -16,6 +20,8 @@ body {
     display: flex;
     flex-direction: column;
     padding: 1rem;
+    transition: all 0.3s ease;
+    flex: 0 0 240px;
 }
 
 .logo {
@@ -45,6 +51,16 @@ body {
 .main-content {
     flex-grow: 1;
     padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .top-bar h1 {
@@ -431,4 +447,652 @@ body {
     font-size: 0.75rem;
     margin-top: 0.5rem;
     color: #777;
+}
+
+/* Reguli pentru responsive design */
+/* CSS pentru responsivitate */
+@media screen and (max-width: 1200px) {
+    .cards {
+        justify-content: space-between;
+    }
+    
+    .card {
+        width: calc(33% - 1rem);
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .burger-menu {
+        display: block !important;
+    }
+    
+    .sidebar {
+        display: none !important;
+    }
+    
+    .mobile-header {
+        display: block !important;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        flex-direction: column;
+        background-color: #1e2a38;
+        top: 60px;
+        right: -100%;
+        width: 70%;
+        height: calc(100vh - 60px);
+        padding: 1.5rem;
+        gap: 1.5rem;
+        transition: right 0.3s ease-in-out;
+        z-index: 1000;
+    }
+    
+    .nav-menu.active {
+        right: 0;
+    }
+    
+    .main-content {
+        padding: 1rem;
+        width: 100%;
+    }
+    
+    .dashboard-layout {
+        flex-direction: column;
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
+    .header-container {
+        padding: 1rem 1.5rem;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .dashboard-layout {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        display: none !important;
+    }
+    
+    .mobile-header {
+        display: block !important;
+        width: 100%;
+    }
+    
+    .main-content {
+        padding: 1rem;
+        width: 100%;
+    }
+    
+    .property-details, 
+    .property-form {
+        max-width: 100%;
+    }
+    
+    .card {
+        width: 100%;
+    }
+    
+    .message-wrapper {
+        max-width: 80%;
+    }
+    
+    .chat-window {
+        height: 60vh;
+    }
+    
+    .chat-form {
+        flex-direction: column;
+    }
+    
+    .chat-form input[type="file"] {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+    
+    .auth-card {
+        width: 90%;
+        padding: 1.5rem;
+    }
+    
+    .toggle-sidebar {
+        bottom: 140px; /* Ajustat pentru a nu se suprapune cu alte butoane pe mobil */
+    }
+    
+    /* Stiluri pentru meniul burger - vizibil pe mobil */
+    .burger-menu {
+        display: block;
+        cursor: pointer;
+    }
+    
+    /* Stiluri pentru meniul de navigare pe mobil */
+    .nav-menu {
+        position: fixed;
+        flex-direction: column;
+        background-color: #1e2a38;
+        top: 60px;
+        right: -100%;
+        width: 70%;
+        height: calc(100vh - 60px);
+        padding: 1.5rem;
+        gap: 1.5rem;
+        transition: right 0.3s ease-in-out;
+        z-index: 1000;
+    }
+    
+    .nav-menu.active {
+        right: 0;
+    }
+}
+
+/* Stiluri pentru ecrane foarte mici */
+@media screen and (max-width: 576px) {
+    /* Fix for mobile header spacing */
+    body, html {
+        overflow-x: hidden;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .dashboard-layout {
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+    
+    .mobile-header {
+        width: 100%;
+        left: 0;
+        right: 0;
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+    
+    .header-container {
+        width: 100%;
+        margin: 0;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        box-sizing: border-box;
+    }
+    
+    .main-content {
+        width: 100%;
+        padding: 1rem;
+        overflow-x: hidden;
+    }
+    
+    /* Text mai mic pentru economie de spatiu */
+    body {
+        font-size: 14px;
+    }
+    
+    /* Titluri mai mici */
+    .top-bar h1 {
+        font-size: 24px;
+    }
+    
+    /* Text mai mic in detalii proprietati */
+    .property-details p {
+        font-size: 0.9rem;
+    }
+    
+    /* Spatiere redusa in carduri */
+    .auth-card {
+        padding: 1.5rem;
+    }
+    
+    /* Mesaje de chat pe toata latimea */
+    .message-wrapper {
+        max-width: 90%;
+    }
+    
+    /* Header mai compact */
+    .header-container {
+        padding: 1rem;
+    }
+    
+    /* Meniul ocupa mai mult spatiu pe ecrane mici */
+    .nav-menu {
+        width: 80%;
+    }
+    
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .top-bar a.btn-primary {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .btn-add-property {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* Reguli flexibile pentru orice dimensiune */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Flexibilitate pentru continut */
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: flex-start;
+}
+
+.card {
+    flex: 1 0 300px;
+    max-width: 100%;
+}
+
+/* Utilizarea unitatilor relative */
+html {
+    font-size: 16px;
+}
+
+body {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Reguli pentru redimensionare */
+.main-content {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.property-details, 
+.property-form {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Reguli pentru scrollare si continut adaptabil */
+.messages, 
+.chat-window {
+    max-height: 70vh;
+    height: auto;
+    overflow-y: auto;
+}
+
+/* Prevenire overflow text */
+* {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Header & Responsive Navigation */
+/* Containerul principal pentru header */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #1e2a38;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Logo pentru versiunea mobil */
+.logo-mobile {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.logo-mobile a {
+    color: white;
+    text-decoration: none;
+}
+
+/* Meniul de navigare - orizontal pe desktop */
+.nav-menu {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-menu a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem;
+    transition: color 0.3s;
+}
+
+.nav-menu a:hover {
+    color: #42a5f5;
+}
+
+/* Butonul de meniu burger - ascuns pe desktop */
+.burger-menu {
+    display: none;
+    cursor: pointer;
+    z-index: 9999;
+}
+
+/* Stiluri pentru iconita burger */
+.burger-icon {
+    width: 30px;
+    height: 20px;
+    position: relative;
+    margin: 0px;
+}
+
+.burger-icon span {
+    display: block;
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    background-color: white;
+    border-radius: 3px;
+    transition: all 0.3s ease-in-out;
+}
+
+.burger-icon span:nth-child(1) {
+    top: 0;
+}
+
+.burger-icon span:nth-child(2) {
+    top: 8px;
+}
+
+.burger-icon span:nth-child(3) {
+    top: 16px;
+}
+
+/* Animatie pentru iconita burger activa */
+.burger-icon.active span:nth-child(1) {
+    transform: rotate(45deg);
+    top: 8px;
+}
+
+.burger-icon.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.burger-icon.active span:nth-child(3) {
+    transform: rotate(-45deg);
+    top: 8px;
+}
+
+/* Buton pentru afisarea listei de proprietati pe mobil */
+.toggle-property-list {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #42a5f5;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+
+/* Eliminarea stilurilor pentru toggle-sidebar */
+.toggle-sidebar {
+    display: none; /* Ascundem complet butonul */
+}
+
+/* Revenirea la stilurile normale pentru sidebar */
+.sidebar {
+    transition: all 0.3s ease;
+    width: 240px;
+}
+
+.sidebar.collapsed {
+    width: 240px; /* Revenim la dimensiunea normala */
+    padding: 1rem; /* Pastram padding-ul normal */
+    overflow: visible;
+    margin-left: 0;
+}
+
+/* Navigare mobila universala */
+.mobile-header {
+    display: none;
+    width: 100%;
+    left: 0;
+    right: 0;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+/* Property grid styles */
+.property-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.property-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.property-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.property-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    color: #1e2a38;
+}
+
+.property-price {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #42a5f5;
+    margin: 0.5rem 0;
+}
+
+.property-area, .property-status {
+    color: #666;
+    margin: 0.25rem 0;
+}
+
+.property-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: #e3f2fd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.property-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+.btn-link, .btn-danger {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-link {
+    background-color: #42a5f5;
+    color: white;
+}
+
+.btn-link:hover {
+    background-color: #1e88e5;
+}
+
+.btn-danger {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #e53935;
+}
+
+.btn-secondary {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    background-color: #9e9e9e;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #757575;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Responsive fixes for property grid */
+@media screen and (max-width: 768px) {
+    .property-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .property-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .property-actions {
+        flex-direction: row;
+        width: 100%;
+    }
+    
+    .property-actions a {
+        flex: 1;
+    }
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.alert-info {
+    background-color: #e3f2fd;
+    border: 1px solid #bbdefb;
+    color: #0d47a1;
+}
+
+.alert-warning {
+    background-color: #fff3e0;
+    border: 1px solid #ffe0b2;
+    color: #e65100;
+}
+
+.no-data {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.no-data p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+.btn-add-property {
+    width: auto;
+    max-width: 200px;
+    margin-left: 1rem;
+    margin-right: 2rem;
+    position: relative;
+}
+
+/* Plus button for small screens */
+.btn-add-property.btn-plus {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .btn-add-property {
+        margin-left: 0;
+        margin-right: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .btn-add-property {
+        display: none;
+    }
+    
+    .btn-add-property.btn-plus {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        padding: 0;
+        font-size: 24px;
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        z-index: 999;
+        max-width: 40px;
+        margin-right: 0;
+        background-color: #1e88e5;
+    }
 }
