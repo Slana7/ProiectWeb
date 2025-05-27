@@ -39,6 +39,7 @@ $lng = $conn->query("SELECT ST_X(location::geometry) AS lng FROM properties WHER
             <a href="map.php">Map</a>
             <a href="add_property.php">Add Property</a>
             <a href="profile.php">Profile</a>
+            <a href="chat_overview.php">My Chats</a>
             <a href="logout.php">Logout</a>
         </nav>
     </aside>
