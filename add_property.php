@@ -2,24 +2,19 @@
 require_once __DIR__ . '/src/config/config.php';
 require_once __DIR__ . '/src/controllers/PropertyController.php';
 
-// Porneste sesiunea daca nu e deja pornita
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Verifica daca utilizatorul e logat
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-// Initializeaza variabile
 $errors = [];
 $success = false;
 
-// Proceseaza datele trimise
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Obtine datele din formular
     $propertyData = [
         'user_id' => $_SESSION['user_id'],
         'title' => $_POST['title'] ?? '',
@@ -32,14 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'facilities' => $_POST['facilities'] ?? []
     ];
     
-    // Adauga proprietatea
     $result = addProperty($propertyData);
     
     if ($result['success']) {
         $success = true;
         $_SESSION['flash_message'] = $result['message'];
         
-        // Redirectioneaza catre dashboard
         header('Location: dashboard.php');
         exit;
     } else {
@@ -47,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Obtine toate facilitatile disponibile
 $facilitiesStmt = $conn->query("SELECT id, name FROM facilities ORDER BY name");
 $facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -58,7 +50,6 @@ $facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Property - <?= APP_NAME ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
-    <!-- Include biblioteca leaflet pentru selectarea locatiei -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <style>
@@ -106,7 +97,6 @@ $facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
         <p>Click on the map to set the property location</p>
         <div id="map"></div>
         
-        <!-- Campuri ascunse pentru coordonate -->
         <input type="hidden" name="lat" id="lat" required>
         <input type="hidden" name="lng" id="lng" required>
 
@@ -131,28 +121,21 @@ $facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
 <?php include_once 'public/includes/dashboard_footer.php'; ?>
 
 <script>
-    // Initializeaza harta centrata pe Iasi, Romania
     const map = L.map('map').setView([47.1585, 27.6014], 13);
     
-    // Adauga tiles OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
     
-    // Variabila pentru marker (initial null)
     let marker = null;
     
-    // Adauga eveniment de click pe harta
     map.on('click', function(e) {
-        // Obtine coordonatele
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
         
-        // Actualizeaza campurile ascunse
         document.getElementById('lat').value = lat;
         document.getElementById('lng').value = lng;
         
-        // Actualizeaza sau adauga un marker
         if (marker) {
             marker.setLatLng(e.latlng);
         } else {

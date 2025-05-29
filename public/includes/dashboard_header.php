@@ -1,6 +1,4 @@
-<!-- Header universal pentru paginile dashboard -->
 <div class="dashboard-layout">
-    <!-- Header pentru mobile/tableta -->
     <header class="mobile-header">
         <div class="header-container">
             <div class="logo-mobile">
@@ -25,7 +23,6 @@
         </div>
     </header>
 
-    <!-- Sidebar pentru desktop -->
     <aside class="sidebar">
         <div class="logo">
             <h2>Real Estate Management</h2>
@@ -41,5 +38,4 @@
         </nav>
     </aside>
 
-    <!-- Continut principal -->
     <main class="main-content"> 

@@ -20,7 +20,6 @@ if (!$property) {
     die("Property not found.");
 }
 
-// Extragem coordonatele proprietatii
 $lat = $conn->query("SELECT ST_Y(location::geometry) AS lat FROM properties WHERE id = $id")->fetchColumn();
 $lng = $conn->query("SELECT ST_X(location::geometry) AS lng FROM properties WHERE id = $id")->fetchColumn();
 ?>

@@ -5,7 +5,6 @@ require_once __DIR__ . '/../db/Database.php';
 $conn = Database::connect();
 
 function addProperty($data) {
-    // Validate input
     $errors = validatePropertyData($data);
     
     if (!empty($errors)) {
@@ -15,14 +14,11 @@ function addProperty($data) {
         ];
     }
     
-    // Process facilities
     if (isset($data['facilities']) && is_array($data['facilities'])) {
-        // Already an array, good to go
     } else {
         $data['facilities'] = [];
     }
     
-    // Save to database
     $propertyId = createProperty($data);
     
     if ($propertyId) {
@@ -49,7 +45,6 @@ function validatePropertyData($data) {
         }
     }
     
-    // Numeric fields
     if (!empty($data['price']) && !is_numeric($data['price'])) {
         $errors[] = 'Price must be a number';
     }
@@ -58,7 +53,6 @@ function validatePropertyData($data) {
         $errors[] = 'Area must be a number';
     }
     
-    // Validate coordinates
     if (!empty($data['lat']) && (!is_numeric($data['lat']) || $data['lat'] < -90 || $data['lat'] > 90)) {
         $errors[] = 'Latitude must be a valid number between -90 and 90';
     }
@@ -74,7 +68,6 @@ function removeProperty($propertyId, $userId) {
     global $conn;
     
     try {
-        // Verifica existenta proprietatii
         $sql = "SELECT user_id FROM properties WHERE id = :id";
         $stmt = $conn->prepare($sql);
         $stmt->execute([':id' => $propertyId]);
@@ -87,7 +80,6 @@ function removeProperty($propertyId, $userId) {
             ];
         }
         
-        // Verifica daca utilizatorul este proprietarul
         if ($property['user_id'] != $userId) {
             return [
                 'success' => false,
@@ -95,30 +87,24 @@ function removeProperty($propertyId, $userId) {
             ];
         }
         
-        // Porneste tranzactia
         $conn->beginTransaction();
         
-        // Sterge relatiile cu facilitatile
         $sql = "DELETE FROM property_facility WHERE property_id = :property_id";
         $stmt = $conn->prepare($sql);
         $stmt->execute([':property_id' => $propertyId]);
         
-        // Sterge proprietatea
         $sql = "DELETE FROM properties WHERE id = :id";
         $stmt = $conn->prepare($sql);
         $stmt->execute([':id' => $propertyId]);
         
-        // Finalizeaza tranzactia
         $conn->commit();
         
-        // Returneaza succes
         return [
             'success' => true,
             'message' => 'Property removed successfully'
         ];
         
     } catch (PDOException $e) {
-        // Anuleaza tranzactia in caz de eroare
         $conn->rollBack();
         error_log("Error removing property: " . $e->getMessage());
         return [
@@ -132,7 +118,6 @@ function getUserProperties($userId) {
     global $conn;
     
     try {
-        // Obtine proprietatile utilizatorului
         $sql = "SELECT p.*, 
                 ST_X(location::geometry) as lng, 
                 ST_Y(location::geometry) as lat
@@ -143,15 +128,12 @@ function getUserProperties($userId) {
         $stmt->execute([':user_id' => $userId]);
         $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Adauga facilitatile pentru fiecare proprietate
         foreach ($properties as &$property) {
             $property['facilities'] = getPropertyFacilities($property['id']);
         }
         
-        // Returneaza lista de proprietati
         return $properties;
     } catch (PDOException $e) {
-        // Logeaza eroarea
         error_log("Error getting user properties: " . $e->getMessage());
         return [];
     }

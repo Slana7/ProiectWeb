@@ -18,7 +18,6 @@ if (!$propertyId || !$receiverId) {
 
 $conn = Database::connect();
 
-// Obtinem numele utilizatorilor
 function getUsername($conn, $id) {
     $stmt = $conn->prepare("SELECT name FROM users WHERE id = :id");
     $stmt->execute(['id' => $id]);
@@ -28,7 +27,6 @@ function getUsername($conn, $id) {
 $myName = getUsername($conn, $userId);
 $otherName = getUsername($conn, $receiverId);
 
-// Preluam mesajele
 $stmt = $conn->prepare("
     SELECT * FROM messages
     WHERE property_id = :property_id

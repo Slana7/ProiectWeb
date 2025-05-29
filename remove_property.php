@@ -2,36 +2,28 @@
 require_once __DIR__ . '/src/config/config.php';
 require_once __DIR__ . '/src/controllers/PropertyController.php';
 
-// Porneste sesiunea
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Verifica autentificarea
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-// Verifica existenta ID-ului proprietatii
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     $_SESSION['flash_message'] = 'No property specified for removal';
     header('Location: dashboard.php');
     exit;
 }
 
-// Extrage ID-ul proprietatii si al utilizatorului
 $propertyId = $_GET['id'];
 $userId = $_SESSION['user_id'];
 
-// Proceseaza confirmarea stergerii
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verifica confirmarea utilizatorului
     if (isset($_POST['confirm']) && $_POST['confirm'] === 'yes') {
-        // Sterge proprietatea
         $result = removeProperty($propertyId, $userId);
         
-        // Pregateste mesajul de feedback
         if ($result['success']) {
             $_SESSION['flash_message'] = $result['message'];
         } else {
@@ -41,15 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['flash_message'] = 'Property removal was cancelled';
     }
     
-    // Redirectioneaza la dashboard
     header('Location: dashboard.php');
     exit;
 }
 
-// Obtine detaliile proprietatii
 $property = getPropertyById($propertyId);
 
-// Verifica drepturile de acces
 if (!$property || $property['user_id'] != $userId) {
     $_SESSION['flash_message'] = 'You do not have permission to remove this property';
     header('Location: dashboard.php');

@@ -83,7 +83,6 @@ function getAllProperties() {
         $stmt = $conn->query($sql);
         $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Get facilities for each property
         foreach ($properties as &$property) {
             $property['facilities'] = getPropertyFacilities($property['id']);
         }
