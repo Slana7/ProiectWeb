@@ -7,14 +7,40 @@ header('Content-Type: application/json');
 try {
     $conn = Database::connect();
 
+    // Preia toate proprietățile
     $sql = "SELECT id, title, price, ST_Y(location::geometry) AS lat, ST_X(location::geometry) AS lng
             FROM properties
             WHERE location IS NOT NULL";
 
     $stmt = $conn->query($sql);
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode($results);
+    // Preia toate facilitățile pentru proprietăți
+    $facilityStmt = $conn->query("
+        SELECT pf.property_id, f.name
+        FROM property_facility pf
+        JOIN facilities f ON pf.facility_id = f.id
+    ");
+    $facilityData = $facilityStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Grupați facilitățile pe property_id
+    $facilityMap = [];
+    foreach ($facilityData as $row) {
+        $pid = $row['property_id'];
+        if (!isset($facilityMap[$pid])) {
+            $facilityMap[$pid] = [];
+        }
+        $facilityMap[$pid][] = $row['name'];
+    }
+
+    // Adaugă facilitățile ca string în fiecare proprietate
+    foreach ($properties as &$property) {
+        $pid = $property['id'];
+        $facilities = $facilityMap[$pid] ?? [];
+        $property['facilities'] = implode(',', $facilities);
+    }
+
+    echo json_encode($properties);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
