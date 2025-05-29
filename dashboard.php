@@ -2,13 +2,11 @@
 require_once __DIR__ . '/src/config/config.php';
 session_start();
 
-// Verifica autentificarea
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 
-// Pregateste mesajul flash
 $flashMessage = null;
 if (isset($_SESSION['flash_message'])) {
     $flashMessage = $_SESSION['flash_message'];
@@ -31,44 +29,37 @@ if (isset($_SESSION['flash_message'])) {
     <p>Welcome to your real estate management dashboard.</p>
 </header>
 
-<!-- Afiseaza mesajul flash daca exista -->
 <?php if ($flashMessage): ?>
     <div class="alert alert-info">
         <?= htmlspecialchars($flashMessage) ?>
     </div>
 <?php endif; ?>
 
-<!-- Carduri cu functionalitati principale -->
 <section class="cards">
-    <!-- Cautare proprietati -->
     <div class="card">
         <h3>Browse Properties</h3>
         <p>Explore available properties for sale or rent.</p>
         <a href="map.php" class="btn-link">View Map</a>
     </div>
     
-    <!-- Proprietatile mele -->
     <div class="card">
         <h3>My Properties</h3>
         <p>Manage your listed properties.</p>
         <a href="my_properties.php" class="btn-link">View Properties</a>
     </div>
     
-    <!-- Adaugare proprietate noua -->
     <div class="card">
         <h3>Add Property</h3>
         <p>List your own property for sale or rent.</p>
         <a href="add_property.php" class="btn-link">Add New</a>
     </div>
     
-    <!-- Profil utilizator -->
     <div class="card">
         <h3>Your Profile</h3>
         <p>View and edit your profile details.</p>
         <a href="profile.php" class="btn-link">View Profile</a>
     </div>
     
-    <!-- Mesaje -->
     <div class="card">
         <h3>Messages</h3>
         <p>Check your messages with property owners or buyers.</p>

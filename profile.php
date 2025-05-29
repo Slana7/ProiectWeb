@@ -3,22 +3,18 @@ require_once __DIR__ . '/src/config/config.php';
 require_once __DIR__ . '/src/db/Database.php';
 session_start();
 
-// Verifica autentificarea
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 
-// Conectare la baza de date
 $conn = Database::connect();
 $userId = $_SESSION['user_id'];
 
-// Obtine datele utilizatorului
 $stmt = $conn->prepare("SELECT name, email FROM users WHERE id = :id");
 $stmt->execute(['id' => $userId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Pregateste mesajul flash
 $flashMessage = null;
 if (isset($_SESSION['flash_message'])) {
     $flashMessage = $_SESSION['flash_message'];
@@ -74,7 +70,6 @@ if (isset($_SESSION['flash_message'])) {
         <h2>My Favorite Properties</h2>
         <ul>
             <?php
-            // Obtine proprietatile favorite
             $favorites = $conn->prepare("
                 SELECT p.id, p.title, p.price
                 FROM saved_properties sp
@@ -84,7 +79,6 @@ if (isset($_SESSION['flash_message'])) {
             $favorites->execute(['uid' => $userId]);
             $favs = $favorites->fetchAll();
             
-            // Afiseaza lista de favorite
             if (empty($favs)) {
                 echo "<p>You haven't saved any properties yet.</p>";
             } else {

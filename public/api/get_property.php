@@ -6,8 +6,6 @@ header('Content-Type: application/json');
 
 try {
     $conn = Database::connect();
-
-    // Preia toate proprietățile
     $sql = "SELECT id, title, price, ST_Y(location::geometry) AS lat, ST_X(location::geometry) AS lng
             FROM properties
             WHERE location IS NOT NULL";
@@ -15,7 +13,6 @@ try {
     $stmt = $conn->query($sql);
     $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Preia toate facilitățile pentru proprietăți
     $facilityStmt = $conn->query("
         SELECT pf.property_id, f.name
         FROM property_facility pf
@@ -23,7 +20,6 @@ try {
     ");
     $facilityData = $facilityStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Grupați facilitățile pe property_id
     $facilityMap = [];
     foreach ($facilityData as $row) {
         $pid = $row['property_id'];
@@ -33,7 +29,6 @@ try {
         $facilityMap[$pid][] = $row['name'];
     }
 
-    // Adaugă facilitățile ca string în fiecare proprietate
     foreach ($properties as &$property) {
         $pid = $property['id'];
         $facilities = $facilityMap[$pid] ?? [];

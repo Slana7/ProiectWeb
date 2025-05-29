@@ -11,7 +11,6 @@ if (!isset($_SESSION['user_id'])) {
 $conn = Database::connect();
 $userId = $_SESSION['user_id'];
 
-// Afisam toate conversatiile utilizatorului
 $query = "
     SELECT 
         CASE 
@@ -50,12 +49,10 @@ $conversations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php else: ?>
     <ul>
         <?php foreach ($conversations as $conv):
-            // Obtine numele celuilalt utilizator
             $userStmt = $conn->prepare("SELECT name FROM users WHERE id = :id");
             $userStmt->execute(['id' => $conv['other_user_id']]);
             $user = $userStmt->fetch();
 
-            // Obtine titlul proprietatii
             $propStmt = $conn->prepare("SELECT title FROM properties WHERE id = :id");
             $propStmt->execute(['id' => $conv['property_id']]);
             $property = $propStmt->fetch();

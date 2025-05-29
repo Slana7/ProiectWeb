@@ -2,23 +2,18 @@
 require_once __DIR__ . '/src/config/config.php';
 require_once __DIR__ . '/src/controllers/PropertyController.php';
 
-// Porneste sesiunea
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Verifica autentificarea
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-// Extrage ID-ul utilizatorului
 $userId = $_SESSION['user_id'];
-// Obtine lista proprietatilor utilizatorului
 $properties = getUserProperties($userId);
 
-// Pregateste mesajul flash
 $flashMessage = null;
 if (isset($_SESSION['flash_message'])) {
     $flashMessage = $_SESSION['flash_message'];
@@ -36,7 +31,6 @@ if (isset($_SESSION['flash_message'])) {
 <body>
 <?php include_once 'public/includes/dashboard_header.php'; ?>
 
-<!-- Plus button for small screens -->
 <a href="add_property.php" class="btn-primary btn-add-property btn-plus">+</a>
 
 <div class="main-content">
@@ -47,7 +41,6 @@ if (isset($_SESSION['flash_message'])) {
         </div>
     </header>
 
-    <!-- Afiseaza mesajul flash daca exista -->
     <?php if ($flashMessage): ?>
         <div class="alert alert-info">
             <?= htmlspecialchars($flashMessage) ?>
@@ -56,26 +49,22 @@ if (isset($_SESSION['flash_message'])) {
 
     <section class="properties-list">
         <?php if (empty($properties)): ?>
-            <!-- Afiseaza mesaj cand nu exista proprietati -->
             <div class="no-data">
                 <p>You don't have any properties yet.</p>
                 <a href="add_property.php" class="btn-primary" style="width: auto; display: inline-block; max-width: none;">Add your first property</a>
             </div>
         <?php else: ?>
-            <!-- Afiseaza lista de proprietati -->
             <div class="property-grid">
                 <?php foreach ($properties as $property): ?>
-                    <!-- Card pentru fiecare proprietate -->
                     <div class="property-card">
                         <h3><?= htmlspecialchars($property['title']) ?></h3>
                         <p class="property-price">€<?= number_format($property['price']) ?></p>
                         <p class="property-area"><strong>Area:</strong> <?= $property['area'] ?> m²</p>
                         <p class="property-status"><?= $property['status'] == 'for_sale' ? 'For Sale' : 'For Rent' ?></p>
                         
-                        <!-- Butoane de actiune -->
-                        <div class="property-actions">
-                            <a href="property_details.php?id=<?= $property['id'] ?>" class="btn-link">View Details</a>
-                            <a href="remove_property.php?id=<?= $property['id'] ?>" class="btn-danger">Remove</a>
+                        <div class="property-actions" style="display: flex; gap: 10px; align-items: center;">
+                            <a href="property_details.php?id=<?= $property['id'] ?>" class="btn-link" style="flex: 1; display: inline-flex; justify-content: center; align-items: center; padding: 8px 16px; text-align: center; line-height: 1; height: 38px; box-sizing: border-box; vertical-align: middle; margin: 0;">View Details</a>
+                            <a href="remove_property.php?id=<?= $property['id'] ?>" class="btn-danger" style="flex: 1; display: inline-flex; justify-content: center; align-items: center; padding: 8px 16px; text-align: center; line-height: 1; height: 38px; box-sizing: border-box; vertical-align: middle; margin: 0;">Remove</a>
                         </div>
                     </div>
                 <?php endforeach; ?>

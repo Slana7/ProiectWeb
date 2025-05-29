@@ -249,7 +249,6 @@ body {
     margin-top: 1.5rem;
 }
 
-/* Heart button (Save/Unsave favorite) */
 .favorite-heart {
     position: absolute;
     top: 1.5rem;
@@ -449,8 +448,6 @@ body {
     color: #777;
 }
 
-/* Reguli pentru responsive design */
-/* CSS pentru responsivitate */
 @media screen and (max-width: 1200px) {
     .cards {
         justify-content: space-between;
@@ -571,16 +568,14 @@ body {
     }
     
     .toggle-sidebar {
-        bottom: 140px; /* Ajustat pentru a nu se suprapune cu alte butoane pe mobil */
+        bottom: 140px;
     }
     
-    /* Stiluri pentru meniul burger - vizibil pe mobil */
     .burger-menu {
         display: block;
         cursor: pointer;
     }
     
-    /* Stiluri pentru meniul de navigare pe mobil */
     .nav-menu {
         position: fixed;
         flex-direction: column;
@@ -600,9 +595,7 @@ body {
     }
 }
 
-/* Stiluri pentru ecrane foarte mici */
 @media screen and (max-width: 576px) {
-    /* Fix for mobile header spacing */
     body, html {
         overflow-x: hidden;
         width: 100%;
@@ -639,37 +632,30 @@ body {
         overflow-x: hidden;
     }
     
-    /* Text mai mic pentru economie de spatiu */
     body {
         font-size: 14px;
     }
     
-    /* Titluri mai mici */
     .top-bar h1 {
         font-size: 24px;
     }
     
-    /* Text mai mic in detalii proprietati */
     .property-details p {
         font-size: 0.9rem;
     }
     
-    /* Spatiere redusa in carduri */
     .auth-card {
         padding: 1.5rem;
     }
     
-    /* Mesaje de chat pe toata latimea */
     .message-wrapper {
         max-width: 90%;
     }
     
-    /* Header mai compact */
     .header-container {
         padding: 1rem;
     }
     
-    /* Meniul ocupa mai mult spatiu pe ecrane mici */
     .nav-menu {
         width: 80%;
     }
@@ -690,14 +676,12 @@ body {
     }
 }
 
-/* Reguli flexibile pentru orice dimensiune */
 .main-content {
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
 
-/* Flexibilitate pentru continut */
 .cards {
     display: flex;
     flex-wrap: wrap;
@@ -710,7 +694,6 @@ body {
     max-width: 100%;
 }
 
-/* Utilizarea unitatilor relative */
 html {
     font-size: 16px;
 }
@@ -720,7 +703,6 @@ body {
     line-height: 1.5;
 }
 
-/* Reguli pentru redimensionare */
 .main-content {
     width: 100%;
     overflow-x: hidden;
@@ -732,7 +714,6 @@ body {
     max-width: 600px;
 }
 
-/* Reguli pentru scrollare si continut adaptabil */
 .messages, 
 .chat-window {
     max-height: 70vh;
@@ -740,14 +721,11 @@ body {
     overflow-y: auto;
 }
 
-/* Prevenire overflow text */
 * {
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
-/* Header & Responsive Navigation */
-/* Containerul principal pentru header */
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -759,7 +737,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Logo pentru versiunea mobil */
 .logo-mobile {
     font-size: 1.5rem;
     font-weight: bold;
@@ -770,7 +747,6 @@ body {
     text-decoration: none;
 }
 
-/* Meniul de navigare - orizontal pe desktop */
 .nav-menu {
     display: flex;
     gap: 1.5rem;
@@ -787,14 +763,12 @@ body {
     color: #42a5f5;
 }
 
-/* Butonul de meniu burger - ascuns pe desktop */
 .burger-menu {
     display: none;
     cursor: pointer;
     z-index: 9999;
 }
 
-/* Stiluri pentru iconita burger */
 .burger-icon {
     width: 30px;
     height: 20px;
@@ -824,7 +798,6 @@ body {
     top: 16px;
 }
 
-/* Animatie pentru iconita burger activa */
 .burger-icon.active span:nth-child(1) {
     transform: rotate(45deg);
     top: 8px;
@@ -839,7 +812,6 @@ body {
     top: 8px;
 }
 
-/* Buton pentru afisarea listei de proprietati pe mobil */
 .toggle-property-list {
     display: none;
     position: fixed;
@@ -857,25 +829,22 @@ body {
     cursor: pointer;
 }
 
-/* Eliminarea stilurilor pentru toggle-sidebar */
 .toggle-sidebar {
-    display: none; /* Ascundem complet butonul */
+    display: none;
 }
 
-/* Revenirea la stilurile normale pentru sidebar */
 .sidebar {
     transition: all 0.3s ease;
     width: 240px;
 }
 
 .sidebar.collapsed {
-    width: 240px; /* Revenim la dimensiunea normala */
-    padding: 1rem; /* Pastram padding-ul normal */
+    width: 240px;
+    padding: 1rem;
     overflow: visible;
     margin-left: 0;
 }
 
-/* Navigare mobila universala */
 .mobile-header {
     display: none;
     width: 100%;
@@ -887,7 +856,6 @@ body {
     z-index: 1000;
 }
 
-/* Property grid styles */
 .property-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -997,7 +965,6 @@ body {
     margin-top: 1rem;
 }
 
-/* Responsive fixes for property grid */
 @media screen and (max-width: 768px) {
     .property-grid {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -1060,7 +1027,6 @@ body {
     position: relative;
 }
 
-/* Plus button for small screens */
 .btn-add-property.btn-plus {
     display: none;
 }

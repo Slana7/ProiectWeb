@@ -8,6 +8,19 @@ require_once __DIR__ . '/src/config/config.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - <?= APP_NAME ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <style>
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .auth-form input {
+            max-width: 100%;
+        }
+        .switch-link {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 <?php include_once 'public/includes/auth_header.php'; ?>

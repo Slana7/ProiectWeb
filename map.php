@@ -194,7 +194,7 @@ if (!isset($_SESSION['user_id'])) {
     </div>
 </div>
 
-<!-- Buton toggle listă -->
+<!-- Buton toggle lista -->
 <button class="toggle-property-list" id="toggle-list">&#9776;</button>
 
 <!-- Buton plutitor cu lupă -->

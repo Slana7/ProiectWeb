@@ -1,34 +1,195 @@
-const map = L.map('map').setView([47.1585, 27.6014], 12); // Centrat pe Iași
+const map = L.map('map').setView([47.1585, 27.6014], 12);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// ====================== //
-// Straturi suplimentare //
-// ====================== //
+const pollutionLayer = L.layerGroup();
+const trafficLayer = L.layerGroup();
+const shopsLayer = L.layerGroup();
 
-const pollutionLayer = L.layerGroup([
-    L.circle([47.164, 27.59], { radius: 300, color: 'red' }).bindPopup("High Pollution Area"),
-    L.circle([47.15, 27.61], { radius: 200, color: 'red' }).bindPopup("Polluted Zone")
-]);
+function fetchShops() {
+    const overpassUrl = "https://overpass-api.de/api/interpreter";
+    const bbox = "47.10,27.50,47.20,27.70";
+    
+    const query = `
+    [out:json];
+    (
+      node["shop"="supermarket"]["name"~"Lidl|Kaufland|Mega Image|Carrefour|Profi|Penny",i](${bbox});
+      way["shop"="supermarket"]["name"~"Lidl|Kaufland|Mega Image|Carrefour|Profi|Penny",i](${bbox});
+      relation["shop"="supermarket"]["name"~"Lidl|Kaufland|Mega Image|Carrefour|Profi|Penny",i](${bbox});
+    );
+    out center;
+    `;
+    
+    fetch(overpassUrl, {
+        method: "POST",
+        body: `data=${encodeURIComponent(query)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        shopsLayer.clearLayers();
+        
+        data.elements.forEach(element => {
+            let lat, lng, name;
+            
+            if (element.type === "node") {
+                lat = element.lat;
+                lng = element.lon;
+                name = element.tags.name;
+            } else {
+                lat = element.center.lat;
+                lng = element.center.lon;
+                name = element.tags.name;
+            }
+            
+            const marketIcon = L.divIcon({
+                className: 'custom-market-icon',
+                html: `
+                    <div style="
+                        background-color: #3498db; 
+                        color: white;
+                        width: 25px; 
+                        height: 25px; 
+                        border-radius: 50%; 
+                        border: 2px solid white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: bold;
+                        font-size: 16px;
+                        box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+                    ">
+                        🛒
+                    </div>
+                `,
+                iconSize: [25, 25],
+                iconAnchor: [12, 12],
+                popupAnchor: [0, -10]
+            });
+            
+            const marker = L.marker([lat, lng], { icon: marketIcon }).bindPopup(name);
+            shopsLayer.addLayer(marker);
+        });
+    })
+    .catch(error => {
+        console.error("Error fetching shops data:", error);
+        const fallbackShops = [
+            { lat: 47.16, lng: 27.61, name: "Mega Image" },
+            { lat: 47.157, lng: 27.595, name: "Lidl" },
+            { lat: 47.159, lng: 27.607, name: "Carrefour Express" }
+        ];
+        
+        const marketIcon = L.divIcon({
+            className: 'custom-market-icon',
+            html: `
+                <div style="
+                    background-color: #3498db; 
+                    color: white;
+                    width: 25px; 
+                    height: 25px; 
+                    border-radius: 50%; 
+                    border: 2px solid white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 16px;
+                    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+                ">
+                    🛒
+                </div>
+            `,
+            iconSize: [25, 25],
+            iconAnchor: [12, 12],
+            popupAnchor: [0, -10]
+        });
+        
+        fallbackShops.forEach(shop => {
+            L.marker([shop.lat, shop.lng], { icon: marketIcon })
+                .bindPopup(shop.name)
+                .addTo(shopsLayer);
+        });
+    });
+}
 
-const trafficLayer = L.layerGroup([
-    L.polyline([
-        [47.162, 27.58],
-        [47.160, 27.61]
-    ], { color: 'orange', weight: 5 }).bindPopup("Traffic Congestion"),
-    L.polyline([
-        [47.155, 27.62],
-        [47.153, 27.6]
-    ], { color: 'orange', weight: 5 }).bindPopup("Heavy Traffic Area")
-]);
+function fetchTrafficData() {
+    const overpassUrl = "https://overpass-api.de/api/interpreter";
+    const bbox = "47.10,27.50,47.20,27.70";
+    
+    const query = `
+    [out:json];
+    (
+      way["highway"~"primary|secondary|tertiary"]["name"](${bbox});
+    );
+    out geom;
+    `;
+    
+    fetch(overpassUrl, {
+        method: "POST",
+        body: `data=${encodeURIComponent(query)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        trafficLayer.clearLayers();
+        
+        data.elements.slice(0, 10).forEach(element => { // Limit to 10 major roads
+            if (element.geometry && element.geometry.length > 1) {
+                const points = element.geometry.map(point => [point.lat, point.lon]);
+                const polyline = L.polyline(points, { 
+                    color: 'orange', 
+                    weight: 5 
+                }).bindPopup(element.tags.name || "Major Road");
+                
+                trafficLayer.addLayer(polyline);
+            }
+        });
+    })
+    .catch(error => {
+        console.error("Error fetching traffic data:", error);
+        const fallbackTrafficAreas = [
+            {
+                points: [[47.162, 27.58], [47.160, 27.61]],
+                name: "Traffic Congestion"
+            },
+            {
+                points: [[47.155, 27.62], [47.153, 27.6]],
+                name: "Heavy Traffic Area"
+            }
+        ];
+        
+        fallbackTrafficAreas.forEach(area => {
+            L.polyline(area.points, { color: 'orange', weight: 5 })
+                .bindPopup(area.name)
+                .addTo(trafficLayer);
+        });
+    });
+}
 
-const shopsLayer = L.layerGroup([
-    L.marker([47.16, 27.61]).bindPopup("Mega Image"),
-    L.marker([47.157, 27.595]).bindPopup("Lidl"),
-    L.marker([47.159, 27.607]).bindPopup("Carrefour Express")
-]);
+function fetchPollutionData() {
+    pollutionLayer.clearLayers();
+    
+    const pollutionAreas = [
+        { lat: 47.164, lng: 27.59, radius: 300, name: "Industrial Zone" },
+        { lat: 47.15, lng: 27.61, radius: 200, name: "High Traffic Area" },
+        { lat: 47.1695, lng: 27.5698, radius: 350, name: "CUG Industrial Area" }
+    ];
+    
+    pollutionAreas.forEach(area => {
+        L.circle([area.lat, area.lng], { 
+            radius: area.radius, 
+            color: 'red',
+            fillOpacity: 0.3
+        }).bindPopup(area.name)
+          .addTo(pollutionLayer);
+    });
+}
+
+function loadAllMapData() {
+    fetchShops();
+    fetchTrafficData();
+    fetchPollutionData();
+}
 
 document.getElementById("layer-pollution")?.addEventListener("change", (e) => {
     e.target.checked ? pollutionLayer.addTo(map) : map.removeLayer(pollutionLayer);
@@ -41,10 +202,6 @@ document.getElementById("layer-traffic")?.addEventListener("change", (e) => {
 document.getElementById("layer-shops")?.addEventListener("change", (e) => {
     e.target.checked ? shopsLayer.addTo(map) : map.removeLayer(shopsLayer);
 });
-
-// ============================ //
-// Marker + listă proprietăți //
-// ============================ //
 
 let allProperties = [];
 let markersGroup = L.layerGroup().addTo(map);
@@ -159,4 +316,5 @@ document.getElementById("filter-button")?.addEventListener("click", () => {
     panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
 });
 
+loadAllMapData();
 loadAndDisplayProperties();

@@ -22,7 +22,7 @@ if (isset($_SESSION['user_id'])) {
     <div class="auth-card">
         <h1>Welcome to <?= APP_NAME ?></h1>
         <p>Manage properties, explore listings, and more.</p>
-        <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem;">
+        <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; align-items: center;">
             <a href="<?= BASE_URL ?>login.php" class="btn-primary">Login</a>
             <a href="<?= BASE_URL ?>register.php" class="btn-primary">Register</a>
         </div>
