@@ -194,10 +194,8 @@ if (!isset($_SESSION['user_id'])) {
     </div>
 </div>
 
-<!-- Buton toggle lista -->
 <button class="toggle-property-list" id="toggle-list">&#9776;</button>
 
-<!-- Buton plutitor cu lupă -->
 <button id="filter-button" title="Open filters">🔍</button>
 
 <?php include_once 'public/includes/dashboard_footer.php'; ?>

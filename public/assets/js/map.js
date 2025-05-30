@@ -114,32 +114,90 @@ function fetchShops() {
 }
 
 function fetchTrafficData() {
+    trafficLayer.clearLayers();
+    
     const overpassUrl = "https://overpass-api.de/api/interpreter";
     const bbox = "47.10,27.50,47.20,27.70";
     
     const query = `
     [out:json];
     (
-      way["highway"~"primary|secondary|tertiary"]["name"](${bbox});
+      way["highway"="primary"](${bbox});
+      way["highway"="secondary"](${bbox});
+      way["highway"="trunk"](${bbox});
+      way["highway"="primary_link"](${bbox});
+      way["highway"="secondary_link"](${bbox});
+      way["highway"="trunk_link"](${bbox});
     );
-    out geom;
+    out body geom;
     `;
+    
+    console.log('Fetching major road data from Overpass API');
+    
+    const loadingControl = L.control({position: 'bottomleft'});
+    loadingControl.onAdd = function() {
+        const div = L.DomUtil.create('div', 'info loading');
+        div.innerHTML = '<strong>Loading traffic data...</strong>';
+        div.style.padding = '6px 8px';
+        div.style.background = 'white';
+        div.style.borderRadius = '4px';
+        return div;
+    };
+    loadingControl.addTo(map);
     
     fetch(overpassUrl, {
         method: "POST",
         body: `data=${encodeURIComponent(query)}`
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Overpass API response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
-        trafficLayer.clearLayers();
+        map.removeControl(loadingControl);
         
-        data.elements.slice(0, 10).forEach(element => { // Limit to 10 major roads
+        if (!data.elements || data.elements.length === 0) {
+            throw new Error('No traffic data available');
+        }
+        
+        const namedRoads = data.elements.filter(element => element.tags);
+        
+        namedRoads.forEach(element => {
             if (element.geometry && element.geometry.length > 1) {
                 const points = element.geometry.map(point => [point.lat, point.lon]);
+                const roadType = element.tags?.highway || 'road';
+                const roadName = element.tags?.name || roadType;
+                
+                let trafficLevel, color;
+                
+                const congestedStreets = [
+                    "Șoseaua Păcurari", "Tudor Vladimirescu", "Bulevardul Independenței",
+                    "Bulevardul Carol I", "Strada Palat", "Bulevardul Ștefan cel Mare",
+                    "Șoseaua Nicolina", "Bulevardul Copou", "Șoseaua Bucium", 
+                    "Bulevardul Chimiei", "Calea Galata", "Șoseaua Arcu",
+                    "Strada Cuza Vodă", "Strada Sărărie", "Aleea Grigore Ghica Vodă"
+                ];
+                
+                if (congestedStreets.some(street => roadName && roadName.includes(street)) || 
+                    roadType === 'primary' || roadType === 'trunk') {
+                    trafficLevel = "Trafic aglomerat";
+                    color = 'red';
+                } else {
+                    trafficLevel = "Trafic moderat";
+                    color = 'orange';
+                }
+                
                 const polyline = L.polyline(points, { 
-                    color: 'orange', 
-                    weight: 5 
-                }).bindPopup(element.tags.name || "Major Road");
+                    color: color, 
+                    weight: 5,
+                    opacity: 0.7
+                }).bindPopup(`
+                    <strong>${roadName || 'Drum principal'}</strong><br>
+                    ${trafficLevel}<br>
+                    Actualizat: ${new Date().toLocaleTimeString()}
+                `);
                 
                 trafficLayer.addLayer(polyline);
             }
@@ -147,22 +205,54 @@ function fetchTrafficData() {
     })
     .catch(error => {
         console.error("Error fetching traffic data:", error);
-        const fallbackTrafficAreas = [
-            {
-                points: [[47.162, 27.58], [47.160, 27.61]],
-                name: "Traffic Congestion"
-            },
-            {
-                points: [[47.155, 27.62], [47.153, 27.6]],
-                name: "Heavy Traffic Area"
-            }
-        ];
+        map.removeControl(loadingControl);
+        useFallbackTrafficData();
+    });
+}
+
+function useFallbackTrafficData() {
+    console.warn("Using fallback traffic data");
+    
+    const fallbackTrafficAreas = [
+        {
+            points: [[47.162, 27.58], [47.160, 27.61]],
+            name: "Șoseaua Păcurari",
+            trafficLevel: "Trafic aglomerat"
+        },
+        {
+            points: [[47.155, 27.62], [47.153, 27.6]],
+            name: "Tudor Vladimirescu",
+            trafficLevel: "Trafic aglomerat"
+        },
+        {
+            points: [[47.167, 27.59], [47.164, 27.61]],
+            name: "Bulevardul Independenței",
+            trafficLevel: "Trafic aglomerat"
+        },
+        {
+            points: [[47.165, 27.57], [47.158, 27.56]],
+            name: "Calea Chișinăului",
+            trafficLevel: "Trafic moderat"
+        },
+        {
+            points: [[47.152, 27.58], [47.150, 27.61]],
+            name: "Bulevardul Socola",
+            trafficLevel: "Trafic moderat"
+        }
+    ];
+    
+    fallbackTrafficAreas.forEach(area => {
+        let color = area.trafficLevel === "Trafic aglomerat" ? "red" : "orange";
         
-        fallbackTrafficAreas.forEach(area => {
-            L.polyline(area.points, { color: 'orange', weight: 5 })
-                .bindPopup(area.name)
-                .addTo(trafficLayer);
-        });
+        L.polyline(area.points, { 
+            color: color, 
+            weight: 5,
+            opacity: 0.7
+        }).bindPopup(`
+            <strong>${area.name}</strong><br>
+            ${area.trafficLevel}<br>
+            Actualizat: ${new Date().toLocaleTimeString()} (date statice)
+        `).addTo(trafficLayer);
     });
 }
 
