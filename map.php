@@ -173,6 +173,7 @@ if (!isset($_SESSION['user_id'])) {
         <label><input type="checkbox" id="layer-pollution"> Pollution</label><br>
         <label><input type="checkbox" id="layer-traffic"> Traffic</label><br>
         <label><input type="checkbox" id="layer-shops"> Shops</label><br>
+        <label><input type="checkbox" id="layer-parking"> Parking Lots</label><br>
 
         <hr>
         <h3>Filter by Facilities</h3>

@@ -7,6 +7,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const pollutionLayer = L.layerGroup();
 const trafficLayer = L.layerGroup();
 const shopsLayer = L.layerGroup();
+const parkingLayer = L.layerGroup();
 
 function fetchShops() {
     const overpassUrl = "https://overpass-api.de/api/interpreter";
@@ -259,19 +260,188 @@ function useFallbackTrafficData() {
 function fetchPollutionData() {
     pollutionLayer.clearLayers();
     
-    const pollutionAreas = [
-        { lat: 47.164, lng: 27.59, radius: 300, name: "Industrial Zone" },
-        { lat: 47.15, lng: 27.61, radius: 200, name: "High Traffic Area" },
-        { lat: 47.1695, lng: 27.5698, radius: 350, name: "CUG Industrial Area" }
+    console.log('Loading pollution data');
+    
+    const industrialSources = [
+        { lat: 47.164, lng: 27.59, radius: 300, name: "Zona Industrială CUG", type: "Poluare industrială", level: "Ridicat" },
+        { lat: 47.1695, lng: 27.5698, radius: 350, name: "Zona Industrială Țuțora", type: "Poluare industrială", level: "Ridicat" },
+        { lat: 47.1580, lng: 27.6390, radius: 280, name: "Metalurgica", type: "Poluare industrială", level: "Mediu" },
+        { lat: 47.1790, lng: 27.5590, radius: 250, name: "Fabrica de Mobilă", type: "Poluare industrială", level: "Mediu" }
     ];
     
-    pollutionAreas.forEach(area => {
-        L.circle([area.lat, area.lng], { 
-            radius: area.radius, 
+    const trafficSources = [
+        { lat: 47.1655, lng: 27.5900, radius: 200, name: "Intersecție Independenței", type: "Poluare trafic", level: "Ridicat" },
+        { lat: 47.1565, lng: 27.5880, radius: 180, name: "Piața Unirii", type: "Poluare trafic", level: "Ridicat" },
+        { lat: 47.1730, lng: 27.5720, radius: 150, name: "Intersecție Copou", type: "Poluare trafic", level: "Mediu" },
+        { lat: 47.1520, lng: 27.6020, radius: 170, name: "Intersecție Tudor Vladimirescu", type: "Poluare trafic", level: "Ridicat" },
+        { lat: 47.1620, lng: 27.5610, radius: 160, name: "Intersecție Dacia", type: "Poluare trafic", level: "Mediu" }
+    ];
+    
+    const constructionSources = [
+        { lat: 47.1610, lng: 27.5780, radius: 120, name: "Șantier Palas", type: "Poluare construcții", level: "Temporar" },
+        { lat: 47.1540, lng: 27.5940, radius: 100, name: "Șantier Rezidențial", type: "Poluare construcții", level: "Temporar" }
+    ];
+    
+    industrialSources.forEach(source => {
+        L.circle([source.lat, source.lng], { 
+            radius: source.radius, 
             color: 'red',
-            fillOpacity: 0.3
-        }).bindPopup(area.name)
-          .addTo(pollutionLayer);
+            fillColor: '#f03',
+            fillOpacity: 0.3,
+            weight: 2
+        }).bindPopup(`
+            <strong>${source.name}</strong><br>
+            Tip: ${source.type}<br>
+            Nivel: ${source.level}<br>
+            <small>Actualizat: ${new Date().toLocaleTimeString()}</small>
+        `).addTo(pollutionLayer);
+    });
+    
+    trafficSources.forEach(source => {
+        L.circle([source.lat, source.lng], { 
+            radius: source.radius, 
+            color: 'orange',
+            fillColor: '#ff8c00',
+            fillOpacity: 0.3,
+            weight: 2
+        }).bindPopup(`
+            <strong>${source.name}</strong><br>
+            Tip: ${source.type}<br>
+            Nivel: ${source.level}<br>
+            <small>Actualizat: ${new Date().toLocaleTimeString()}</small>
+        `).addTo(pollutionLayer);
+    });
+    
+    constructionSources.forEach(source => {
+        L.circle([source.lat, source.lng], { 
+            radius: source.radius, 
+            color: 'purple',
+            fillColor: '#9932cc',
+            fillOpacity: 0.3,
+            weight: 2
+        }).bindPopup(`
+            <strong>${source.name}</strong><br>
+            Tip: ${source.type}<br>
+            Nivel: ${source.level}<br>
+            <small>Actualizat: ${new Date().toLocaleTimeString()}</small>
+        `).addTo(pollutionLayer);
+    });
+}
+
+function fetchParkingSpots() {
+    const overpassUrl = "https://overpass-api.de/api/interpreter";
+    const bbox = "47.10,27.50,47.20,27.70";
+    
+    const query = `
+    [out:json];
+    (
+      node["amenity"="parking"](${bbox});
+      way["amenity"="parking"](${bbox});
+      relation["amenity"="parking"](${bbox});
+    );
+    out center;
+    `;
+    
+    fetch(overpassUrl, {
+        method: "POST",
+        body: `data=${encodeURIComponent(query)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        parkingLayer.clearLayers();
+        
+        data.elements.forEach(element => {
+            let lat, lng, name, capacity;
+            
+            if (element.type === "node") {
+                lat = element.lat;
+                lng = element.lon;
+                name = element.tags.name || "Parcare";
+                capacity = element.tags.capacity || "Necunoscută";
+            } else {
+                lat = element.center.lat;
+                lng = element.center.lon;
+                name = element.tags.name || "Parcare";
+                capacity = element.tags.capacity || "Necunoscută";
+            }
+            
+            const parkingIcon = L.divIcon({
+                className: 'custom-parking-icon',
+                html: `
+                    <div style="
+                        background-color: #4CAF50; 
+                        color: white;
+                        width: 25px; 
+                        height: 25px; 
+                        border-radius: 50%; 
+                        border: 2px solid white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: bold;
+                        font-size: 16px;
+                        box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+                    ">
+                        P
+                    </div>
+                `,
+                iconSize: [25, 25],
+                iconAnchor: [12, 12],
+                popupAnchor: [0, -10]
+            });
+            
+            const marker = L.marker([lat, lng], { icon: parkingIcon }).bindPopup(`
+                <strong>${name}</strong><br>
+                Capacitate: ${capacity}<br>
+                ${element.tags.fee === "yes" ? "Cu plată" : "Gratuit"}
+            `);
+            parkingLayer.addLayer(marker);
+        });
+    })
+    .catch(error => {
+        console.error("Error fetching parking data:", error);
+        const fallbackParkings = [
+            { lat: 47.161, lng: 27.587, name: "Parcare Palas Mall", capacity: "1000", fee: "yes" },
+            { lat: 47.174, lng: 27.571, name: "Parcare Copou", capacity: "50", fee: "yes" },
+            { lat: 47.158, lng: 27.604, name: "Parcare Iulius Mall", capacity: "800", fee: "yes" },
+            { lat: 47.153, lng: 27.595, name: "Parcare Strada Palat", capacity: "30", fee: "yes" },
+            { lat: 47.166, lng: 27.584, name: "Parcare Mitopolie", capacity: "40", fee: "yes" }
+        ];
+        
+        const parkingIcon = L.divIcon({
+            className: 'custom-parking-icon',
+            html: `
+                <div style="
+                    background-color: #4CAF50; 
+                    color: white;
+                    width: 25px; 
+                    height: 25px; 
+                    border-radius: 50%; 
+                    border: 2px solid white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 16px;
+                    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+                ">
+                    P
+                </div>
+            `,
+            iconSize: [25, 25],
+            iconAnchor: [12, 12],
+            popupAnchor: [0, -10]
+        });
+        
+        fallbackParkings.forEach(parking => {
+            L.marker([parking.lat, parking.lng], { icon: parkingIcon })
+                .bindPopup(`
+                    <strong>${parking.name}</strong><br>
+                    Capacitate: ${parking.capacity}<br>
+                    ${parking.fee === "yes" ? "Cu plată" : "Gratuit"}
+                `)
+                .addTo(parkingLayer);
+        });
     });
 }
 
@@ -279,19 +449,90 @@ function loadAllMapData() {
     fetchShops();
     fetchTrafficData();
     fetchPollutionData();
+    fetchParkingSpots();
+    addMapLegends();
 }
 
-document.getElementById("layer-pollution")?.addEventListener("change", (e) => {
-    e.target.checked ? pollutionLayer.addTo(map) : map.removeLayer(pollutionLayer);
-});
+function addMapLegends() {
+    const trafficLegend = L.control({position: 'bottomleft'});
+    trafficLegend.onAdd = function() {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.backgroundColor = 'white';
+        div.style.padding = '10px';
+        div.style.borderRadius = '5px';
+        div.style.boxShadow = '0 1px 5px rgba(0,0,0,0.4)';
+        div.style.marginBottom = '10px';
+        
+        div.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 5px;">Legendă Trafic</div>
+            <div style="display: flex; align-items: center; margin-bottom: 3px;">
+                <div style="background-color: red; width: 20px; height: 4px; margin-right: 5px;"></div>
+                Trafic aglomerat
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div style="background-color: orange; width: 20px; height: 4px; margin-right: 5px;"></div>
+                Trafic moderat
+            </div>
+        `;
+        return div;
+    };
+    
+    const pollutionLegend = L.control({position: 'bottomleft'});
+    pollutionLegend.onAdd = function() {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.backgroundColor = 'white';
+        div.style.padding = '10px';
+        div.style.borderRadius = '5px';
+        div.style.boxShadow = '0 1px 5px rgba(0,0,0,0.4)';
+        div.style.marginBottom = '10px';
+        div.style.marginLeft = '10px';
+        
+        div.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 5px;">Legendă Poluare</div>
+            <div style="display: flex; align-items: center; margin-bottom: 3px;">
+                <div style="background-color: red; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px;"></div>
+                Poluare industrială
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 3px;">
+                <div style="background-color: orange; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px;"></div>
+                Poluare trafic
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div style="background-color: purple; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px;"></div>
+                Poluare construcții
+            </div>
+        `;
+        return div;
+    };
+    
+    document.getElementById("layer-traffic")?.addEventListener("change", (e) => {
+        if (e.target.checked) {
+            trafficLayer.addTo(map);
+            trafficLegend.addTo(map);
+        } else {
+            map.removeLayer(trafficLayer);
+            map.removeControl(trafficLegend);
+        }
+    });
 
-document.getElementById("layer-traffic")?.addEventListener("change", (e) => {
-    e.target.checked ? trafficLayer.addTo(map) : map.removeLayer(trafficLayer);
-});
+    document.getElementById("layer-pollution")?.addEventListener("change", (e) => {
+        if (e.target.checked) {
+            pollutionLayer.addTo(map);
+            pollutionLegend.addTo(map);
+        } else {
+            map.removeLayer(pollutionLayer);
+            map.removeControl(pollutionLegend);
+        }
+    });
+    
+    document.getElementById("layer-shops")?.addEventListener("change", (e) => {
+        e.target.checked ? shopsLayer.addTo(map) : map.removeLayer(shopsLayer);
+    });
 
-document.getElementById("layer-shops")?.addEventListener("change", (e) => {
-    e.target.checked ? shopsLayer.addTo(map) : map.removeLayer(shopsLayer);
-});
+    document.getElementById("layer-parking")?.addEventListener("change", (e) => {
+        e.target.checked ? parkingLayer.addTo(map) : map.removeLayer(parkingLayer);
+    });
+}
 
 let allProperties = [];
 let markersGroup = L.layerGroup().addTo(map);
