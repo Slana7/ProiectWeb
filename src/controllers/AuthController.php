@@ -16,7 +16,6 @@ if ($action === 'register') {
         exit;
     }
 
-    // Check if email already exists
     $stmt = $conn->prepare("SELECT id FROM users WHERE email = :email");
     $stmt->execute(['email' => $email]);
     if ($stmt->fetch()) {
@@ -24,7 +23,6 @@ if ($action === 'register') {
         exit;
     }
 
-    // Insert new user
     $hashed = password_hash($password, PASSWORD_DEFAULT);
     $stmt = $conn->prepare("INSERT INTO users (email, password, name) VALUES (:email, :password, :name)");
     $stmt->execute([

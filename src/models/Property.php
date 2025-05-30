@@ -7,20 +7,17 @@ function createProperty($data) {
     global $conn;
     
     try {
-        // Start transaction
         $conn->beginTransaction();
         
-        // Create point geometry from lat/lng
         $pointSQL = "ST_GeogFromText('SRID=4326;POINT(" . $data['lng'] . " " . $data['lat'] . ")')";
         
-        // Insert property
         $sql = "INSERT INTO properties (user_id, title, description, price, area, location, status) 
                 VALUES (:user_id, :title, :description, :price, :area, " . $pointSQL . ", :status)
                 RETURNING id";
         
         $stmt = $conn->prepare($sql);
         $stmt->execute([
-            ':user_id' => $data['user_id'] ?? 1, // Default to user 1 if not specified
+            ':user_id' => $data['user_id'] ?? 1,
             ':title' => $data['title'],
             ':description' => $data['description'],
             ':price' => $data['price'],
@@ -30,14 +27,11 @@ function createProperty($data) {
         
         $propertyId = $stmt->fetchColumn();
         
-        // Add facilities if provided
         if (!empty($data['facilities']) && is_array($data['facilities'])) {
             foreach ($data['facilities'] as $facilityName) {
-                // First get the facility ID
                 $facilityId = getFacilityIdByName($facilityName);
                 
                 if ($facilityId) {
-                    // Insert into property_facility table
                     $sql = "INSERT INTO property_facility (property_id, facility_id) VALUES (:property_id, :facility_id)";
                     $stmt = $conn->prepare($sql);
                     $stmt->execute([
