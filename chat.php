@@ -62,16 +62,20 @@ $messages = $stmt->fetchAll();
                 $formattedTime = date('H:i', strtotime($msg['sent_at']));
             ?>
             <div class="message-wrapper <?= $isMine ? 'mine' : 'theirs' ?>">
-                <div class="message-card">
-                    <div class="sender-name"><?= htmlspecialchars($senderName) ?></div>
-                    <div class="message-content">
-                        <p><?= nl2br(htmlspecialchars($msg['content'])) ?></p>
-                        <?php if ($msg['attachment']): ?>
-                            <a class="attachment-link" href="uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
-                        <?php endif; ?>
-                    </div>
-                    <div class="timestamp"><?= $formattedTime ?></div>
-                </div>
+                <div class="message-card <?= $msg['is_flagged'] ? 'flagged' : '' ?>">
+    <?php if ($msg['is_flagged']): ?>
+        <div class="flag-label">⚠️ Important</div>
+    <?php endif; ?>
+    <div class="sender-name"><?= htmlspecialchars($senderName) ?></div>
+    <div class="message-content">
+        <p><?= nl2br(htmlspecialchars($msg['content'])) ?></p>
+        <?php if ($msg['attachment']): ?>
+            <a class="attachment-link" href="uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
+        <?php endif; ?>
+    </div>
+    <div class="timestamp"><?= $formattedTime ?></div>
+</div>
+
             </div>
         <?php endforeach; ?>
     </div>

@@ -1062,3 +1062,13 @@ body {
         background-color: #1e88e5;
     }
 }
+.message-card.flagged {
+    border-left: 5px solid red;
+    background-color: #fff0f0;
+}
+
+.flag-label {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
