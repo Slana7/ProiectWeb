@@ -27,10 +27,16 @@ require_once __DIR__ . '/src/config/config.php';
 
 <div class="auth-page">
     <div class="auth-card">
-        <h2>Create an Account</h2>
-
-        <?php if (isset($_GET['error'])): ?>
-            <p class="error">Registration failed. Please try again.</p>
+        <h2>Create an Account</h2>        <?php if (isset($_GET['error'])): ?>
+            <?php if ($_GET['error'] === 'invalid_email'): ?>
+                <p class="error">Invalid email format. Please provide a valid email address.</p>
+            <?php elseif ($_GET['error'] === 'duplicate_email'): ?>
+                <p class="error">An account with this email address already exists.</p>
+            <?php elseif ($_GET['error'] === 'database'): ?>
+                <p class="error">A database error occurred. Please try again later.</p>
+            <?php else: ?>
+                <p class="error">Registration failed. Please try again.</p>
+            <?php endif; ?>
         <?php endif; ?>
 
         <form method="post" action="<?= BASE_URL ?>src/controllers/AuthController.php?action=register" class="auth-form">

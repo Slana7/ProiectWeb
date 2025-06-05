@@ -31,15 +31,14 @@ require_once __DIR__ . '/src/config/config.php';
 
         <?php if (isset($_GET['updated'])): ?>
         <p class="success">Your profile was updated. Please log in again.</p>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['error']) && $_GET['error'] === 'email_taken'): ?>
-        <p class="error">Email already in use. Please use a different one.</p>
-        <?php endif; ?>
-
-
-        <?php if (isset($_GET['error'])): ?>
-            <p class="error">Login failed. Please try again.</p>
+        <?php endif; ?>        <?php if (isset($_GET['error'])): ?>
+            <?php if ($_GET['error'] === 'database'): ?>
+                <p class="error">A database error occurred. Please try again later.</p>
+            <?php elseif ($_GET['error'] === 'email_taken'): ?>
+                <p class="error">Email already in use. Please use a different one.</p>
+            <?php else: ?>
+                <p class="error">Login failed. Please try again.</p>
+            <?php endif; ?>
         <?php endif; ?>
 
         <form method="post" action="<?= BASE_URL ?>src/controllers/AuthController.php?action=login" class="auth-form">
