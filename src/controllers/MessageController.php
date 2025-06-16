@@ -35,9 +35,10 @@ if (!empty($_FILES['attachment']['name'])) {
 }
 
 $stmt = $conn->prepare("
-    INSERT INTO messages (sender_id, receiver_id, property_id, content, attachment)
-    VALUES (:sender, :receiver, :property, :content, :attachment)
+    INSERT INTO messages (sender_id, receiver_id, property_id, content, attachment, is_read)
+    VALUES (:sender, :receiver, :property, :content, :attachment, false)
 ");
+
 
 $stmt->execute([
     'sender' => $userId,

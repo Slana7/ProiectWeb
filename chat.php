@@ -1,4 +1,9 @@
 <?php
+
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 require_once __DIR__ . '/src/config/config.php';
 require_once __DIR__ . '/src/db/Database.php';
 session_start();
@@ -17,6 +22,21 @@ if (!$propertyId || !$receiverId) {
 }
 
 $conn = Database::connect();
+
+// ✅ Mark all messages as read for this conversation
+$markRead = $conn->prepare("
+    UPDATE messages
+    SET is_read = TRUE
+    WHERE receiver_id = :me
+      AND sender_id = :other
+      AND property_id = :property
+      AND is_read = FALSE
+");
+$markRead->execute([
+    'me' => $userId,
+    'other' => $receiverId,
+    'property' => $propertyId
+]);
 
 function getUsername($conn, $id) {
     $stmt = $conn->prepare("SELECT name FROM users WHERE id = :id");
@@ -63,28 +83,26 @@ $messages = $stmt->fetchAll();
             ?>
             <div class="message-wrapper <?= $isMine ? 'mine' : 'theirs' ?>">
                 <div class="message-card <?= $msg['is_flagged'] ? 'flagged' : '' ?>">
-    <?php if ($msg['is_flagged']): ?>
-        <div class="flag-label">⚠️ Important</div>
-    <?php endif; ?>
-    <div class="sender-name"><?= htmlspecialchars($senderName) ?></div>
-    <div class="message-content">
-        <p><?= nl2br(htmlspecialchars($msg['content'])) ?></p>
-        <?php if ($msg['attachment']): ?>
-    <?php
-        $ext = strtolower(pathinfo($msg['attachment'], PATHINFO_EXTENSION));
-        $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-    ?>
-    <?php if ($isImage): ?>
-        <img src="uploads/<?= htmlspecialchars($msg['attachment']) ?>" alt="Attachment" class="chat-image">
-    <?php else: ?>
-        <a class="attachment-link" href="uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
-    <?php endif; ?>
-<?php endif; ?>
-
-    </div>
-    <div class="timestamp"><?= $formattedTime ?></div>
-</div>
-
+                    <?php if ($msg['is_flagged']): ?>
+                        <div class="flag-label">⚠️ Important</div>
+                    <?php endif; ?>
+                    <div class="sender-name"><?= htmlspecialchars($senderName) ?></div>
+                    <div class="message-content">
+                        <p><?= nl2br(htmlspecialchars($msg['content'])) ?></p>
+                        <?php if ($msg['attachment']): ?>
+                            <?php
+                                $ext = strtolower(pathinfo($msg['attachment'], PATHINFO_EXTENSION));
+                                $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                            ?>
+                            <?php if ($isImage): ?>
+                                <img src="uploads/<?= htmlspecialchars($msg['attachment']) ?>" alt="Attachment" class="chat-image">
+                            <?php else: ?>
+                                <a class="attachment-link" href="uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                    <div class="timestamp"><?= $formattedTime ?></div>
+                </div>
             </div>
         <?php endforeach; ?>
     </div>
@@ -99,11 +117,19 @@ $messages = $stmt->fetchAll();
 </section>
 
 <?php include_once 'public/includes/dashboard_footer.php'; ?>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const messagesContainer = document.querySelector(".messages");
         if (messagesContainer) {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    });
+</script>
+<script>
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted || (window.performance && performance.navigation.type === 2)) {
+            location.reload();
         }
     });
 </script>
