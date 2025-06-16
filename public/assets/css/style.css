@@ -1121,3 +1121,39 @@ body {
     color: #999;
     font-size: 0.8rem;
 }
+.property-stats {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+    margin-top: 2rem;
+    max-width: 600px;
+}
+
+.property-stats h3 {
+    margin-bottom: 1rem;
+    color: #1e2a38;
+}
+
+.property-stats ul {
+    list-style: none;
+    padding-left: 0;
+    font-size: 1rem;
+}
+
+.property-stats li {
+    margin-bottom: 0.5rem;
+}
+canvas#priceChart {
+    margin-top: 1.5rem;
+    max-width: 600px;
+}
+.color-red {
+    color: #e53935;
+    font-weight: bold;
+}
+
+.color-green {
+    color: #43a047;
+    font-weight: bold;
+}
