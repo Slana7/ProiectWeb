@@ -1,4 +1,4 @@
-CREATE EXTENSION IF NOT EXISTS postgis;
+--CREATE EXTENSION IF NOT EXISTS postgis;
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -189,3 +189,19 @@ BEGIN
     WHERE p.user_id = _user_id;
 END;
 $$ LANGUAGE plpgsql;
+ALTER TABLE messages ADD COLUMN is_flagged BOOLEAN DEFAULT FALSE;
+
+CREATE OR REPLACE FUNCTION flag_keywords()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.content ~* 'urgent|urgență|important|preț|pret|vizionare|vizitare|vizită|vizita|ieșire|iesire|negociere|anunț|anunt' THEN
+        NEW.is_flagged := TRUE;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trg_flag_keywords
+BEFORE INSERT ON messages
+FOR EACH ROW EXECUTE FUNCTION flag_keywords();

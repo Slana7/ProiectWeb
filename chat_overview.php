@@ -47,23 +47,30 @@ $conversations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php if (empty($conversations)): ?>
     <p>You have no conversations yet.</p>
 <?php else: ?>
-    <ul>
-        <?php foreach ($conversations as $conv):
-            $userStmt = $conn->prepare("SELECT name FROM users WHERE id = :id");
-            $userStmt->execute(['id' => $conv['other_user_id']]);
-            $user = $userStmt->fetch();
+    <div class="chat-list">
+    <?php foreach ($conversations as $conv): 
+        
+        $userStmt = $conn->prepare("SELECT name FROM users WHERE id = :id");
+        $userStmt->execute(['id' => $conv['other_user_id']]);
+        $user = $userStmt->fetch(PDO::FETCH_ASSOC);
 
-            $propStmt = $conn->prepare("SELECT title FROM properties WHERE id = :id");
-            $propStmt->execute(['id' => $conv['property_id']]);
-            $property = $propStmt->fetch();
-        ?>
-            <li>
-                <a href="chat.php?with=<?= $conv['other_user_id'] ?>&property=<?= $conv['property_id'] ?>">
-                    <?= htmlspecialchars($property['title']) ?> - with <?= htmlspecialchars($user['name']) ?>
-                </a>
-            </li>
-        <?php endforeach; ?>
-    </ul>
+    
+        $propStmt = $conn->prepare("SELECT title FROM properties WHERE id = :id");
+        $propStmt->execute(['id' => $conv['property_id']]);
+        $property = $propStmt->fetch(PDO::FETCH_ASSOC);
+
+
+        if (!$user || !$property) continue;
+    ?>
+        <div class="chat-card">
+            <a href="chat.php?with=<?= $conv['other_user_id'] ?>&property=<?= $conv['property_id'] ?>">
+                <h3><?= htmlspecialchars($property['title']) ?></h3>
+                <p><strong>with <?= htmlspecialchars($user['name']) ?></strong></p>
+                <small>Last message: <?= date('Y-m-d H:i', strtotime($conv['last_message_time'])) ?></small>
+            </a>
+        </div>
+    <?php endforeach; ?>
+    </div>
 <?php endif; ?>
 
 <?php include_once 'public/includes/dashboard_footer.php'; ?>
