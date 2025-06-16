@@ -14,6 +14,7 @@
             <nav class="nav-menu">
                 <a href="dashboard.php">Dashboard</a>
                 <a href="map.php">Map</a>
+                <a href="favorites.php">Favorites</a>
                 <a href="my_properties.php">My Properties</a>
                 <a href="add_property.php">Add Property</a>
                 <a href="profile.php">Profile</a>
@@ -30,6 +31,7 @@
         <nav class="nav-links">
             <a href="dashboard.php">Dashboard</a>
             <a href="map.php">Map</a>
+            <a href="favorites.php">Favorites</a>
             <a href="my_properties.php">My Properties</a>
             <a href="add_property.php">Add Property</a>
             <a href="profile.php">Profile</a>

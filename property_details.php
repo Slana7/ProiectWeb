@@ -10,7 +10,6 @@ if (!isset($_GET['id'])) {
 $id = (int) $_GET['id'];
 $conn = Database::connect();
 
-// Fetch property
 $stmt = $conn->prepare("SELECT * FROM properties WHERE id = :id");
 $stmt->execute(['id' => $id]);
 $property = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -19,11 +18,9 @@ if (!$property) {
     die("Property not found.");
 }
 
-// Get coordinates from PostGIS geometry
 $lat = $conn->query("SELECT ST_Y(location::geometry) FROM properties WHERE id = $id")->fetchColumn();
 $lng = $conn->query("SELECT ST_X(location::geometry) FROM properties WHERE id = $id")->fetchColumn();
 
-// Nearby stats with same status
 $statsStmt = $conn->prepare("
     SELECT 
         COUNT(*) AS total_properties,
@@ -50,6 +47,7 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
     <title><?= htmlspecialchars($property['title']) ?> - <?= APP_NAME ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
 <?php include_once 'public/includes/dashboard_header.php'; ?>
@@ -63,8 +61,14 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
     <p><strong>Area:</strong> <?= $property['area'] ?> m²</p>
     <p><strong>Status:</strong> <?= htmlspecialchars($property['status']) ?></p>
     <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($property['description'])) ?></p>
-    <p><strong>Posted at:</strong> <?= $property['posted_at'] ?></p>
-    <p><strong>Location:</strong> <?= $lat ?>, <?= $lng ?></p>
+    <?php
+$postedTime = (new DateTime($property['posted_at']))->format('d-m-Y H:i');
+?>
+<p><strong>Posted at:</strong> <?= $postedTime ?></p>
+
+    <!-- 
+    <p><strong>Location:</strong> <?= $lat ?>, <?= $lng ?></p> 
+    -->
 
     <?php if (isset($_SESSION['user_id'])): ?>
         <?php
@@ -85,18 +89,10 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
         <?php endif; ?>
     <?php endif; ?>
 
-    <?php if ($stats && $stats['total_properties'] > 0): ?>
-        <div class="property-stats">
-            <h3>📊 Market Stats in This Area</h3>
-            <ul>
-                <li>Other listings nearby: <?= $stats['total_properties'] ?></li>
-                <li>Average price: €<?= $stats['avg_price'] ?><?= $property['status'] === 'for_rent' ? ' / month' : '' ?></li>
-                <li>Minimum price: €<?= $stats['min_price'] ?><?= $property['status'] === 'for_rent' ? ' / month' : '' ?></li>
-                <li>Maximum price: €<?= $stats['max_price'] ?><?= $property['status'] === 'for_rent' ? ' / month' : '' ?></li>
-            </ul>
-        </div>
 
-        <canvas id="priceChart" width="400" height="200"></canvas>
+    <canvas id="priceChart" width="400" height="200" class="<?= $stats['total_properties'] > 0 ? '' : 'blurred' ?>"></canvas>
+
+    <?php if ($stats['total_properties'] > 0): ?>
         <script>
             const ctx = document.getElementById('priceChart').getContext('2d');
             const labelUnit = "<?= $property['status'] === 'for_rent' ? '€/month' : '€' ?>";
@@ -157,6 +153,8 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
             echo "<p class='$class' style='margin-top:1rem; font-style:italic;'>📌 $message</p>";
         }
         ?>
+    <?php else: ?>
+        <p style="margin-top:1rem; font-style:italic;">📌 There are no nearby properties available for chart comparison.</p>
     <?php endif; ?>
 </section>
 
