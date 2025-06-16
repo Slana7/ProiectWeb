@@ -1157,3 +1157,63 @@ canvas#priceChart {
     color: #43a047;
     font-weight: bold;
 }
+.blurred {
+    filter: blur(4px);
+    opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
+}
+.favorites-list {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.favorite-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+.favorite-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 1rem;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s;
+}
+
+.favorite-card:hover {
+    transform: translateY(-4px);
+}
+
+.favorite-card h3 {
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.favorite-card .price {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.favorite-card .btn-link {
+    text-align: center;
+    padding: 8px;
+    background-color: #3b82f6;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.favorite-card .btn-link:hover {
+    background-color: #2563eb;
+}

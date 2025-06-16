@@ -41,6 +41,13 @@ if (isset($_SESSION['flash_message'])) {
         <p>Explore available properties for sale or rent.</p>
         <a href="map.php" class="btn-link">View Map</a>
     </div>
+
+    <div class="card">
+    <h3>Favourite Properties</h3>
+    <p>See the list of properties you saved.</p>
+    <a href="favorites.php" class="btn-link">View Favorites</a>
+    </div>
+
     
     <div class="card">
         <h3>My Properties</h3>
