@@ -70,8 +70,17 @@ $messages = $stmt->fetchAll();
     <div class="message-content">
         <p><?= nl2br(htmlspecialchars($msg['content'])) ?></p>
         <?php if ($msg['attachment']): ?>
-            <a class="attachment-link" href="uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
-        <?php endif; ?>
+    <?php
+        $ext = strtolower(pathinfo($msg['attachment'], PATHINFO_EXTENSION));
+        $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+    ?>
+    <?php if ($isImage): ?>
+        <img src="uploads/<?= htmlspecialchars($msg['attachment']) ?>" alt="Attachment" class="chat-image">
+    <?php else: ?>
+        <a class="attachment-link" href="uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
+    <?php endif; ?>
+<?php endif; ?>
+
     </div>
     <div class="timestamp"><?= $formattedTime ?></div>
 </div>
@@ -90,5 +99,14 @@ $messages = $stmt->fetchAll();
 </section>
 
 <?php include_once 'public/includes/dashboard_footer.php'; ?>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const messagesContainer = document.querySelector(".messages");
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    });
+</script>
+
 </body>
 </html>

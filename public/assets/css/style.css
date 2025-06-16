@@ -1072,3 +1072,52 @@ body {
     font-weight: bold;
     margin-bottom: 4px;
 }
+.chat-image {
+    max-width: 100%;
+    max-height: 300px;
+    margin-top: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.chat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.chat-card {
+    background-color: white;
+    padding: 1.2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.chat-card a {
+    text-decoration: none;
+    color: #1e2a38;
+    display: block;
+}
+
+.chat-card h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.chat-card p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.chat-card small {
+    color: #999;
+    font-size: 0.8rem;
+}
