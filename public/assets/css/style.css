@@ -52,6 +52,8 @@ body {
     flex-grow: 1;
     padding: 2rem;
     transition: all 0.3s ease;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .top-bar {
@@ -1232,4 +1234,326 @@ canvas#priceChart {
     0% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.3); opacity: 0.6; }
     100% { transform: scale(1); opacity: 1; }
+}
+/* Export Section Styles */
+.export-section {
+    margin-top: 2rem;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.export-section h2 {
+    color: #1e2a38;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.export-section > p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.export-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.export-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    transition: box-shadow 0.3s ease;
+}
+
+.export-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.export-card h3 {
+    margin: 0 0 0.5rem 0;
+    color: #1e2a38;
+    font-size: 1.2rem;
+}
+
+.export-card p {
+    margin: 0 0 1rem 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-export {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    min-width: 60px;
+    text-align: center;
+}
+
+.btn-csv {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-csv:hover {
+    background-color: #218838;
+}
+
+.btn-json {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.btn-json:hover {
+    background-color: #5a359a;
+}
+
+.btn-pdf {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-pdf:hover {
+    background-color: #c82333;
+}
+
+.export-info {
+    background-color: #e9ecef;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #2c5aa0;
+}
+
+.export-info h4 {
+    margin: 0 0 0.5rem 0;
+    color: #1e2a38;
+    font-size: 1rem;
+}
+
+.export-info ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.export-info li {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.export-info li strong {
+    color: #1e2a38;
+}
+
+/* Profile Page Styles */
+.profile-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.profile-left,
+.profile-right {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.profile-left .form-section {
+    padding: 30px;
+    margin: 0;
+}
+
+.profile-left .form-section h2 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.form-submit-section {
+    margin-top: 25px;
+    padding-top: 5px;
+}
+
+/* Profile Export Section Overrides */
+.profile-right .export-section {
+    padding: 30px;
+    margin: 0;
+    margin-top: 0;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    position: relative;
+    overflow: hidden;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-right .export-section h2 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #28a745;
+    padding-bottom: 10px;
+}
+
+.profile-right .export-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.profile-right .export-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.profile-right .export-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.profile-right .export-card h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.profile-right .export-card p {
+    margin: 0 0 15px 0;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.profile-right .export-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.profile-right .btn-export {
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+}
+
+.profile-right .btn-csv {
+    background-color: #28a745;
+}
+
+.profile-right .btn-csv:hover {
+    background-color: #218838;
+}
+
+.profile-right .btn-json {
+    background-color: #6f42c1;
+}
+
+.profile-right .btn-json:hover {
+    background-color: #5a359a;
+}
+
+.profile-right .btn-pdf {
+    background-color: #dc3545;
+}
+
+.profile-right .btn-pdf:hover {
+    background-color: #c82333;
+}
+
+.profile-right .export-info {
+    background: #e7f3ff;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+    margin: 0;
+    box-sizing: border-box;
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.profile-right .export-info h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1rem;
+}
+
+.profile-right .export-info ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.profile-right .export-info li {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Responsive design for export section */
+@media (max-width: 768px) {
+    .export-section {
+        max-width: 100%;
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .export-buttons {
+        justify-content: center;
+    }
+    
+    .btn-export {
+        flex: 1;
+        min-width: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-right .export-buttons {
+        flex-direction: column;
+    }
+    
+    .profile-right .btn-export {
+        width: 100%;
+    }
 }

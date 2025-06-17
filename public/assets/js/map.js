@@ -183,10 +183,10 @@ function fetchTrafficData() {
                 
                 if (congestedStreets.some(street => roadName && roadName.includes(street)) || 
                     roadType === 'primary' || roadType === 'trunk') {
-                    trafficLevel = "Trafic aglomerat";
+                    trafficLevel = "Heavy Traffic";
                     color = 'red';
                 } else {
-                    trafficLevel = "Trafic moderat";
+                    trafficLevel = "Moderate Traffic";
                     color = 'orange';
                 }
                 
@@ -195,9 +195,9 @@ function fetchTrafficData() {
                     weight: 5,
                     opacity: 0.7
                 }).bindPopup(`
-                    <strong>${roadName || 'Drum principal'}</strong><br>
+                    <strong>${roadName || 'Main Road'}</strong><br>
                     ${trafficLevel}<br>
-                    Actualizat: ${new Date().toLocaleTimeString()}
+                    Updated: ${new Date().toLocaleTimeString()}
                 `);
                 
                 trafficLayer.addLayer(polyline);
@@ -218,32 +218,32 @@ function useFallbackTrafficData() {
         {
             points: [[47.162, 27.58], [47.160, 27.61]],
             name: "Șoseaua Păcurari",
-            trafficLevel: "Trafic aglomerat"
+            trafficLevel: "Heavy Traffic"
         },
         {
             points: [[47.155, 27.62], [47.153, 27.6]],
             name: "Tudor Vladimirescu",
-            trafficLevel: "Trafic aglomerat"
+            trafficLevel: "Heavy Traffic"
         },
         {
             points: [[47.167, 27.59], [47.164, 27.61]],
             name: "Bulevardul Independenței",
-            trafficLevel: "Trafic aglomerat"
+            trafficLevel: "Heavy Traffic"
         },
         {
             points: [[47.165, 27.57], [47.158, 27.56]],
             name: "Calea Chișinăului",
-            trafficLevel: "Trafic moderat"
+            trafficLevel: "Moderate Traffic"
         },
         {
             points: [[47.152, 27.58], [47.150, 27.61]],
             name: "Bulevardul Socola",
-            trafficLevel: "Trafic moderat"
+            trafficLevel: "Moderate Traffic"
         }
     ];
     
     fallbackTrafficAreas.forEach(area => {
-        let color = area.trafficLevel === "Trafic aglomerat" ? "red" : "orange";
+        let color = area.trafficLevel === "Heavy Traffic" ? "red" : "orange";
         
         L.polyline(area.points, { 
             color: color, 
@@ -252,7 +252,7 @@ function useFallbackTrafficData() {
         }).bindPopup(`
             <strong>${area.name}</strong><br>
             ${area.trafficLevel}<br>
-            Actualizat: ${new Date().toLocaleTimeString()} (date statice)
+            Updated: ${new Date().toLocaleTimeString()} (static data)
         `).addTo(trafficLayer);
     });
 }
@@ -263,23 +263,23 @@ function fetchPollutionData() {
     console.log('Loading pollution data');
     
     const industrialSources = [
-        { lat: 47.164, lng: 27.59, radius: 300, name: "Zona Industrială CUG", type: "Poluare industrială", level: "Ridicat" },
-        { lat: 47.1695, lng: 27.5698, radius: 350, name: "Zona Industrială Țuțora", type: "Poluare industrială", level: "Ridicat" },
-        { lat: 47.1580, lng: 27.6390, radius: 280, name: "Metalurgica", type: "Poluare industrială", level: "Mediu" },
-        { lat: 47.1790, lng: 27.5590, radius: 250, name: "Fabrica de Mobilă", type: "Poluare industrială", level: "Mediu" }
+        { lat: 47.164, lng: 27.59, radius: 300, name: "CUG Industrial Zone", type: "Industrial Pollution", level: "High" },
+        { lat: 47.1695, lng: 27.5698, radius: 350, name: "Țuțora Industrial Zone", type: "Industrial Pollution", level: "High" },
+        { lat: 47.1580, lng: 27.6390, radius: 280, name: "Metallurgical Plant", type: "Industrial Pollution", level: "Medium" },
+        { lat: 47.1790, lng: 27.5590, radius: 250, name: "Furniture Factory", type: "Industrial Pollution", level: "Medium" }
     ];
     
     const trafficSources = [
-        { lat: 47.1655, lng: 27.5900, radius: 200, name: "Intersecție Independenței", type: "Poluare trafic", level: "Ridicat" },
-        { lat: 47.1565, lng: 27.5880, radius: 180, name: "Piața Unirii", type: "Poluare trafic", level: "Ridicat" },
-        { lat: 47.1730, lng: 27.5720, radius: 150, name: "Intersecție Copou", type: "Poluare trafic", level: "Mediu" },
-        { lat: 47.1520, lng: 27.6020, radius: 170, name: "Intersecție Tudor Vladimirescu", type: "Poluare trafic", level: "Ridicat" },
-        { lat: 47.1620, lng: 27.5610, radius: 160, name: "Intersecție Dacia", type: "Poluare trafic", level: "Mediu" }
+        { lat: 47.1655, lng: 27.5900, radius: 200, name: "Independence Intersection", type: "Traffic Pollution", level: "High" },
+        { lat: 47.1565, lng: 27.5880, radius: 180, name: "Union Square", type: "Traffic Pollution", level: "High" },
+        { lat: 47.1730, lng: 27.5720, radius: 150, name: "Copou Intersection", type: "Traffic Pollution", level: "Medium" },
+        { lat: 47.1520, lng: 27.6020, radius: 170, name: "Tudor Vladimirescu Intersection", type: "Traffic Pollution", level: "High" },
+        { lat: 47.1620, lng: 27.5610, radius: 160, name: "Dacia Intersection", type: "Traffic Pollution", level: "Medium" }
     ];
     
     const constructionSources = [
-        { lat: 47.1610, lng: 27.5780, radius: 120, name: "Șantier Palas", type: "Poluare construcții", level: "Temporar" },
-        { lat: 47.1540, lng: 27.5940, radius: 100, name: "Șantier Rezidențial", type: "Poluare construcții", level: "Temporar" }
+        { lat: 47.1610, lng: 27.5780, radius: 120, name: "Palas Construction Site", type: "Construction Pollution", level: "Temporary" },
+        { lat: 47.1540, lng: 27.5940, radius: 100, name: "Residential Construction Site", type: "Construction Pollution", level: "Temporary" }
     ];
     
     industrialSources.forEach(source => {
@@ -291,9 +291,9 @@ function fetchPollutionData() {
             weight: 2
         }).bindPopup(`
             <strong>${source.name}</strong><br>
-            Tip: ${source.type}<br>
-            Nivel: ${source.level}<br>
-            <small>Actualizat: ${new Date().toLocaleTimeString()}</small>
+            Type: ${source.type}<br>
+            Level: ${source.level}<br>
+            <small>Updated: ${new Date().toLocaleTimeString()}</small>
         `).addTo(pollutionLayer);
     });
     
@@ -306,9 +306,9 @@ function fetchPollutionData() {
             weight: 2
         }).bindPopup(`
             <strong>${source.name}</strong><br>
-            Tip: ${source.type}<br>
-            Nivel: ${source.level}<br>
-            <small>Actualizat: ${new Date().toLocaleTimeString()}</small>
+            Type: ${source.type}<br>
+            Level: ${source.level}<br>
+            <small>Updated: ${new Date().toLocaleTimeString()}</small>
         `).addTo(pollutionLayer);
     });
     
@@ -321,9 +321,9 @@ function fetchPollutionData() {
             weight: 2
         }).bindPopup(`
             <strong>${source.name}</strong><br>
-            Tip: ${source.type}<br>
-            Nivel: ${source.level}<br>
-            <small>Actualizat: ${new Date().toLocaleTimeString()}</small>
+            Type: ${source.type}<br>
+            Level: ${source.level}<br>
+            <small>Updated: ${new Date().toLocaleTimeString()}</small>
         `).addTo(pollutionLayer);
     });
 }
@@ -356,13 +356,13 @@ function fetchParkingSpots() {
             if (element.type === "node") {
                 lat = element.lat;
                 lng = element.lon;
-                name = element.tags.name || "Parcare";
-                capacity = element.tags.capacity || "Necunoscută";
+                name = element.tags.name || "Parking";
+                capacity = element.tags.capacity || "Unknown";
             } else {
                 lat = element.center.lat;
                 lng = element.center.lon;
-                name = element.tags.name || "Parcare";
-                capacity = element.tags.capacity || "Necunoscută";
+                name = element.tags.name || "Parking";
+                capacity = element.tags.capacity || "Unknown";
             }
             
             const parkingIcon = L.divIcon({
@@ -392,8 +392,8 @@ function fetchParkingSpots() {
             
             const marker = L.marker([lat, lng], { icon: parkingIcon }).bindPopup(`
                 <strong>${name}</strong><br>
-                Capacitate: ${capacity}<br>
-                ${element.tags.fee === "yes" ? "Cu plată" : "Gratuit"}
+                Capacity: ${capacity}<br>
+                ${element.tags.fee === "yes" ? "Paid" : "Free"}
             `);
             parkingLayer.addLayer(marker);
         });
@@ -401,11 +401,11 @@ function fetchParkingSpots() {
     .catch(error => {
         console.error("Error fetching parking data:", error);
         const fallbackParkings = [
-            { lat: 47.161, lng: 27.587, name: "Parcare Palas Mall", capacity: "1000", fee: "yes" },
-            { lat: 47.174, lng: 27.571, name: "Parcare Copou", capacity: "50", fee: "yes" },
-            { lat: 47.158, lng: 27.604, name: "Parcare Iulius Mall", capacity: "800", fee: "yes" },
-            { lat: 47.153, lng: 27.595, name: "Parcare Strada Palat", capacity: "30", fee: "yes" },
-            { lat: 47.166, lng: 27.584, name: "Parcare Mitopolie", capacity: "40", fee: "yes" }
+            { lat: 47.161, lng: 27.587, name: "Palas Mall Parking", capacity: "1000", fee: "yes" },
+            { lat: 47.174, lng: 27.571, name: "Copou Parking", capacity: "50", fee: "yes" },
+            { lat: 47.158, lng: 27.604, name: "Iulius Mall Parking", capacity: "800", fee: "yes" },
+            { lat: 47.153, lng: 27.595, name: "Palace Street Parking", capacity: "30", fee: "yes" },
+            { lat: 47.166, lng: 27.584, name: "Metropolitan Parking", capacity: "40", fee: "yes" }
         ];
         
         const parkingIcon = L.divIcon({
@@ -437,8 +437,8 @@ function fetchParkingSpots() {
             L.marker([parking.lat, parking.lng], { icon: parkingIcon })
                 .bindPopup(`
                     <strong>${parking.name}</strong><br>
-                    Capacitate: ${parking.capacity}<br>
-                    ${parking.fee === "yes" ? "Cu plată" : "Gratuit"}
+                    Capacity: ${parking.capacity}<br>
+                    ${parking.fee === "yes" ? "Paid" : "Free"}
                 `)
                 .addTo(parkingLayer);
         });
@@ -464,14 +464,14 @@ function addMapLegends() {
         div.style.marginBottom = '10px';
         
         div.innerHTML = `
-            <div style="font-weight: bold; margin-bottom: 5px;">Legendă Trafic</div>
+            <div style="font-weight: bold; margin-bottom: 5px;">Traffic Legend</div>
             <div style="display: flex; align-items: center; margin-bottom: 3px;">
                 <div style="background-color: red; width: 20px; height: 4px; margin-right: 5px;"></div>
-                Trafic aglomerat
+                Heavy Traffic
             </div>
             <div style="display: flex; align-items: center;">
                 <div style="background-color: orange; width: 20px; height: 4px; margin-right: 5px;"></div>
-                Trafic moderat
+                Moderate Traffic
             </div>
         `;
         return div;
@@ -488,18 +488,18 @@ function addMapLegends() {
         div.style.marginLeft = '10px';
         
         div.innerHTML = `
-            <div style="font-weight: bold; margin-bottom: 5px;">Legendă Poluare</div>
+            <div style="font-weight: bold; margin-bottom: 5px;">Pollution Legend</div>
             <div style="display: flex; align-items: center; margin-bottom: 3px;">
                 <div style="background-color: red; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px;"></div>
-                Poluare industrială
+                Industrial pollution
             </div>
             <div style="display: flex; align-items: center; margin-bottom: 3px;">
                 <div style="background-color: orange; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px;"></div>
-                Poluare trafic
+                Traffic pollution
             </div>
             <div style="display: flex; align-items: center;">
                 <div style="background-color: purple; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px;"></div>
-                Poluare construcții
+                Construction pollution
             </div>
         `;
         return div;

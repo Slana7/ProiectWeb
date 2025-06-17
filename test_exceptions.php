@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/src/db/Database.php';
 
-echo "=== Comprehensive Test for PL/pgSQL Exception Handling ===\n\n";
+echo "=== Test for PL/pgSQL Exception Handling ===\n\n";
 
 try {
     $conn = Database::connect();
@@ -128,5 +128,5 @@ try {
 }
 echo "\n";
 
-echo "=== Comprehensive test completed ===\n";
+echo "=== Test completed ===\n";
 ?>
