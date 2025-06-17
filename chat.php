@@ -23,7 +23,6 @@ if (!$propertyId || !$receiverId) {
 
 $conn = Database::connect();
 
-// ✅ Mark all messages as read for this conversation
 $markRead = $conn->prepare("
     UPDATE messages
     SET is_read = TRUE

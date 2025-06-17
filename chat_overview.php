@@ -11,7 +11,6 @@ if (!isset($_SESSION['user_id'])) {
 $conn = Database::connect();
 $userId = $_SESSION['user_id'];
 
-// Fetch conversations
 $query = "
     SELECT 
         CASE 
@@ -30,7 +29,6 @@ $stmt = $conn->prepare($query);
 $stmt->execute(['uid' => $userId]);
 $conversations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch unread messages
 $unreadStmt = $conn->prepare("
     SELECT property_id, sender_id, COUNT(*) AS unread_count
     FROM messages
