@@ -118,18 +118,18 @@ function getUserProperties($userId) {
     global $conn;
     
     try {
-        $sql = "SELECT p.*, 
+        $sql = "SELECT p.id, p.user_id, p.title, p.description, p.price, p.area, p.status, p.posted_at as created_at,
                 ST_X(location::geometry) as lng, 
                 ST_Y(location::geometry) as lat
                 FROM properties p 
                 WHERE p.user_id = :user_id
-                ORDER BY id DESC";
+                ORDER BY p.id DESC";
         $stmt = $conn->prepare($sql);
         $stmt->execute([':user_id' => $userId]);
         $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        foreach ($properties as &$property) {
-            $property['facilities'] = getPropertyFacilities($property['id']);
+          foreach ($properties as &$property) {
+            $facilities = getPropertyFacilities($property['id']);
+            $property['facilities'] = implode(', ', $facilities);
         }
         
         return $properties;
