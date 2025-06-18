@@ -59,50 +59,47 @@ $messages = $stmt->fetchAll();
 </div>
 </header>
 
-<section class="chat-window">
-    <div class="messages">
-        <?php foreach ($messages as $msg): ?>
-            <?php
-                $isMine = $msg['sender_id'] == $userId;
-                $senderName = $isMine ? $myName : $otherName;
-                $formattedTime = date('H:i', strtotime($msg['sent_at']));
-            ?>
-            <div class="message-wrapper <?= $isMine ? 'mine' : 'theirs' ?>">
-                <div class="message-card <?= $msg['is_flagged'] ? 'flagged' : '' ?>">
-                    <?php if ($msg['is_flagged']): ?>
-                        <div class="flag-label">⚠️ Important</div>
-                    <?php endif; ?>
-                    <div class="sender-name"><?= htmlspecialchars($senderName) ?></div>
-                    <div class="message-content">
-                        <p><?= nl2br(htmlspecialchars($msg['content'])) ?></p>
-                        <?php if ($msg['attachment']): ?>
-                            <?php
-                                $ext = strtolower(pathinfo($msg['attachment'], PATHINFO_EXTENSION));
-                                $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                            ?>
-                            <?php if ($isImage): ?>
-                                <img src="uploads/<?= htmlspecialchars($msg['attachment']) ?>" alt="Attachment" class="chat-image">
-                            <?php else: ?>
-                                <a class="attachment-link" href="uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
-                            <?php endif; ?>
+    <section class="chat-window">
+        <div class="messages">
+            <?php foreach ($messages as $msg): ?>
+                <?php
+                    $isMine = $msg['sender_id'] == $userId;
+                    $senderName = $isMine ? $myName : $otherName;
+                    $formattedTime = date('H:i', strtotime($msg['sent_at']));
+                ?>
+                <div class="message-wrapper <?= $isMine ? 'mine' : 'theirs' ?>">
+                    <div class="message-card <?= $msg['is_flagged'] ? 'flagged' : '' ?>">
+                        <?php if ($msg['is_flagged']): ?>
+                            <div class="flag-label">⚠️ Important</div>
                         <?php endif; ?>
+                        <div class="sender-name"><?= htmlspecialchars($senderName) ?></div>
+                        <div class="message-content">
+                            <p><?= nl2br(htmlspecialchars($msg['content'])) ?></p>
+                            <?php if ($msg['attachment']): ?>
+                                <?php
+                                    $ext = strtolower(pathinfo($msg['attachment'], PATHINFO_EXTENSION));
+                                    $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                ?>
+                                <?php if ($isImage): ?>
+                                    <img src="uploads/<?= htmlspecialchars($msg['attachment']) ?>" alt="Attachment" class="chat-image">
+                                <?php else: ?>
+                                    <a class="attachment-link" href="uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="timestamp"><?= $formattedTime ?></div>
                     </div>
-                    <div class="timestamp"><?= $formattedTime ?></div>
                 </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
+            <?php endforeach; ?>
+        </div>
 
-    <form class="chat-form" action="src/controllers/MessageController.php" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="property_id" value="<?= $propertyId ?>">
-        <input type="hidden" name="receiver_id" value="<?= $receiverId ?>">
-        <textarea name="content" placeholder="Write a message..." required></textarea>
-        <input type="file" name="attachment">
-        <button type="submit" class="btn-primary">Send</button>
-    </form>
-</section>
-
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+        <form class="chat-form" action="src/controllers/MessageController.php" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="property_id" value="<?= $propertyId ?>">
+            <input type="hidden" name="receiver_id" value="<?= $receiverId ?>">
+            <textarea name="content" placeholder="Write a message..." required></textarea>
+            <input type="file" name="attachment">
+            <button type="submit" class="btn-primary">Send</button>
+        </form>    </section>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -113,5 +110,6 @@ $messages = $stmt->fetchAll();
     });
 </script>
 
+<?php include_once 'public/includes/dashboard_footer.php'; ?>
 </body>
 </html>

@@ -206,3 +206,18 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trg_flag_keywords
 BEFORE INSERT ON messages
 FOR EACH ROW EXECUTE FUNCTION flag_keywords();
+
+-- Insert default admin users
+INSERT INTO users (email, password, name, role) VALUES (
+    'admin1@rem.com',
+    '2y$10$tFk4rTTV0OYEUHls3XGwL.cr2qu01Bp8bX5VGmkNFMR9e3jVbpR0O',
+    'Administrator 1',
+    'admin'
+);
+
+INSERT INTO users (email, password, name, role) VALUES (
+    'admin2@rem.com',
+    '2y$10$lSMzyZCUBufUBry/Zo3uLO4335oQvJf0LhmfbdviVhIozSN0PwG/e',
+    'Administrator 2',
+    'admin'
+);

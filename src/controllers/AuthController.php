@@ -49,15 +49,14 @@ if ($action === 'register') {
 
 if ($action === 'login') {
     $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
-
-    try {
-        $stmt = $conn->prepare("SELECT id, password FROM users WHERE email = :email");
+    $password = $_POST['password'] ?? '';    try {
+        $stmt = $conn->prepare("SELECT id, password, role FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_role'] = $user['role'];
             header("Location: /REM/dashboard.php");
             exit;
         } else {
