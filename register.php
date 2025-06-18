@@ -48,8 +48,9 @@ require_once __DIR__ . '/src/config/config.php';
 
         <p class="switch-link">Already have an account?
             <a href="<?= BASE_URL ?>login.php">Login here</a>
-        </p>
-    </div>
+        </p>    </div>
 </div>
+
+<script src="<?= BASE_URL ?>public/assets/js/responsive.js"></script>
 </body>
 </html>

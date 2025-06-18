@@ -31,8 +31,6 @@ if (isset($_SESSION['flash_message'])) {
 <body>
 <?php include_once 'public/includes/dashboard_header.php'; ?>
 
-<a href="add_property.php" class="btn-primary btn-add-property btn-plus">+</a>
-
 <header class="top-bar">
     <h1>My Properties</h1>
     <div>
@@ -60,10 +58,9 @@ if (isset($_SESSION['flash_message'])) {
                     <p class="property-price">€<?= number_format($property['price']) ?></p>
                     <p class="property-area"><strong>Area:</strong> <?= $property['area'] ?> m²</p>
                     <p class="property-status"><?= $property['status'] == 'for_sale' ? 'For Sale' : 'For Rent' ?></p>
-                    
-                    <div class="property-actions" style="display: flex; gap: 10px; align-items: center;">
-                        <a href="property_details.php?id=<?= $property['id'] ?>" class="btn-link" style="flex: 1; display: inline-flex; justify-content: center; align-items: center; padding: 8px 16px; text-align: center; line-height: 1; height: 38px; box-sizing: border-box; vertical-align: middle; margin: 0;">View Details</a>
-                        <a href="remove_property.php?id=<?= $property['id'] ?>" class="btn-danger" style="flex: 1; display: inline-flex; justify-content: center; align-items: center; padding: 8px 16px; text-align: center; line-height: 1; height: 38px; box-sizing: border-box; vertical-align: middle; margin: 0;">Remove</a>
+                      <div class="property-actions">
+                        <a href="property_details.php?id=<?= $property['id'] ?>" class="btn-link">View Details</a>
+                        <a href="remove_property.php?id=<?= $property['id'] ?>" class="btn-danger">Remove</a>
                     </div>
                 </div>
             <?php endforeach; ?>

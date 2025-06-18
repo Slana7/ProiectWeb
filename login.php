@@ -49,8 +49,9 @@ require_once __DIR__ . '/src/config/config.php';
 
         <p class="switch-link">Don't have an account?
             <a href="<?= BASE_URL ?>register.php">Register here</a>
-        </p>
-    </div>
+        </p>    </div>
 </div>
+
+<script src="<?= BASE_URL ?>public/assets/js/responsive.js"></script>
 </body>
 </html>
