@@ -1,9 +1,5 @@
 <?php
 
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-
 require_once __DIR__ . '/src/config/config.php';
 require_once __DIR__ . '/src/db/Database.php';
 session_start();
@@ -22,20 +18,6 @@ if (!$propertyId || !$receiverId) {
 }
 
 $conn = Database::connect();
-
-$markRead = $conn->prepare("
-    UPDATE messages
-    SET is_read = TRUE
-    WHERE receiver_id = :me
-      AND sender_id = :other
-      AND property_id = :property
-      AND is_read = FALSE
-");
-$markRead->execute([
-    'me' => $userId,
-    'other' => $receiverId,
-    'property' => $propertyId
-]);
 
 function getUsername($conn, $id) {
     $stmt = $conn->prepare("SELECT name FROM users WHERE id = :id");
@@ -70,7 +52,12 @@ $messages = $stmt->fetchAll();
 <body>
 <?php include_once 'public/includes/dashboard_header.php'; ?>
 
-<header class="top-bar"><h1>Chat</h1></header>
+<header class="top-bar"><h1>Chat</h1> <div style="margin: 1rem 0;">
+    <a href="mark_read_and_redirect.php?with=<?= $receiverId ?>&property=<?= $propertyId ?>" class="btn-secondary">
+        ← Back to Conversations
+    </a>
+</div>
+</header>
 
 <section class="chat-window">
     <div class="messages">
@@ -122,13 +109,6 @@ $messages = $stmt->fetchAll();
         const messagesContainer = document.querySelector(".messages");
         if (messagesContainer) {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-    });
-</script>
-<script>
-    window.addEventListener('pageshow', function(event) {
-        if (event.persisted || (window.performance && performance.navigation.type === 2)) {
-            location.reload();
         }
     });
 </script>
