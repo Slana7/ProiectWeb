@@ -26,7 +26,6 @@ if (isset($_SESSION['flash_message'])) {
 
 <header class="top-bar">
     <h1>Dashboard</h1>
-    <p>Welcome to your real estate management dashboard.</p>
 </header>
 
 <?php if ($flashMessage): ?>

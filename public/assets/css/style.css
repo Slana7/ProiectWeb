@@ -1360,31 +1360,50 @@ canvas#priceChart {
     color: #1e2a38;
 }
 
-/* Profile Page Styles */
 .profile-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin-top: 20px;
-    max-width: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 16px;
+    justify-content: center;
+    align-items: flex-start;
 }
 
-.profile-left,
-.profile-right {
+.profile-left, .profile-right {
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    overflow: hidden;
-    box-sizing: border-box;
-    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    padding: 32px 24px;
+    min-width: 320px;
+    flex: 1 1 350px;
+    max-width: 480px;
 }
 
-.profile-left .form-section {
-    padding: 30px;
-    margin: 0;
+.profile-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
+
+@media (max-width: 900px) {
+    .profile-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .profile-left, .profile-right {
+        max-width: 100%;
+    }
+}
+
+.profile-left .property-form {
+    width: 100%;
+    box-sizing: border-box; 
+    padding: 16px 32px;
+}
+
 
 .profile-left .form-section h2 {
     margin: 0 0 20px 0;
@@ -1399,7 +1418,7 @@ canvas#priceChart {
     padding-top: 5px;
 }
 
-/* Profile Export Section Overrides */
+
 .profile-right .export-section {
     padding: 30px;
     margin: 0;
@@ -1530,7 +1549,6 @@ canvas#priceChart {
     line-height: 1.4;
 }
 
-/* Responsive design for export section */
 @media (max-width: 768px) {
     .export-section {
         max-width: 100%;
@@ -1556,4 +1574,22 @@ canvas#priceChart {
     .profile-right .btn-export {
         width: 100%;
     }
+}
+.btn-secondary {
+    display: inline-block;
+    background-color: #e8f0fe;
+    color: #1a73e8;
+    border: 1px solid #c6dafc;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #d2e3fc;
+    color: #125ab3;
+    border-color: #a8c6f3;
 }
