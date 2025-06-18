@@ -1,9 +1,15 @@
 <?php
 require_once __DIR__ . '/src/config/config.php';
+require_once __DIR__ . '/src/utils/AdminUtils.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
+    exit;
+}
+
+if (isAdmin()) {
+    header("Location: admin_dashboard.php");
     exit;
 }
 
@@ -59,7 +65,7 @@ if (isset($_SESSION['flash_message'])) {
         <p>List your own property for sale or rent.</p>
         <a href="add_property.php" class="btn-link">Add New</a>
     </div>
-    
+        
     <div class="card">
         <h3>Your Profile</h3>
         <p>View and edit your profile details.</p>

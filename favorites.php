@@ -50,7 +50,6 @@ $favorites = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 </section>
 
-
 <footer class="dashboard-footer">
     &copy; <?= date('Y') ?> REM Project. All rights reserved.
 </footer>
