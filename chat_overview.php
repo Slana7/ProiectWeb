@@ -71,7 +71,9 @@ foreach ($unread as $row) {
 </header>
 
 <?php if (empty($conversations)): ?>
-    <p>You have no conversations yet.</p>
+    <div class="chat-list">
+        <p>You have no conversations yet. Start chatting by contacting property owners from the property details pages.</p>
+    </div>
 <?php else: ?>
     <div class="chat-list">
     <?php foreach ($conversations as $conv): 

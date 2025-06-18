@@ -52,11 +52,13 @@ $messages = $stmt->fetchAll();
 <body>
 <?php include_once 'public/includes/dashboard_header.php'; ?>
 
-<header class="top-bar"><h1>Chat</h1> <div style="margin: 1rem 0;">
-    <a href="mark_read_and_redirect.php?with=<?= $receiverId ?>&property=<?= $propertyId ?>" class="btn-secondary">
-        ← Back to Conversations
-    </a>
-</div>
+<header class="top-bar">
+    <h1>Chat</h1>
+    <div class="chat-header-actions">
+        <a href="mark_read_and_redirect.php?with=<?= $receiverId ?>&property=<?= $propertyId ?>" class="btn-secondary">
+            ← Back to Conversations
+        </a>
+    </div>
 </header>
 
     <section class="chat-window">

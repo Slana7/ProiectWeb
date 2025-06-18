@@ -25,8 +25,7 @@ if (isset($_SESSION['user_id'])) {
         <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; align-items: center;">
             <a href="<?= BASE_URL ?>login.php" class="btn-primary">Login</a>
             <a href="<?= BASE_URL ?>register.php" class="btn-primary">Register</a>
-        </div>
-    </div>
+        </div>    </div>
 </div>
 
 <script src="<?= BASE_URL ?>public/assets/js/responsive.js"></script>

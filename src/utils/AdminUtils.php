@@ -13,4 +13,3 @@ function requireAdmin() {
 function isClient() {
     return !isset($_SESSION['user_role']) || $_SESSION['user_role'] === 'client';
 }
-?>
