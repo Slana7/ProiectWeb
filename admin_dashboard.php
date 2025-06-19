@@ -19,8 +19,6 @@ $totalUsers = $userCountStmt->fetchColumn();
 $propertyCountStmt = $conn->query("SELECT COUNT(*) FROM properties");
 $totalProperties = $propertyCountStmt->fetchColumn();
 
-$messageCountStmt = $conn->query("SELECT COUNT(*) FROM messages");
-$totalMessages = $messageCountStmt->fetchColumn();
 
 $flashMessage = null;
 if (isset($_SESSION['flash_message'])) {
@@ -41,9 +39,6 @@ if (isset($_SESSION['flash_message'])) {
 
 <header class="top-bar">
     <h1>Admin Dashboard</h1>
-    <div class="admin-badge">
-        <span>🛡️ Administrator</span>
-    </div>
 </header>
 
 <?php if ($flashMessage): ?>
@@ -53,23 +48,19 @@ if (isset($_SESSION['flash_message'])) {
 <?php endif; ?>
 
 <section class="cards">
-    <div class="card admin-stat-card">
+    <div class="card">
         <h3>Total Users</h3>
         <p class="stat-number"><?= $totalUsers ?></p>
         <p>Registered clients</p>
     </div>
 
-    <div class="card admin-stat-card">
+    <div class="card">
         <h3>Total Properties</h3>
         <p class="stat-number"><?= $totalProperties ?></p>
         <p>Properties listed</p>
     </div>
 
-    <div class="card admin-stat-card">
-        <h3>Total Messages</h3>
-        <p class="stat-number"><?= $totalMessages ?></p>
-        <p>Messages exchanged</p>
-    </div>
+    
 
     <div class="card">
         <h3>Manage Users</h3>
@@ -83,12 +74,6 @@ if (isset($_SESSION['flash_message'])) {
         <a href="admin_properties.php" class="btn-link">Manage Properties</a>
     </div>
     
-    <div class="card">
-        <h3>View All Messages</h3>
-        <p>Monitor messages between users.</p>
-        <a href="admin_messages.php" class="btn-link">View Messages</a>
-    </div>
-</section>
 
 <footer class="dashboard-footer">
     &copy; <?= date('Y') ?> REM Project. All rights reserved.

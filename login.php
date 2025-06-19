@@ -31,7 +31,8 @@ require_once __DIR__ . '/src/config/config.php';
 
         <?php if (isset($_GET['updated'])): ?>
         <p class="success">Your profile was updated. Please log in again.</p>
-        <?php endif; ?>        <?php if (isset($_GET['error'])): ?>
+        <?php endif; ?>
+        <?php if (isset($_GET['error'])): ?>
             <?php if ($_GET['error'] === 'database'): ?>
                 <p class="error">A database error occurred. Please try again later.</p>
             <?php elseif ($_GET['error'] === 'email_taken'): ?>
@@ -49,7 +50,8 @@ require_once __DIR__ . '/src/config/config.php';
 
         <p class="switch-link">Don't have an account?
             <a href="<?= BASE_URL ?>register.php">Register here</a>
-        </p>    </div>
+        </p>
+    </div>
 </div>
 
 <script src="<?= BASE_URL ?>public/assets/js/responsive.js"></script>

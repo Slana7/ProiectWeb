@@ -36,17 +36,26 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <header class="top-bar">
     <h1>Manage Users</h1>
+            <?php if (isset($_GET['success']) && $_GET['success'] === 'user_deleted'): ?>
+            <div class="alert success">User deleted successfully.</div>
+        <?php elseif (isset($_GET['error']) && $_GET['error'] === 'delete_failed'): ?>
+            <div class="alert error">An error occurred while deleting the user.</div>
+        <?php elseif (isset($_GET['error']) && $_GET['error'] === 'invalid_id'): ?>
+            <div class="alert error">Invalid user ID.</div>
+        <?php elseif (isset($_GET['error']) && $_GET['error'] === 'forbidden'): ?>
+            <div class="alert error">You cannot delete an admin account.</div>
+        <?php endif; ?>
+
     <div class="admin-badge">
         <span>🛡️ Administrator</span>
     </div>
 </header>
 
 <section class="form-section">
-    <div style="overflow-x: auto;">
+    <div style="overflow-x: auto; width: 100%;">
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
@@ -57,7 +66,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tbody>
                 <?php foreach ($users as $user): ?>
                 <tr>
-                    <td><?= $user['id'] ?></td>
                     <td><?= htmlspecialchars($user['name']) ?></td>
                     <td><?= htmlspecialchars($user['email']) ?></td>
                     <td>
@@ -68,7 +76,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= $user['property_count'] ?></td>
                     <td>
                         <?php if ($user['role'] !== 'admin'): ?>
-                            <a href="#" class="btn btn-small btn-warning">View</a>
+                            <a href="delete_user.php?id=<?= $user['id'] ?>"
+                               class="btn btn-small btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this user?');">
+                                Delete
+                            </a>
                         <?php endif; ?>
                     </td>
                 </tr>

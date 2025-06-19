@@ -14,7 +14,7 @@ requireAdmin();
 $conn = Database::connect();
 
 $stmt = $conn->query("
-    SELECT p.id, p.title, p.description, p.price, p.area, p.status, p.posted_at,
+    SELECT  p.id, p.title, p.description, p.price, p.area, p.status, p.posted_at,
            u.name as owner_name, u.email as owner_email
     FROM properties p
     JOIN users u ON p.user_id = u.id
@@ -41,24 +41,21 @@ $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </header>
 
 <section class="form-section">
-    <div style="overflow-x: auto;">
+    <div style="overflow-x: auto; width: 100%;">
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Title</th>
                     <th>Owner</th>
                     <th>Price</th>
                     <th>Area</th>
                     <th>Status</th>
-                    <th>Posted</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($properties as $property): ?>
                 <tr>
-                    <td><?= $property['id'] ?></td>
                     <td><?= htmlspecialchars(substr($property['title'], 0, 30)) ?><?= strlen($property['title']) > 30 ? '...' : '' ?></td>
                     <td><?= htmlspecialchars($property['owner_name']) ?></td>
                     <td>€<?= number_format($property['price']) ?></td>
@@ -68,10 +65,14 @@ $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?= ucfirst(str_replace('_', ' ', $property['status'])) ?>
                         </span>
                     </td>
-                    <td><?= date('M j, Y', strtotime($property['posted_at'])) ?></td>
                     <td>
-                        <a href="property_details.php?id=<?= $property['id'] ?>" class="btn btn-small btn-primary">View</a>
+                        <a href="remove_property.php?id=<?= $property['id'] ?>"
+                        class="btn btn-small btn-danger"
+                        onclick="return confirm('Are you sure you want to delete this property?');">
+                            Delete
+                        </a>
                     </td>
+
                 </tr>
                 <?php endforeach; ?>
             </tbody>
