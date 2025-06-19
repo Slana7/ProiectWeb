@@ -26,8 +26,7 @@ if (isset($_SESSION['user_id'])) {
                     <span></span>
                     <span></span>
                 </div>
-            </div>
-            <nav class="nav-menu">
+            </div>            <nav class="nav-menu">
                 <?php if (isAdmin()): ?>
                     <a href="admin_dashboard.php">Admin Dashboard</a>
                     <a href="admin_users.php">Users</a>
@@ -35,7 +34,7 @@ if (isset($_SESSION['user_id'])) {
                 <?php else: ?>
                     <a href="dashboard.php">Dashboard</a>
                     <a href="map.php">Map</a>
-                    <a href="favorites.php">Favorites</a>
+                    <a href="favorites.php">My Favorites</a>
                     <a href="my_properties.php">My Properties</a>
                     <a href="add_property.php">Add Property</a>
                     <a href="profile.php">Profile</a>
@@ -61,7 +60,7 @@ if (isset($_SESSION['user_id'])) {
             <?php else: ?>
                 <a href="dashboard.php">Dashboard</a>
                 <a href="map.php">Map</a>
-                <a href="favorites.php">Favorites</a>
+                <a href="favorites.php">My Favorites</a>
                 <a href="my_properties.php">My Properties</a>
                 <a href="add_property.php">Add Property</a>
                 <a href="profile.php">Profile</a>

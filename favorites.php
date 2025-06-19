@@ -24,6 +24,7 @@ $favorites = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Favorite Properties - <?= APP_NAME ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
 </head>
