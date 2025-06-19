@@ -99,6 +99,23 @@ body {
     max-width: 100%;
 }
 
+.card:hover,
+.favorite-card:hover,
+.property-card:hover,
+.chat-card:hover {
+    transform: translateY(-4px);
+}
+
+.favorite-card:hover,
+.property-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.chat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
 .card:hover {
     transform: translateY(-4px);
 }
@@ -107,7 +124,7 @@ body {
     margin-top: 0;
 }
 
-.btn-link, .btn-primary, .btn-secondary, .btn-danger {
+.btn-link, .btn-primary, .btn-secondary, .btn-danger, .btn-export {
     display: inline-block;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -118,29 +135,20 @@ body {
     transition: background-color 0.3s ease;
     border: none;
     font-size: 1rem;
-}
-
-.btn-link {
-    background-color: #42a5f5;
     color: white;
 }
 
-.btn-link:hover {
-    background-color: #1e88e5;
-}
-
-.btn-primary {
+.btn-link, .btn-primary {
     background-color: #42a5f5;
-    color: white;
 }
 
-.btn-primary:hover {
+.btn-link:hover, .btn-primary:hover {
     background-color: #1e88e5;
 }
 
 .btn-secondary {
     background-color: #6c757d;
-    color: white;
+    padding: 0.75rem 1.5rem;
 }
 
 .btn-secondary:hover {
@@ -149,14 +157,6 @@ body {
 
 .btn-danger {
     background-color: #dc3545;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
 .btn-danger:hover {
@@ -295,13 +295,31 @@ body {
 
 .auth-form input[type="text"],
 .auth-form input[type="email"],
-.auth-form input[type="password"] {
+.auth-form input[type="password"],
+.property-form input[type="text"],
+.property-form input[type="number"],
+.property-form select,
+.property-form input[type="email"],
+.property-form input[type="password"],
+.property-form textarea {
     width: 100%;
     padding: 0.75rem;
     margin-bottom: 1rem;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.property-form input[type="text"],
+.property-form input[type="number"],
+.property-form select,
+.property-form input[type="email"],
+.property-form input[type="password"],
+.property-form textarea {
+    padding: 0.6rem;
+    margin-top: 0.3rem;
+    margin-bottom: 0;
 }
 
 .btn-primary {
@@ -314,29 +332,6 @@ body {
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-}
-
-.btn-primary:hover {
-    background-color: #1e88e5;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-    font-weight: 500;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-    text-decoration: none;
 }
 
 .switch-link {
@@ -395,21 +390,6 @@ body {
     font-weight: 500;
 }
 
-.property-form input[type="text"],
-.property-form input[type="number"],
-.property-form select,
-.property-form input[type="email"],
-.property-form input[type="password"],
-.property-form textarea {
-    width: 100%;
-    padding: 0.6rem;
-    margin-top: 0.3rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-    box-sizing: border-box;
-}
-
 .property-form textarea {
     resize: vertical;
     min-height: 100px;
@@ -422,19 +402,35 @@ body {
     gap: 0.5rem;
 }
 
-.form-section {
-    margin-top: 0;
+.form-section,
+.export-section,
+.my-listings {
     background-color: white;
     border-radius: 8px;
     padding: 2rem;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    height: fit-content;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
 }
 
-.form-section h2 {
+.form-section {
+    margin-top: 0;
+    height: fit-content;
+}
+
+.export-section {
+    height: fit-content;
+}
+
+.my-listings {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.form-section h2,
+.export-section h2 {
     margin-top: 0;
     margin-bottom: 1.5rem;
     color: #1e2a38;
@@ -478,11 +474,6 @@ body {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.favorite-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
 .favorite-card h3 {
     margin-top: 0;
     margin-bottom: 0.5rem;
@@ -497,13 +488,7 @@ body {
     margin: 0.5rem 0;
 }
 
-.my-listings {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
+
 
 .my-listings h2 {
     margin-bottom: 1rem;
@@ -816,22 +801,6 @@ body {
   white-space: nowrap;      
 }
 
-.btn-danger {
-    background-color: #dc3545;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-danger:hover {
-    background-color: #c82333;
-}
-
 .profile-container {
     display: flex;
     gap: 2rem;
@@ -854,24 +823,6 @@ body {
     min-width: 300px;
     max-width: 100%;
     box-sizing: border-box;
-}
-
-.export-section {
-    background-color: white;
-    border-radius: 8px;
-    padding: 2rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    height: fit-content;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-}
-
-.export-section h2 {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    color: #1e2a38;
-    font-weight: 500;
 }
 
 .export-cards {
@@ -917,14 +868,8 @@ body {
 }
 
 .btn-export {
-    display: inline-block;
-    padding: 0.5rem 1rem;
     border-radius: 4px;
-    text-decoration: none;
-    font-weight: 500;
     font-size: 0.9rem;
-    color: white;
-    transition: background-color 0.3s ease;
 }
 
 .btn-csv {
@@ -998,11 +943,6 @@ body {
     border: 1px solid #e9ecef;
 }
 
-.chat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-}
-
 .chat-card a {
     text-decoration: none;
     color: inherit;
@@ -1041,7 +981,6 @@ body {
     white-space: nowrap;
 }
 
-
 .chat-list > p {
     text-align: center;
     color: #666;
@@ -1053,21 +992,25 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-
 .chat-header-actions {
     display: flex;
     align-items: center;
 }
 
-
 @media screen and (max-width: 768px) {
+    body {
+        font-size: 0.95rem;
+    }
+    
     .mobile-header {
         display: block !important;
     }
     
     .sidebar {
         display: none !important;
-    }      .burger-menu {
+    }
+    
+    .burger-menu {
         display: block !important;
     }
     
@@ -1105,14 +1048,17 @@ body {
     .property-actions {
         flex-direction: column;
         gap: 0.5rem;
-    }      .main-content {
+    }
+    
+    .main-content {
         padding: 1rem;
         margin-left: 0;
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;
     }
-      .dashboard-layout {
+    
+    .dashboard-layout {
         flex-direction: column;
     }
     
@@ -1120,10 +1066,11 @@ body {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-      .favorite-card {
+    
+    .favorite-card {
         padding: 1rem;
     }
-      /* Profile page responsiveness */
+    
     .profile-container {
         flex-direction: column;
         gap: 1.5rem;
@@ -1159,6 +1106,17 @@ body {
         max-width: 100%;
         box-sizing: border-box;
     }
+    
+    .button-group {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .button-group .btn-danger,
+    .button-group .btn-secondary {
+        width: 90%;
+        max-width: 320px;
+    }
 }
 
 @media screen and (max-width: 1024px) and (min-width: 769px) {
@@ -1166,7 +1124,7 @@ body {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 1.2rem;
     }
-      /* Profile page tablet responsiveness */
+    
     .profile-container {
         gap: 1.5rem;
         padding: 0 1rem;
@@ -1197,7 +1155,7 @@ body {
     .auth-page .mobile-header .burger-menu {
         display: none !important;
     }
-      /* Profile page small mobile adjustments */
+    
     .export-section,
     .form-section {
         padding: 1rem;
@@ -1287,11 +1245,6 @@ body {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.property-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
 .property-card h3 {
     margin-top: 0;
     margin-bottom: 0.5rem;
@@ -1327,19 +1280,11 @@ body {
     padding-top: 1rem;
 }
 
-.btn-danger {
+.btn-danger.property-action {
     background-color: #f44336;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
-.btn-danger:hover {
+.btn-danger.property-action:hover {
     background-color: #e53935;
 }
 
@@ -1354,7 +1299,6 @@ body {
     margin-bottom: 1.5rem;
 }
 
-/* Desktop specific rules */
 @media screen and (min-width: 769px) {
     .mobile-header {
         display: none !important;
@@ -1379,6 +1323,7 @@ body {
         display: none !important;
     }
 }
+
 .unread-dot {
   width: 10px;
   height: 10px;
@@ -1388,6 +1333,7 @@ body {
   margin-left: 8px;
   animation: pulse 1s infinite;
 }
+
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -1402,23 +1348,11 @@ body {
     opacity: 1;
   }
 }
+
 .admin-table td:last-child,
 .admin-table th:last-child {
     width: 115px;
     min-width: 115px;
-    text-align: center;
-}
-
-.button-group {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 2rem;
-}
-
-.button-group .btn-danger,
-.button-group .btn-secondary {
-    min-width: 220px;
     text-align: center;
 }
 
@@ -1440,43 +1374,6 @@ body {
     border-radius: 8px;
     font-weight: 500;
     display: inline-block;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-    font-weight: 500;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-    text-decoration: none;
-}
-
-
-@media screen and (max-width: 768px) {
-    body {
-        font-size: 0.95rem;
-    }
-
-    .button-group {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .button-group .btn-danger,
-    .button-group .btn-secondary {
-        width: 90%;
-        max-width: 320px;
-    }
 }
 
 @media screen and (max-width: 480px) {
