@@ -32,7 +32,6 @@ if (isset($_SESSION['user_id'])) {
                     <a href="admin_dashboard.php">Admin Dashboard</a>
                     <a href="admin_users.php">Users</a>
                     <a href="admin_properties.php">Properties</a>
-                    <a href="admin_messages.php">Messages</a>
                 <?php else: ?>
                     <a href="dashboard.php">Dashboard</a>
                     <a href="map.php">Map</a>
@@ -59,7 +58,6 @@ if (isset($_SESSION['user_id'])) {
                 <a href="admin_dashboard.php">Admin Dashboard</a>
                 <a href="admin_users.php">Users</a>
                 <a href="admin_properties.php">Properties</a>
-                <a href="admin_messages.php">Messages</a>
             <?php else: ?>
                 <a href="dashboard.php">Dashboard</a>
                 <a href="map.php">Map</a>

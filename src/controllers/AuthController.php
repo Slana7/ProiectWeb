@@ -3,7 +3,6 @@ require_once __DIR__ . '/../db/Database.php';
 session_start();
 
 $conn = Database::connect();
-
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 if ($action === 'register') {
@@ -21,13 +20,16 @@ if ($action === 'register') {
     if ($stmt->fetch()) {
         header("Location: ../../register.php?error=1");
         exit;
-    }    try {
+    }
+
+    try {
         $hashed = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO users (email, password, name) VALUES (:email, :password, :name)");
+        $stmt = $conn->prepare("INSERT INTO users (email, password, name, role) VALUES (:email, :password, :name, :role)");
         $stmt->execute([
             'email' => $email,
             'password' => $hashed,
-            'name' => $name
+            'name' => $name,
+            'role' => 'user'
         ]);
 
         header("Location: ../../login.php");
@@ -49,13 +51,17 @@ if ($action === 'register') {
 
 if ($action === 'login') {
     $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';    try {
-        $stmt = $conn->prepare("SELECT id, password, role FROM users WHERE email = :email");
+    $password = $_POST['password'] ?? '';
+
+    try {
+        $stmt = $conn->prepare("SELECT id, name, email, password, role FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_email'] = $user['email'];
             $_SESSION['user_role'] = $user['role'];
             header("Location: /REM/dashboard.php");
             exit;
