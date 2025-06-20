@@ -2,6 +2,9 @@
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../db/Database.php';
 require_once __DIR__ . '/PropertyController.php';
+
+date_default_timezone_set('Europe/Bucharest');
+
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
