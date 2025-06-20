@@ -1,77 +1,53 @@
 <?php
 require_once __DIR__ . '/src/config/config.php';
+require_once __DIR__ . '/src/controllers/PropertyController.php';
 require_once __DIR__ . '/src/db/Database.php';
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_GET['id'])) {
     die("Missing property ID.");
 }
 
 $id = (int) $_GET['id'];
-$conn = Database::connect();
+$data = PropertyController::getPropertyWithStats($id);
 
-$stmt = $conn->prepare("SELECT * FROM properties WHERE id = :id");
-$stmt->execute(['id' => $id]);
-$property = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$property) {
+if (!$data || !isset($data['details'])) {
     die("Property not found.");
 }
 
-$lat = $conn->query("SELECT ST_Y(location::geometry) FROM properties WHERE id = $id")->fetchColumn();
-$lng = $conn->query("SELECT ST_X(location::geometry) FROM properties WHERE id = $id")->fetchColumn();
-
-$statsStmt = $conn->prepare("
-    SELECT 
-        COUNT(*) AS total_properties,
-        ROUND(AVG(price), 2) AS avg_price,
-        MIN(price) AS min_price,
-        MAX(price) AS max_price
-    FROM properties
-    WHERE id != :id
-      AND status = :status
-      AND ST_DWithin(location, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography, 2000)
-");
-$statsStmt->execute([
-    'id' => $property['id'],
-    'status' => $property['status'],
-    'lat' => $lat,
-    'lng' => $lng
-]);
-$stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
+$details = $data['details'];
+$stats = $data['stats'];
+$lat = $details['lat'];
+$lng = $details['lng'];
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title><?= htmlspecialchars($property['title']) ?> - <?= APP_NAME ?></title>
+    <title><?= htmlspecialchars($details['title']) ?> - <?= APP_NAME ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 <body>
 <?php include_once 'public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
-    <h1><?= htmlspecialchars($property['title']) ?></h1>
+    <h1><?= htmlspecialchars($details['title']) ?></h1>
 </header>
 
 <section class="property-details">
-    <p><strong>Price:</strong> €<?= number_format($property['price']) ?><?= $property['status'] === 'for_rent' ? ' / month' : '' ?></p>
-    <p><strong>Area:</strong> <?= $property['area'] ?> m²</p>
-    <p><strong>Status:</strong> <?= htmlspecialchars($property['status']) ?></p>
-    <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($property['description'])) ?></p>
-    <?php
-$postedTime = (new DateTime($property['posted_at']))->format('d-m-Y H:i');
-?>
-<p><strong>Posted at:</strong> <?= $postedTime ?></p>
-
-    <!-- 
-    <p><strong>Location:</strong> <?= $lat ?>, <?= $lng ?></p> 
-    -->
+    <p><strong>Price:</strong> €<?= number_format($details['price']) ?><?= $details['status'] === 'for_rent' ? ' / month' : '' ?></p>
+    <p><strong>Area:</strong> <?= $details['area'] ?> m²</p>
+    <p><strong>Status:</strong> <?= htmlspecialchars($details['status']) ?></p>
+    <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($details['description'])) ?></p>
+    <p><strong>Posted at:</strong> <?= (new DateTime($details['posted_at']))->format('d-m-Y H:i') ?></p>
 
     <?php if (isset($_SESSION['user_id'])): ?>
         <?php
+        $conn = Database::connect();
         $check = $conn->prepare("SELECT 1 FROM saved_properties WHERE user_id = :uid AND property_id = :pid");
         $check->execute(['uid' => $_SESSION['user_id'], 'pid' => $id]);
         $isSaved = $check->fetch();
@@ -84,18 +60,17 @@ $postedTime = (new DateTime($property['posted_at']))->format('d-m-Y H:i');
             </button>
         </form>
 
-        <?php if ($_SESSION['user_id'] !== $property['user_id']): ?>
-            <a href="chat.php?property=<?= $property['id'] ?>&with=<?= $property['user_id'] ?>" class="btn-link">Contact landlord</a>
+        <?php if ($_SESSION['user_id'] !== $details['user_id']): ?>
+            <a href="chat.php?property=<?= $details['id'] ?>&with=<?= $details['user_id'] ?>" class="btn-link">Contact landlord</a>
         <?php endif; ?>
     <?php endif; ?>
-
 
     <canvas id="priceChart" width="400" height="200" class="<?= $stats['total_properties'] > 0 ? '' : 'blurred' ?>"></canvas>
 
     <?php if ($stats['total_properties'] > 0): ?>
         <script>
             const ctx = document.getElementById('priceChart').getContext('2d');
-            const labelUnit = "<?= $property['status'] === 'for_rent' ? '€/month' : '€' ?>";
+            const labelUnit = "<?= $details['status'] === 'for_rent' ? '€/month' : '€' ?>";
 
             const priceChart = new Chart(ctx, {
                 type: 'bar',
@@ -104,7 +79,7 @@ $postedTime = (new DateTime($property['posted_at']))->format('d-m-Y H:i');
                     datasets: [{
                         label: 'Price Comparison',
                         data: [
-                            <?= $property['price'] ?>,
+                            <?= $details['price'] ?>,
                             <?= $stats['avg_price'] ?? 0 ?>,
                             <?= $stats['min_price'] ?? 0 ?>,
                             <?= $stats['max_price'] ?? 0 ?>
@@ -136,7 +111,7 @@ $postedTime = (new DateTime($property['posted_at']))->format('d-m-Y H:i');
         </script>
 
         <?php
-        $price = $property['price'];
+        $price = $details['price'];
         $avg = $stats['avg_price'];
         if ($avg > 0) {
             $diff = round(($price - $avg) / $avg * 100);

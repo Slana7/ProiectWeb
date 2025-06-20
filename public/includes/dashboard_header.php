@@ -44,7 +44,7 @@ if (isset($_SESSION['user_id'])) {
                         <?php endif; ?>
                     </a>
                 <?php endif; ?>
-                <a href="logout.php">Logout</a>
+                <a href="<?= BASE_URL ?>src/controllers/AuthController.php?action=logout">Logout</a>
             </nav>
         </div>
     </header>
@@ -70,8 +70,8 @@ if (isset($_SESSION['user_id'])) {
                     <?php endif; ?>
                 </a>
             <?php endif; ?>
-            <a href="logout.php">Logout</a>
+            <a href="<?= BASE_URL ?>src/controllers/AuthController.php?action=logout">Logout</a>
         </nav>
     </aside>
 
-    <main class="main-content"> 
+    <main class="main-content">

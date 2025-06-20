@@ -26,28 +26,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'lng' => $_POST['lng'] ?? '',
         'facilities' => $_POST['facilities'] ?? []
     ];
-    
-    $result = addProperty($propertyData);
-    
+
+    $result = PropertyController::addProperty($propertyData);
+
     if ($result['success']) {
-        $success = true;
         $_SESSION['flash_message'] = $result['message'];
-        
         header('Location: dashboard.php');
         exit;
     } else {
-        $errors = $result['errors'];
+        $errors[] = $result['message'];
     }
 }
 
-$facilitiesStmt = $conn->query("SELECT id, name FROM facilities ORDER BY name");
-$facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
+$facilities = PropertyController::getFacilities();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Property - <?= APP_NAME ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -57,6 +53,7 @@ $facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 <body>
+
 <?php include_once 'public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
@@ -74,7 +71,7 @@ $facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     <?php endif; ?>
 
-    <form method="post" action="<?= $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data" class="property-form">
+    <form method="post" action="<?= $_SERVER['PHP_SELF'] ?>" class="property-form">
         <label>Title:</label>
         <input type="text" name="title" required>
 
@@ -96,17 +93,17 @@ $facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
         <label>Location:</label>
         <p>Click on the map to set the property location</p>
         <div id="map"></div>
-        
+
         <input type="hidden" name="lat" id="lat" required>
         <input type="hidden" name="lng" id="lng" required>
 
         <label>Facilities:</label>
         <div class="checkbox-group">
             <?php foreach ($facilities as $facility): ?>
-            <label>
-                <input type="checkbox" name="facilities[]" value="<?= htmlspecialchars($facility['name']) ?>"> 
-                <?= htmlspecialchars($facility['name']) ?>
-            </label>
+                <label>
+                    <input type="checkbox" name="facilities[]" value="<?= htmlspecialchars($facility['name']) ?>">
+                    <?= htmlspecialchars($facility['name']) ?>
+                </label>
             <?php endforeach; ?>
         </div>
 
@@ -122,20 +119,20 @@ $facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
 
 <script>
     const map = L.map('map').setView([47.1585, 27.6014], 13);
-    
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
-    
+
     let marker = null;
-    
+
     map.on('click', function(e) {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
-        
+
         document.getElementById('lat').value = lat;
         document.getElementById('lng').value = lng;
-        
+
         if (marker) {
             marker.setLatLng(e.latlng);
         } else {
@@ -143,5 +140,6 @@ $facilities = $facilitiesStmt->fetchAll(PDO::FETCH_ASSOC);
         }
     });
 </script>
+
 </body>
 </html>

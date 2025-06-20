@@ -1,26 +1,47 @@
 <?php
 require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/db/Database.php';
-session_start();
+require_once __DIR__ . '/src/controllers/ProfileController.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 
-$conn = Database::connect();
 $userId = $_SESSION['user_id'];
+$user = ProfileController::getUser($userId);
+$success = false;
+$error = '';
 
-$stmt = $conn->prepare("SELECT name, email FROM users WHERE id = :id");
-$stmt->execute(['id' => $userId]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = $_POST['name'] ?? '';
+    $password = $_POST['password'] ?? null;
+    $confirm = $_POST['confirm_password'] ?? null;
 
-$flashMessage = null;
-if (isset($_SESSION['flash_message'])) {
-    $flashMessage = $_SESSION['flash_message'];
-    unset($_SESSION['flash_message']);
+    if ($password && $password !== $confirm) {
+        $error = "Passwords do not match.";
+    } else {
+        $updated = ProfileController::updateProfile($userId, $name, $password);
+        if ($updated) {
+            $success = true;
+            $user = ProfileController::getUser($userId); // Refresh user data
+        } else {
+            $error = "Failed to update profile.";
+        }
+    }
 }
+$flashMessage = '';
+if ($success) {
+    $flashMessage = 'Profile updated successfully.';
+} elseif (!empty($error)) {
+    $flashMessage = $error;
+}
+
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>

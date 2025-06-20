@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/db/Database.php';
+require_once __DIR__ . '/src/controllers/PropertyController.php';
+
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -8,17 +9,8 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$conn = Database::connect();
 $userId = $_SESSION['user_id'];
-
-$stmt = $conn->prepare("
-    SELECT p.id, p.title, p.price
-    FROM saved_properties sp
-    JOIN properties p ON sp.property_id = p.id
-    WHERE sp.user_id = :uid
-");
-$stmt->execute(['uid' => $userId]);
-$favorites = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$favorites = PropertyController::getFavoritesByUserId($userId);
 ?>
 <!DOCTYPE html>
 <html>
