@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/src/config/config.php';
 require_once __DIR__ . '/src/utils/AdminUtils.php';
-require_once __DIR__ . '/src/db/Database.php';
+require_once __DIR__ . '/src/controllers/PropertyController.php';
+
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -11,16 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 
 requireAdmin();
 
-$conn = Database::connect();
-
-$stmt = $conn->query("
-    SELECT  p.id, p.title, p.description, p.price, p.area, p.status, p.posted_at,
-           u.name as owner_name, u.email as owner_email
-    FROM properties p
-    JOIN users u ON p.user_id = u.id
-    ORDER BY p.posted_at DESC
-");
-$properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$properties = PropertyController::getAllWithOwners();
 ?>
 <!DOCTYPE html>
 <html>
@@ -67,12 +59,11 @@ $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </td>
                     <td>
                         <a href="remove_property.php?id=<?= $property['id'] ?>"
-                        class="btn btn-small btn-danger"
-                        onclick="return confirm('Are you sure you want to delete this property?');">
+                           class="btn btn-small btn-danger"
+                           onclick="return confirm('Are you sure you want to delete this property?');">
                             Delete
                         </a>
                     </td>
-
                 </tr>
                 <?php endforeach; ?>
             </tbody>

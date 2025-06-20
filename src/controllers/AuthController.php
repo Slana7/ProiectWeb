@@ -1,77 +1,187 @@
 <?php
 require_once __DIR__ . '/../db/Database.php';
-session_start();
+require_once __DIR__ . '/../models/User.php';
 
-$conn = Database::connect();
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+class AuthController {
+    public static function login($email, $password) {
+        $conn = Database::connect();
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($action === 'register') {
-    $name = $_POST['name'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
+        if ($row && password_verify($password, $row['password'])) {
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
 
-    if (!$name || !$email || !$password) {
-        header("Location: ../../register.php?error=1");
+            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['user_role'] = $row['role'];
+            $_SESSION['user_name'] = $row['name'];
+
+            if ($row['role'] === 'admin') {
+                header('Location: ../../admin_users.php');
+            } else {
+                header('Location: ../../dashboard.php');
+            }
+            exit;
+        }
+
+        header('Location: ../../login.php?error=invalid');
         exit;
     }
 
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = :email");
-    $stmt->execute(['email' => $email]);
-    if ($stmt->fetch()) {
-        header("Location: ../../register.php?error=1");
-        exit;
-    }
+    public static function register($name, $email, $password) {
+        $conn = Database::connect();
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $conn->prepare("
+            INSERT INTO users (name, email, password) 
+            VALUES (:name, :email, :password)
+        ");
 
-    try {
-        $hashed = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO users (email, password, name, role) VALUES (:email, :password, :name, :role)");
-        $stmt->execute([
-            'email' => $email,
-            'password' => $hashed,
+        return $stmt->execute([
             'name' => $name,
-            'role' => 'user'
+            'email' => $email,
+            'password' => $hashedPassword
         ]);
+    }
 
-        header("Location: ../../login.php");
-        exit;
-    } catch (PDOException $e) {
-        if (strpos($e->getMessage(), 'Invalid email format') !== false) {
-            error_log("Email validation error: " . $e->getMessage());
-            header("Location: ../../register.php?error=invalid_email");
-        } elseif (strpos($e->getMessage(), 'duplicate key') !== false || strpos($e->getMessage(), 'unique constraint') !== false) {
-            error_log("Duplicate email error: " . $e->getMessage());
-            header("Location: ../../register.php?error=duplicate_email");
+    public static function findByEmail($email) {
+        $conn = Database::connect();
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            return new User($row['id'], $row['name'], $row['email'], $row['role']);
+        }
+
+        return null;
+    }
+
+    public static function findById($id) {
+        $conn = Database::connect();
+        $stmt = $conn->prepare("SELECT * FROM users WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            return new User($row['id'], $row['name'], $row['email'], $row['role']);
+        }
+
+        return null;
+    }
+
+    public static function updateUser($id, $name, $password = null) {
+        $conn = Database::connect();
+
+        if ($password) {
+            $hashed = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare("UPDATE users SET name = :name, password = :password WHERE id = :id");
+            return $stmt->execute([
+                'name' => $name,
+                'password' => $hashed,
+                'id' => $id
+            ]);
         } else {
-            error_log("Database error during registration: " . $e->getMessage());
-            header("Location: ../../register.php?error=database");
+            $stmt = $conn->prepare("UPDATE users SET name = :name WHERE id = :id");
+            return $stmt->execute([
+                'name' => $name,
+                'id' => $id
+            ]);
+        }
+    }
+
+    public static function deleteUser($id) {
+        $conn = Database::connect();
+        $stmt = $conn->prepare("DELETE FROM users WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
+
+    public static function getAllUsers() {
+        $conn = Database::connect();
+        $stmt = $conn->query("SELECT * FROM users ORDER BY id DESC");
+        $result = [];
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $result[] = new User($row['id'], $row['name'], $row['email'], $row['role']);
+        }
+
+        return $result;
+    }
+
+    public static function deleteUserWithData($id) {
+        $conn = Database::connect();
+
+        $stmt = $conn->prepare("SELECT role FROM users WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user || $user['role'] === 'admin') {
+            return 'forbidden';
+        }
+
+        try {
+            $conn->beginTransaction();
+
+            $stmt = $conn->prepare("DELETE FROM saved_properties WHERE property_id IN (SELECT id FROM properties WHERE user_id = :id)");
+            $stmt->execute([':id' => $id]);
+
+            $stmt = $conn->prepare("DELETE FROM property_facility WHERE property_id IN (SELECT id FROM properties WHERE user_id = :id)");
+            $stmt->execute([':id' => $id]);
+
+            $stmt = $conn->prepare("DELETE FROM properties WHERE user_id = :id");
+            $stmt->execute([':id' => $id]);
+
+            $stmt = $conn->prepare("DELETE FROM users WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+
+            $conn->commit();
+            return 'success';
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            error_log("Delete user error: " . $e->getMessage());
+            return 'delete_failed';
+        }
+    }
+
+    public static function logout() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        session_unset();
+        session_destroy();
+        header('Location: ../../login.php');
+        exit;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_GET['action'] ?? '';
+
+    if ($action === 'login') {
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+        AuthController::login($email, $password);
+    }
+
+    if ($action === 'register') {
+        $name = $_POST['name'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $success = AuthController::register($name, $email, $password);
+
+        if ($success) {
+            header('Location: ../../login.php');
+        } else {
+            header('Location: ../../register.php?error=database');
         }
         exit;
     }
 }
 
-if ($action === 'login') {
-    $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
-
-    try {
-        $stmt = $conn->prepare("SELECT id, name, email, password, role FROM users WHERE email = :email");
-        $stmt->execute(['email' => $email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_email'] = $user['email'];
-            $_SESSION['user_role'] = $user['role'];
-            header("Location: /REM/dashboard.php");
-            exit;
-        } else {
-            header("Location: ../../login.php?error=1");
-            exit;
-        }
-    } catch (PDOException $e) {
-        error_log("Database error during login: " . $e->getMessage());
-        header("Location: ../../login.php?error=database");
-        exit;
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $action = $_GET['action'] ?? '';
+    if ($action === 'logout') {
+        AuthController::logout();
     }
 }

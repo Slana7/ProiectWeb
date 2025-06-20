@@ -1,128 +1,170 @@
 <?php
 require_once __DIR__ . '/../models/Property.php';
-require_once __DIR__ . '/../db/Database.php';
 
-$conn = Database::connect();
-
-function addProperty($data) {
-    $errors = validatePropertyData($data);
-
-    if (!empty($errors)) {
-        return [
-            'success' => false,
-            'errors' => $errors
-        ];
-    }
-
-    if (!isset($data['facilities']) || !is_array($data['facilities'])) {
-        $data['facilities'] = [];
-    }
-
-    $propertyId = createProperty($data);
-
-    if ($propertyId) {
-        return [
-            'success' => true,
-            'message' => 'Property added successfully',
-            'property_id' => $propertyId
-        ];
-    } else {
-        return [
-            'success' => false,
-            'errors' => ['Failed to add property to database']
-        ];
-    }
-}
-
-function validatePropertyData($data) {
-    $errors = [];
-
-    $requiredFields = ['title', 'description', 'price', 'area', 'status', 'lat', 'lng'];
-    foreach ($requiredFields as $field) {
-        if (empty($data[$field])) {
-            $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required';
+class PropertyController {
+    public static function addProperty($data) {
+        if (!isset($data['user_id'], $data['title'], $data['description'], $data['price'], $data['location'], $data['type'])) {
+            return ['success' => false, 'message' => 'Missing fields'];
         }
+
+        $property = new Property();
+        $property->setTitle($data['title']);
+        $property->setDescription($data['description']);
+        $property->setPrice($data['price']);
+        $property->setLocation($data['location']);
+        $property->setType($data['type']);
+        $property->setUserId($data['user_id']);
+        $property->save();
+
+        return ['success' => true, 'message' => 'Property added successfully'];
     }
 
-    if (!empty($data['price']) && !is_numeric($data['price'])) {
-        $errors[] = 'Price must be a number';
-    }
-
-    if (!empty($data['area']) && !is_numeric($data['area'])) {
-        $errors[] = 'Area must be a number';
-    }
-
-    if (!empty($data['lat']) && (!is_numeric($data['lat']) || $data['lat'] < -90 || $data['lat'] > 90)) {
-        $errors[] = 'Latitude must be a valid number between -90 and 90';
-    }
-
-    if (!empty($data['lng']) && (!is_numeric($data['lng']) || $data['lng'] < -180 || $data['lng'] > 180)) {
-        $errors[] = 'Longitude must be a valid number between -180 and 180';
-    }
-
-    return $errors;
-}
-
-function removeProperty($propertyId, $userId, $isAdmin = false) {
-    global $conn;
-
-    try {
-        $sql = "SELECT user_id FROM properties WHERE id = :id";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([':id' => $propertyId]);
-        $property = $stmt->fetch(PDO::FETCH_ASSOC);
+    public static function updateProperty($propertyId, $data, $userId, $isAdmin = false) {
+        $property = Property::findById($propertyId);
 
         if (!$property) {
-            return ['success' => false, 'errors' => ['Property not found']];
+            return ['success' => false, 'message' => 'Property not found'];
         }
 
-        if (!$isAdmin && $property['user_id'] != $userId) {
-            return ['success' => false, 'errors' => ['You do not have permission to remove this property']];
+        if (!$isAdmin && $property->getUserId() !== $userId) {
+            return ['success' => false, 'message' => 'Unauthorized'];
         }
 
-        $conn->beginTransaction();
+        $property->setTitle($data['title']);
+        $property->setDescription($data['description']);
+        $property->setPrice($data['price']);
+        $property->setLocation($data['location']);
+        $property->setType($data['type']);
+        $property->save();
 
-        $stmt = $conn->prepare("DELETE FROM property_facility WHERE property_id = :property_id");
-        $stmt->execute([':property_id' => $propertyId]);
+        return ['success' => true, 'message' => 'Property updated successfully'];
+    }
 
-        $stmt = $conn->prepare("DELETE FROM saved_properties WHERE property_id = :property_id");
-        $stmt->execute([':property_id' => $propertyId]);
+    public static function removeProperty($propertyId, $userId, $isAdmin = false) {
+        $property = Property::findById($propertyId);
 
-        $stmt = $conn->prepare("DELETE FROM properties WHERE id = :id");
-        $stmt->execute([':id' => $propertyId]);
+        if (!$property) {
+            return ['success' => false, 'message' => 'Property not found'];
+        }
 
-        $conn->commit();
+        if (!$isAdmin && $property->getUserId() !== $userId) {
+            return ['success' => false, 'message' => 'Unauthorized'];
+        }
+
+        $property->delete();
 
         return ['success' => true, 'message' => 'Property removed successfully'];
-    } catch (PDOException $e) {
-        $conn->rollBack();
-        error_log("Error removing property: " . $e->getMessage());
-        return ['success' => false, 'errors' => ['Database error occurred while removing the property']];
     }
-}
 
-function getUserProperties($userId) {
-    global $conn;
+    public static function getPropertyById($propertyId) {
+        return Property::findById($propertyId);
+    }
 
-    try {
-        $sql = "SELECT p.id, p.user_id, p.title, p.description, p.price, p.area, p.status, p.posted_at as created_at,
-                ST_X(location::geometry) as lng, 
-                ST_Y(location::geometry) as lat
-                FROM properties p 
-                WHERE p.user_id = :user_id
-                ORDER BY p.id DESC";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([':user_id' => $userId]);
-        $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public static function getUserProperties($userId) {
+        return Property::findByUserId($userId);
+    }
 
-        foreach ($properties as &$property) {
-            $facilities = getPropertyFacilities($property['id']);
-            $property['facilities'] = implode(', ', $facilities);
+    public static function saveProperty($propertyId, $userId) {
+        $property = Property::findById($propertyId);
+        if (!$property) {
+            return ['success' => false, 'message' => 'Property not found'];
         }
 
-        return $properties;
+        Property::saveForUser($propertyId, $userId);
+        return ['success' => true, 'message' => 'Property saved'];
+    }
+
+    public static function unsaveProperty($propertyId, $userId) {
+        Property::removeSaved($propertyId, $userId);
+        return ['success' => true, 'message' => 'Property removed from favorites'];
+    }
+
+    public static function getSavedProperties($userId) {
+        return Property::findSavedByUser($userId);
+    }
+
+    public static function getFacilities() {
+    return Property::getAllFacilities();
+    }
+
+    public static function getAllWithOwners() {
+    $conn = Database::connect();
+
+    try {
+        $sql = "SELECT p.id, p.title, p.description, p.price, p.area, p.status, p.posted_at,
+                       u.name as owner_name, u.email as owner_email
+                FROM properties p
+                JOIN users u ON p.user_id = u.id
+                ORDER BY p.posted_at DESC";
+
+        $stmt = $conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } 
+        catch (PDOException $e) {
+        error_log("Error fetching properties with owners: " . $e->getMessage());
+        return [];
+        }
+    }
+
+    public static function getFavoritesByUserId($userId) {
+    $conn = Database::connect();
+
+    try {
+        $sql = "SELECT p.id, p.title, p.price
+                FROM saved_properties sp
+                JOIN properties p ON sp.property_id = p.id
+                WHERE sp.user_id = :uid";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['uid' => $userId]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        error_log("Error getting user properties: " . $e->getMessage());
+        error_log("Error fetching favorites: " . $e->getMessage());
         return [];
     }
+}
+public static function getPropertyWithStats($id) {
+    $conn = Database::connect();
+
+    $stmt = $conn->prepare("SELECT * FROM properties WHERE id = :id");
+    $stmt->execute(['id' => $id]);
+    $property = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$property) {
+        return null;
+    }
+
+    $lat = $conn->query("SELECT ST_Y(location::geometry) FROM properties WHERE id = $id")->fetchColumn();
+    $lng = $conn->query("SELECT ST_X(location::geometry) FROM properties WHERE id = $id")->fetchColumn();
+
+    $statsStmt = $conn->prepare("
+        SELECT 
+            COUNT(*) AS total_properties,
+            ROUND(AVG(price), 2) AS avg_price,
+            MIN(price) AS min_price,
+            MAX(price) AS max_price
+        FROM properties
+        WHERE id != :id
+          AND status = :status
+          AND ST_DWithin(location, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography, 2000)
+    ");
+    $statsStmt->execute([
+        'id' => $property['id'],
+        'status' => $property['status'],
+        'lat' => $lat,
+        'lng' => $lng
+    ]);
+    $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
+
+    $property['lat'] = $lat;
+    $property['lng'] = $lng;
+
+    return [
+        'details' => $property,
+        'stats' => $stats
+    ];
+}
+
+
 }

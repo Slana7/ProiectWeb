@@ -12,7 +12,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
-$properties = getUserProperties($userId);
+$properties = PropertyController::getUserProperties($userId);
+
 
 $flashMessage = null;
 if (isset($_SESSION['flash_message'])) {

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/src/config/config.php';
 require_once __DIR__ . '/src/utils/AdminUtils.php';
-require_once __DIR__ . '/src/db/Database.php';
+require_once __DIR__ . '/src/controllers/ProfileController.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -11,18 +11,9 @@ if (!isset($_SESSION['user_id'])) {
 
 requireAdmin();
 
-$conn = Database::connect();
-
-$stmt = $conn->query("
-    SELECT u.id, u.name, u.email, u.role,
-           COUNT(p.id) as property_count
-    FROM users u
-    LEFT JOIN properties p ON u.id = p.user_id
-    GROUP BY u.id, u.name, u.email, u.role
-    ORDER BY u.id DESC
-");
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$users = ProfileController::getAllUsersWithPropertyCount();
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
