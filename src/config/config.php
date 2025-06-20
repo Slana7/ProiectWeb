@@ -3,6 +3,8 @@ require_once __DIR__ . '/EnvLoader.php';
 
 EnvLoader::load(__DIR__ . '/../../.env');
 
+date_default_timezone_set('Europe/Bucharest');
+
 define('BASE_URL', getenv('BASE_URL') ?: '/REM/');
 define('APP_NAME', getenv('APP_NAME') ?: 'REM');
 define('DEBUG_MODE', getenv('DEBUG_MODE') === 'true');
