@@ -1,13 +1,14 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
+require_once __DIR__ . '/../../src/config/config.php';
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/style.css">
     <style>
         .auth-form {
             display: flex;
@@ -23,7 +24,7 @@ require_once __DIR__ . '/src/config/config.php';
     </style>
 </head>
 <body>
-<?php include_once 'public/includes/auth_header.php'; ?>
+<?php include_once '../../public/includes/auth_header.php'; ?>
 
 <div class="auth-page">
     <div class="auth-card">
@@ -39,18 +40,19 @@ require_once __DIR__ . '/src/config/config.php';
             <?php endif; ?>
         <?php endif; ?>
 
-        <form method="post" action="<?= BASE_URL ?>src/controllers/AuthController.php?action=register" class="auth-form">
+        <form method="post" action="../../src/controllers/AuthController.php?action=register" class="auth-form">
             <input type="text" name="name" placeholder="Full Name" required>
             <input type="email" name="email" placeholder="Email Address" required>
             <input type="password" name="password" placeholder="Password" required>
             <input type="submit" value="Register" class="btn-primary">
-        </form>
-
-        <p class="switch-link">Already have an account?
-            <a href="<?= BASE_URL ?>login.php">Login here</a>
+        </form>        <p class="switch-link">Already have an account?
+            <a href="login.php">Login here</a>
         </p>    </div>
 </div>
 
-<script src="<?= BASE_URL ?>public/assets/js/responsive.js"></script>
+<script src="../../public/assets/js/responsive.js"></script>
 </body>
 </html>
+
+
+

@@ -99,5 +99,17 @@ public static function getConversationsWithLastMessage($userId) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+    public static function hasUnreadMessages($userId) {
+        $conn = Database::connect();
+        
+        try {
+            $stmt = $conn->prepare("SELECT 1 FROM messages WHERE receiver_id = :uid AND is_read = FALSE LIMIT 1");
+            $stmt->execute(['uid' => $userId]);
+            return $stmt->fetchColumn() !== false;
+        } catch (PDOException $e) {
+            error_log("Error checking unread messages: " . $e->getMessage());
+            return false;
+        }
+    }
 
 }

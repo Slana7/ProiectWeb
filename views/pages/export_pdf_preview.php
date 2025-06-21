@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/db/Database.php';
-require_once __DIR__ . '/src/controllers/PropertyController.php';
+require_once __DIR__ . '/../../src/config/config.php';
+require_once __DIR__ . '/../../src/services/PropertyService.php';
+require_once __DIR__ . '/../../src/utils/UIHelper.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$conn = Database::connect();
 $userId = $_SESSION['user_id'];
 $exportType = $_GET['type'] ?? '';
 
@@ -19,36 +18,10 @@ if (!in_array($exportType, ['favorites', 'my_properties'])) {
     exit;
 }
 
-$data = [];
-$filename = '';
-
 if ($exportType === 'favorites') {
-    $stmt = $conn->prepare("
-        SELECT p.id, p.title, p.description, p.price, p.area, p.status, p.posted_at as created_at,
-               ST_Y(p.location::geometry) as lat, ST_X(p.location::geometry) as lng,
-               u.name as owner_name, u.email as owner_email
-        FROM saved_properties sp
-        JOIN properties p ON sp.property_id = p.id
-        JOIN users u ON p.user_id = u.id
-        WHERE sp.user_id = :uid
-        ORDER BY p.id DESC
-    ");
-    $stmt->execute(['uid' => $userId]);
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} else if ($exportType === 'my_properties') {
-    $data = getUserProperties($userId);
-}
-
-foreach ($data as &$property) {
-    $facilityStmt = $conn->prepare("
-        SELECT f.name 
-        FROM property_facility pf 
-        JOIN facilities f ON pf.facility_id = f.id 
-        WHERE pf.property_id = :pid
-    ");
-    $facilityStmt->execute(['pid' => $property['id']]);
-    $facilities = $facilityStmt->fetchAll(PDO::FETCH_COLUMN);
-    $property['facilities'] = implode(', ', $facilities);
+    $data = PropertyService::getFavoriteProperties($userId);
+} else {
+    $data = PropertyService::getUserProperties($userId);
 }
 ?>
 <!DOCTYPE html>
@@ -56,7 +29,7 @@ foreach ($data as &$property) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $exportType === 'favorites' ? 'Favorite Properties' : 'My Properties' ?> - <?= APP_NAME ?></title>    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <title><?= $exportType === 'favorites' ? 'Favorite Properties' : 'My Properties' ?> - <?= APP_NAME ?></title>    <link rel="stylesheet" href="../../public/assets/css/style.css">
     <style>
         @media print {
             body { margin: 0; font-size: 12pt; }
@@ -190,7 +163,7 @@ foreach ($data as &$property) {
     </script>
 </head>
 <body>
-    <?php include_once 'public/includes/dashboard_header.php'; ?>
+    <?php include_once '../../public/includes/dashboard_header.php'; ?>
     
     <header class="top-bar">
         <h1>Export Preview</h1>
@@ -219,28 +192,28 @@ foreach ($data as &$property) {
     <?php else: ?>
         <div class="export-property-grid">
             <?php foreach ($data as $property): ?>
-                <div class="export-property">
-                    <div class="export-property-title"><?= htmlspecialchars($property['title']) ?></div>
+                <div class="export-property">                    <div class="export-property-title"><?= htmlspecialchars($property['title']) ?></div>
                     <div class="export-property-details"><strong>Description:</strong> <?= htmlspecialchars($property['description']) ?></div>
-                    <div class="export-property-details export-property-price"><strong>Price:</strong> €<?= number_format($property['price']) ?></div>
+                    <div class="export-property-details export-property-price"><strong>Price:</strong> <?= UIHelper::formatPrice($property['price']) ?></div>
                     <div class="export-property-details"><strong>Area:</strong> <?= $property['area'] ?> m²</div>
-                    <div class="export-property-details"><strong>Status:</strong> <?= $property['status'] === 'for_sale' ? 'For Sale' : 'For Rent' ?></div>
+                    <div class="export-property-details"><strong>Status:</strong> <?= UIHelper::formatPropertyStatus($property['status']) ?></div>
                     <?php if (!empty($property['facilities'])): ?>
                         <div class="export-property-details export-facilities"><strong>Facilities:</strong> <?= htmlspecialchars($property['facilities']) ?></div>
                     <?php endif; ?>
                     <?php if (isset($property['owner_name'])): ?>
                         <div class="export-property-details"><strong>Owner:</strong> <?= htmlspecialchars($property['owner_name']) ?> (<?= htmlspecialchars($property['owner_email']) ?>)</div>
                     <?php endif; ?>
-                    <div class="export-property-details"><strong>Posted:</strong> <?= date('F j, Y', strtotime($property['created_at'])) ?></div>
+                    <div class="export-property-details"><strong>Posted:</strong> <?= UIHelper::formatDate($property['created_at']) ?></div>
                 </div>
             <?php endforeach; ?>
         </div>
-    <?php endif; ?>
-      <div class="export-footer">
+    <?php endif; ?>    <div class="export-footer">
         <p>Generated by REM - Real Estate Management System</p>
-        <p>Report generated on <?= date('F j, Y \a\t H:i', time()) ?> (Europe/Bucharest)</p>
+        <p>Report generated on <?= UIHelper::formatDate('now', 'F j, Y \a\t H:i') ?> (Europe/Bucharest)</p>
     </div>
-
-    <?php include_once 'public/includes/dashboard_footer.php'; ?>
+<script src="../../public/assets/js/responsive.js"></script>
 </body>
 </html>
+
+
+

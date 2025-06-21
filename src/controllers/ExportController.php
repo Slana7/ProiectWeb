@@ -1,14 +1,14 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../services/PropertyService.php';
 require_once __DIR__ . '/../db/Database.php';
-require_once __DIR__ . '/PropertyController.php';
 
 date_default_timezone_set('Europe/Bucharest');
 
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../login.php");
+    header("Location: ../../views/pages/login.php");
     exit;
 }
 
@@ -19,13 +19,13 @@ $format = $_GET['format'] ?? 'csv';
 
 if (!in_array($exportType, ['favorites', 'my_properties'])) {
     $_SESSION['flash_message'] = 'Invalid export type.';
-    header("Location: ../../profile.php");
+    header("Location: ../../views/pages/profile.php");
     exit;
 }
 
 if (!in_array($format, ['csv', 'json', 'pdf'])) {
     $_SESSION['flash_message'] = 'Invalid export format.';
-    header("Location: ../../profile.php");
+    header("Location: ../../views/pages/profile.php");
     exit;
 }
 
@@ -34,38 +34,12 @@ $userStmt->execute(['id' => $userId]);
 $userName = $userStmt->fetchColumn();
 $safeUserName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $userName);
 
-$data = [];
-$filename = '';
-
 if ($exportType === 'favorites') {
-    $stmt = $conn->prepare("
-        SELECT p.id, p.title, p.description, p.price, p.area, p.status, p.posted_at as created_at,
-               ST_Y(p.location::geometry) as lat, ST_X(p.location::geometry) as lng,
-               u.name as owner_name, u.email as owner_email
-        FROM saved_properties sp
-        JOIN properties p ON sp.property_id = p.id
-        JOIN users u ON p.user_id = u.id
-        WHERE sp.user_id = :uid
-        ORDER BY p.id DESC
-    ");
-    $stmt->execute(['uid' => $userId]);
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $data = PropertyService::getFavoriteProperties($userId);
     $filename = $safeUserName . '_favorite_properties_' . date('Y-m-d');
-}else if ($exportType === 'my_properties') {
-    $data = getUserProperties($userId);
+} else {
+    $data = PropertyService::getUserProperties($userId);
     $filename = $safeUserName . '_my_properties_' . date('Y-m-d');
-}
-
-foreach ($data as &$property) {
-    $facilityStmt = $conn->prepare("
-        SELECT f.name 
-        FROM property_facility pf 
-        JOIN facilities f ON pf.facility_id = f.id 
-        WHERE pf.property_id = :pid
-    ");
-    $facilityStmt->execute(['pid' => $property['id']]);
-    $facilities = $facilityStmt->fetchAll(PDO::FETCH_COLUMN);
-    $property['facilities'] = implode(', ', $facilities);
 }
 
 switch ($format) {
@@ -203,11 +177,11 @@ function exportPDF($data, $filename, $exportType) {
     $queryParams = http_build_query([
         'type' => $exportType
     ]);
-    header("Location: ../../export_pdf_preview.php?" . $queryParams);
+    header("Location: ../../views/pages/export_pdf_preview.php?" . $queryParams);
     exit;
 }
 
 $_SESSION['flash_message'] = 'Export completed successfully.';
-header("Location: ../../profile.php");
+header("Location: ../../views/pages/profile.php");
 exit;
 ?>

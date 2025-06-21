@@ -1,6 +1,9 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/models/Message.php';
+require_once __DIR__ . '/../../src/config/config.php';
+require_once __DIR__ . '/../../src/controllers/MessageController.php';
+require_once __DIR__ . '/../../src/models/Message.php';
+
+// Backend logic using existing controllers
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -16,6 +19,8 @@ if (!$propertyId || !$receiverId) {
     header("Location: chat_overview.php");
     exit;
 }
+
+// Use Message model for now since MessageController doesn't have these methods yet
 Message::markMessagesAsRead($receiverId, $userId, $propertyId);
 $messages = Message::getConversationWithUsernames($userId, $receiverId, $propertyId);
 ?>
@@ -24,11 +29,12 @@ $messages = Message::getConversationWithUsernames($userId, $receiverId, $propert
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/style.css">
 </head>
 <body>
-<?php include_once 'public/includes/dashboard_header.php'; ?>
+<?php include_once '../../public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
     <h1>Chat</h1>
@@ -58,11 +64,10 @@ $messages = Message::getConversationWithUsernames($userId, $receiverId, $propert
                             <?php
                                 $ext = strtolower(pathinfo($msg['attachment'], PATHINFO_EXTENSION));
                                 $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                            ?>
-                            <?php if ($isImage): ?>
-                                <img src="uploads/<?= htmlspecialchars($msg['attachment']) ?>" alt="Attachment" class="chat-image">
+                            ?>                            <?php if ($isImage): ?>
+                                <img src="../../uploads/<?= htmlspecialchars($msg['attachment']) ?>" alt="Attachment" class="chat-image">
                             <?php else: ?>
-                                <a class="attachment-link" href="uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
+                                <a class="attachment-link" href="../../uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>
@@ -72,7 +77,7 @@ $messages = Message::getConversationWithUsernames($userId, $receiverId, $propert
         <?php endforeach; ?>
     </div>
 
-    <form class="chat-form" action="src/controllers/MessageController.php?action=send" method="post" enctype="multipart/form-data">
+    <form class="chat-form" action="../../src/controllers/MessageController.php?action=send" method="post" enctype="multipart/form-data">
         <input type="hidden" name="property_id" value="<?= $propertyId ?>">
         <input type="hidden" name="receiver_id" value="<?= $receiverId ?>">
         <textarea name="content" placeholder="Write a message..." required></textarea>
@@ -81,8 +86,7 @@ $messages = Message::getConversationWithUsernames($userId, $receiverId, $propert
     </form>
 </section>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
+<script>    document.addEventListener("DOMContentLoaded", function () {
         const messagesContainer = document.querySelector(".messages");
         if (messagesContainer) {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -90,6 +94,9 @@ $messages = Message::getConversationWithUsernames($userId, $receiverId, $propert
     });
 </script>
 
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+<?php include_once '../../public/includes/dashboard_footer.php'; ?>
 </body>
 </html>
+
+
+

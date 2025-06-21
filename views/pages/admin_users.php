@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/utils/AdminUtils.php';
-require_once __DIR__ . '/src/controllers/ProfileController.php';
+require_once __DIR__ . '/../../src/config/config.php';
+require_once __DIR__ . '/../../src/utils/AdminUtils.php';
+require_once __DIR__ . '/../../src/controllers/ProfileController.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -20,10 +20,10 @@ $users = ProfileController::getAllUsersWithPropertyCount();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/style.css">
 </head>
 <body>
-<?php include_once 'public/includes/dashboard_header.php'; ?>
+<?php include_once '../../public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
     <h1>Manage Users</h1>
@@ -64,12 +64,10 @@ $users = ProfileController::getAllUsersWithPropertyCount();
                             <?= ucfirst($user['role']) ?>
                         </span>
                     </td>
-                    <td><?= $user['property_count'] ?></td>
-                    <td>
+                    <td><?= $user['property_count'] ?></td>                    <td>
                         <?php if ($user['role'] !== 'admin'): ?>
                             <a href="delete_user.php?id=<?= $user['id'] ?>"
-                               class="btn btn-small btn-danger"
-                               onclick="return confirm('Are you sure you want to delete this user?');">
+                               class="btn btn-small btn-danger">
                                 Delete
                             </a>
                         <?php endif; ?>
@@ -81,6 +79,9 @@ $users = ProfileController::getAllUsersWithPropertyCount();
     </div>
 </section>
 
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+<?php include_once '../../public/includes/dashboard_footer.php'; ?>
 </body>
 </html>
+
+
+

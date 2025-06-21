@@ -1,8 +1,9 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/controllers/PropertyController.php';
-require_once __DIR__ . '/src/db/Database.php';
+require_once __DIR__ . '/../../src/config/config.php';
+require_once __DIR__ . '/../../src/controllers/PropertyController.php';
+require_once __DIR__ . '/../../src/utils/UIHelper.php';
 
+// Backend logic using existing controllers
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -27,33 +28,26 @@ $lng = $details['lng'];
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($details['title']) ?> - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<?php include_once 'public/includes/dashboard_header.php'; ?>
+<?php include_once '../../public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
     <h1><?= htmlspecialchars($details['title']) ?></h1>
 </header>
 
-<section class="property-details">
-    <p><strong>Price:</strong> €<?= number_format($details['price']) ?><?= $details['status'] === 'for_rent' ? ' / month' : '' ?></p>
+<section class="property-details">    <p><strong>Price:</strong> <?= UIHelper::formatPrice($details['price']) ?><?= $details['status'] === 'for_rent' ? ' / month' : '' ?></p>
     <p><strong>Area:</strong> <?= $details['area'] ?> m²</p>
-    <p><strong>Status:</strong> <?= htmlspecialchars($details['status']) ?></p>
+    <p><strong>Status:</strong> <?= UIHelper::formatPropertyStatus($details['status']) ?></p>
     <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($details['description'])) ?></p>
-    <p><strong>Posted at:</strong> <?= (new DateTime($details['posted_at']))->format('d-m-Y H:i') ?></p>
-
-    <?php if (isset($_SESSION['user_id'])): ?>
+    <p><strong>Posted at:</strong> <?= UIHelper::formatDate($details['posted_at'], 'd-m-Y H:i') ?></p>    <?php if (isset($_SESSION['user_id'])): ?>
         <?php
-        $conn = Database::connect();
-        $check = $conn->prepare("SELECT 1 FROM saved_properties WHERE user_id = :uid AND property_id = :pid");
-        $check->execute(['uid' => $_SESSION['user_id'], 'pid' => $id]);
-        $isSaved = $check->fetch();
-        ?>
-
-        <form method="post" action="src/controllers/FavoriteController.php">
+        $isSaved = PropertyController::isPropertySavedByUser($id, $_SESSION['user_id']);
+        ?>        <form method="post" action="../../src/controllers/PropertyController.php?action=toggle_favorite">
             <input type="hidden" name="property_id" value="<?= $id ?>">
             <button type="submit" name="action" value="<?= $isSaved ? 'Unsave' : 'Save' ?>" class="favorite-heart <?= $isSaved ? 'saved' : '' ?>">
                 ♥
@@ -129,14 +123,14 @@ $lng = $details['lng'];
         }
         ?>
     <?php else: ?>
-        <p style="margin-top:1rem; font-style:italic;">📌 There are no nearby properties available for chart comparison.</p>
-    <?php endif; ?>
+        <p style="margin-top:1rem; font-style:italic;">📌 There are no nearby properties available for chart comparison.</p>    <?php endif; ?>
 </section>
 
-<footer class="dashboard-footer">
-    &copy; <?= date('Y') ?> REM Project. All rights reserved.
-</footer>
+<?= UIHelper::generateFooter() ?>
 
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+<?php include_once '../../public/includes/dashboard_footer.php'; ?>
 </body>
 </html>
+
+
+

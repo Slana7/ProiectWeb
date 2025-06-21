@@ -1,8 +1,7 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/utils/AdminUtils.php';
-require_once __DIR__ . '/src/db/Database.php';
-require_once __DIR__ . '/src/controllers/AdminController.php';
+require_once __DIR__ . '/../../src/config/config.php';
+require_once __DIR__ . '/../../src/utils/AdminUtils.php';
+require_once __DIR__ . '/../../src/controllers/AdminController.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -12,12 +11,8 @@ if (!isset($_SESSION['user_id'])) {
 
 requireAdmin();
 
-$conn = Database::connect();
-
 $totalUsers = AdminController::getTotalUsers();
 $totalProperties = AdminController::getTotalProperties();
-
-
 
 $flashMessage = null;
 if (isset($_SESSION['flash_message'])) {
@@ -31,10 +26,10 @@ if (isset($_SESSION['flash_message'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/style.css">
 </head>
 <body>
-<?php include_once 'public/includes/dashboard_header.php'; ?>
+<?php include_once '../../public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
     <h1>Admin Dashboard</h1>
@@ -78,6 +73,9 @@ if (isset($_SESSION['flash_message'])) {
     &copy; <?= date('Y') ?> REM Project. All rights reserved.
 </footer>
 
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+<?php include_once '../../public/includes/dashboard_footer.php'; ?>
 </body>
 </html>
+
+
+

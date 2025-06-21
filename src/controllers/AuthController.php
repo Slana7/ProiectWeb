@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../db/Database.php';
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../services/UserService.php';
 
 class AuthController {
     public static function login($email, $password) {
@@ -16,17 +17,15 @@ class AuthController {
 
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['user_role'] = $row['role'];
-            $_SESSION['user_name'] = $row['name'];
-
-            if ($row['role'] === 'admin') {
-                header('Location: ../../admin_users.php');
+            $_SESSION['user_name'] = $row['name'];            if ($row['role'] === 'admin') {
+                header('Location: ../../views/pages/admin_dashboard.php');
             } else {
-                header('Location: ../../dashboard.php');
+                header('Location: ../../views/pages/dashboard.php');
             }
             exit;
         }
 
-        header('Location: ../../login.php?error=invalid');
+        header('Location: ../../views/pages/login.php?error=invalid');
         exit;
     }
 
@@ -107,41 +106,8 @@ class AuthController {
         }
 
         return $result;
-    }
-
-    public static function deleteUserWithData($id) {
-        $conn = Database::connect();
-
-        $stmt = $conn->prepare("SELECT role FROM users WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$user || $user['role'] === 'admin') {
-            return 'forbidden';
-        }
-
-        try {
-            $conn->beginTransaction();
-
-            $stmt = $conn->prepare("DELETE FROM saved_properties WHERE property_id IN (SELECT id FROM properties WHERE user_id = :id)");
-            $stmt->execute([':id' => $id]);
-
-            $stmt = $conn->prepare("DELETE FROM property_facility WHERE property_id IN (SELECT id FROM properties WHERE user_id = :id)");
-            $stmt->execute([':id' => $id]);
-
-            $stmt = $conn->prepare("DELETE FROM properties WHERE user_id = :id");
-            $stmt->execute([':id' => $id]);
-
-            $stmt = $conn->prepare("DELETE FROM users WHERE id = :id");
-            $stmt->execute([':id' => $id]);
-
-            $conn->commit();
-            return 'success';
-        } catch (PDOException $e) {
-            $conn->rollBack();
-            error_log("Delete user error: " . $e->getMessage());
-            return 'delete_failed';
-        }
+    }    public static function deleteUserWithData($id) {
+        return UserService::deleteUserCompletely($id);
     }
 
     public static function logout() {
@@ -150,7 +116,7 @@ class AuthController {
         }
         session_unset();
         session_destroy();
-        header('Location: ../../login.php');
+        header('Location: ../../views/pages/login.php');
         exit;
     }
 }
@@ -168,12 +134,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = $_POST['name'] ?? '';
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
-        $success = AuthController::register($name, $email, $password);
-
-        if ($success) {
-            header('Location: ../../login.php');
+        $success = AuthController::register($name, $email, $password);        if ($success) {
+            header('Location: ../../views/pages/login.php');
         } else {
-            header('Location: ../../register.php?error=database');
+            header('Location: ../../views/pages/register.php?error=database');
         }
         exit;
     }
