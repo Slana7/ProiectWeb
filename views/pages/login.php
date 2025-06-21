@@ -33,10 +33,16 @@ require_once __DIR__ . '/../../src/config/config.php';
         <p class="success">Your profile was updated. Please log in again.</p>
         <?php endif; ?>
         <?php if (isset($_GET['error'])): ?>
-            <?php if ($_GET['error'] === 'database'): ?>
-                <p class="error">A database error occurred. Please try again later.</p>
+            <?php if ($_GET['error'] === 'empty'): ?>
+                <p class="error">Please fill in all fields.</p>
+            <?php elseif ($_GET['error'] === 'notfound'): ?>
+                <p class="error">No account found with this email.</p>
+            <?php elseif ($_GET['error'] === 'invalid'): ?>
+                <p class="error">Incorrect password. Please try again.</p>
             <?php elseif ($_GET['error'] === 'email_taken'): ?>
                 <p class="error">Email already in use. Please use a different one.</p>
+            <?php elseif ($_GET['error'] === 'database'): ?>
+                <p class="error">A database error occurred. Please try again later.</p>
             <?php else: ?>
                 <p class="error">Login failed. Please try again.</p>
             <?php endif; ?>

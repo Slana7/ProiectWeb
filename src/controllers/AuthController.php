@@ -5,43 +5,74 @@ require_once __DIR__ . '/../services/UserService.php';
 
 class AuthController {
     public static function login($email, $password) {
+        if (empty($email) || empty($password)) {
+            header('Location: ../../views/pages/login.php?error=empty');
+            exit;
+        }
+
         $conn = Database::connect();
         $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($row && password_verify($password, $row['password'])) {
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
-
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['user_role'] = $row['role'];
-            $_SESSION['user_name'] = $row['name'];            if ($row['role'] === 'admin') {
-                header('Location: ../../views/pages/admin_dashboard.php');
-            } else {
-                header('Location: ../../views/pages/dashboard.php');
-            }
+        if (!$row) {
+            header('Location: ../../views/pages/login.php?error=notfound');
             exit;
         }
 
-        header('Location: ../../views/pages/login.php?error=invalid');
+        if (!password_verify($password, $row['password'])) {
+            header('Location: ../../views/pages/login.php?error=invalid');
+            exit;
+        }
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $_SESSION['user_id'] = $row['id'];
+        $_SESSION['user_role'] = $row['role'];
+        $_SESSION['user_name'] = $row['name'];
+
+        if ($row['role'] === 'admin') {
+            header('Location: ../../views/pages/admin_dashboard.php');
+        } else {
+            header('Location: ../../views/pages/dashboard.php');
+        }
         exit;
     }
 
     public static function register($name, $email, $password) {
+        if (empty($name) || empty($email) || empty($password)) {
+            header('Location: ../../views/pages/register.php?error=empty');
+            exit;
+        }
+
         $conn = Database::connect();
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        if ($stmt->fetch()) {
+            header('Location: ../../views/pages/register.php?error=email_taken');
+            exit;
+        }
+
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("
             INSERT INTO users (name, email, password) 
             VALUES (:name, :email, :password)
         ");
 
-        return $stmt->execute([
+        $success = $stmt->execute([
             'name' => $name,
             'email' => $email,
             'password' => $hashedPassword
         ]);
+
+        if ($success) {
+            header('Location: ../../views/pages/login.php?success=registered');
+        } else {
+            header('Location: ../../views/pages/register.php?error=database');
+        }
+        exit;
     }
 
     public static function findByEmail($email) {
@@ -134,12 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = $_POST['name'] ?? '';
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
-        $success = AuthController::register($name, $email, $password);        if ($success) {
-            header('Location: ../../views/pages/login.php');
-        } else {
-            header('Location: ../../views/pages/register.php?error=database');
-        }
-        exit;
+        AuthController::register($name, $email, $password);
     }
 }
 
