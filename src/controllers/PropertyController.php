@@ -96,6 +96,22 @@ class PropertyController
     {
         return PropertyService::getPropertyWithStats($id);
     }
+
+    public static function getFacilitiesByPropertyId($propertyId)
+{
+    $pdo = Database::connect();
+
+    $stmt = $pdo->prepare("
+        SELECT f.name 
+        FROM facilities f
+        INNER JOIN property_facility pf ON f.id = pf.facility_id
+        WHERE pf.property_id = ?
+    ");
+    $stmt->execute([$propertyId]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -183,6 +199,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $redirectTo = $isAdmin ? '../../views/pages/admin_properties.php' : '../../views/pages/my_properties.php';
         header("Location: $redirectTo");
+        exit;
+    }
+
+    if ($action === 'edit_property') {
+        $propertyId = $_GET['id'] ?? null;
+        $userId = $_SESSION['user_id'];
+        $isAdmin = ($_SESSION['user_role'] ?? '') === 'admin';
+
+        if (!$propertyId) {
+            $_SESSION['flash_message'] = 'No property specified for editing';
+            $redirectTo = $isAdmin ? '../../views/pages/admin_properties.php' : '../../views/pages/my_properties.php';
+            header("Location: $redirectTo");
+            exit;
+        }
+
+        $propertyData = [
+            'title' => $_POST['title'] ?? '',
+            'description' => $_POST['description'] ?? '',
+            'price' => $_POST['price'] ?? '',
+            'area' => $_POST['area'] ?? '',
+            'status' => $_POST['status'] ?? 'for_sale',
+            'lat' => $_POST['lat'] ?? '',
+            'lng' => $_POST['lng'] ?? '',
+            'facilities' => $_POST['facilities'] ?? []
+        ];
+
+        $result = PropertyController::updateProperty($propertyId, $propertyData, $userId, $isAdmin);
+
+        if ($result['success']) {
+            $_SESSION['flash_message'] = $result['message'];
+            $redirectTo = $isAdmin ? '../../views/pages/admin_properties.php' : '../../views/pages/my_properties.php';
+            header("Location: $redirectTo");
+        } else {
+            $_SESSION['flash_message'] = 'Error: ' . $result['message'];
+            header("Location: ../../views/pages/edit_property.php?id=$propertyId");
+        }
         exit;
     }
 }

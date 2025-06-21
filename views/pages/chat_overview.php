@@ -3,7 +3,6 @@ require_once __DIR__ . '/../../src/config/config.php';
 require_once __DIR__ . '/../../src/controllers/MessageController.php';
 require_once __DIR__ . '/../../src/models/Message.php';
 
-// Backend logic using existing controllers
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -13,7 +12,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Use Message model for now since MessageController doesn't have this method yet
 $conversations = Message::getConversationsWithLastMessage($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
