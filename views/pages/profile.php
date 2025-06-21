@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/controllers/ProfileController.php';
+require_once __DIR__ . '/../../src/config/config.php';
+require_once __DIR__ . '/../../src/controllers/ProfileController.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -13,31 +13,11 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = $_SESSION['user_id'];
 $user = ProfileController::getUser($userId);
-$success = false;
-$error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'] ?? '';
-    $password = $_POST['password'] ?? null;
-    $confirm = $_POST['confirm_password'] ?? null;
-
-    if ($password && $password !== $confirm) {
-        $error = "Passwords do not match.";
-    } else {
-        $updated = ProfileController::updateProfile($userId, $name, $password);
-        if ($updated) {
-            $success = true;
-            $user = ProfileController::getUser($userId); // Refresh user data
-        } else {
-            $error = "Failed to update profile.";
-        }
-    }
-}
 $flashMessage = '';
-if ($success) {
-    $flashMessage = 'Profile updated successfully.';
-} elseif (!empty($error)) {
-    $flashMessage = $error;
+if (isset($_SESSION['flash_message'])) {
+    $flashMessage = $_SESSION['flash_message'];
+    unset($_SESSION['flash_message']);
 }
 
 ?>
@@ -48,10 +28,10 @@ if ($success) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Profile - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/style.css">
 </head>
 <body>
-<?php include_once 'public/includes/dashboard_header.php'; ?>
+<?php include_once '../../public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
     <h1>Your Profile</h1>
@@ -71,10 +51,9 @@ if ($success) {
             <?php if (isset($_GET['error']) && $_GET['error'] === 'email_taken'): ?>
                 <p class="error">Email already in use. Please choose another.</p>
             <?php endif; ?>
-            
-            <form method="post" action="<?= BASE_URL ?>src/controllers/ProfileController.php" class="property-form">
+              <form method="post" action="../../src/controllers/ProfileController.php?action=update_profile" class="property-form">
                 <label>Name:</label>
-                <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>" readonly>
+                <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>" required>
 
                 <label>Email:</label>
                 <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
@@ -132,6 +111,9 @@ if ($success) {
     &copy; <?= date('Y') ?> REM Project. All rights reserved.
 </footer>
 
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+<?php include_once '../../public/includes/dashboard_footer.php'; ?>
 </body>
 </html>
+
+
+

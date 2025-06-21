@@ -1,7 +1,9 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/models/Message.php';
+require_once __DIR__ . '/../../src/config/config.php';
+require_once __DIR__ . '/../../src/controllers/MessageController.php';
+require_once __DIR__ . '/../../src/models/Message.php';
 
+// Backend logic using existing controllers
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -11,6 +13,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Use Message model for now since MessageController doesn't have this method yet
 $conversations = Message::getConversationsWithLastMessage($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
@@ -19,7 +22,7 @@ $conversations = Message::getConversationsWithLastMessage($_SESSION['user_id']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Chats - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/style.css">
     <style>
         .unread-badge {
             background-color: crimson;
@@ -33,7 +36,7 @@ $conversations = Message::getConversationsWithLastMessage($_SESSION['user_id']);
     </style>
 </head>
 <body>
-<?php include_once 'public/includes/dashboard_header.php'; ?>
+<?php include_once '../../public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
     <h1>My Conversations</h1>
@@ -62,6 +65,9 @@ $conversations = Message::getConversationsWithLastMessage($_SESSION['user_id']);
     </div>
 <?php endif; ?>
 
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+<?php include_once '../../public/includes/dashboard_footer.php'; ?>
 </body>
 </html>
+
+
+

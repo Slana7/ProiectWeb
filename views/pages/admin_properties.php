@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/utils/AdminUtils.php';
-require_once __DIR__ . '/src/controllers/PropertyController.php';
+require_once __DIR__ . '/../../src/config/config.php';
+require_once __DIR__ . '/../../src/utils/AdminUtils.php';
+require_once __DIR__ . '/../../src/controllers/PropertyController.php';
 
 session_start();
 
@@ -20,10 +20,10 @@ $properties = PropertyController::getAllWithOwners();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Properties - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/style.css">
 </head>
 <body>
-<?php include_once 'public/includes/dashboard_header.php'; ?>
+<?php include_once '../../public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
     <h1>Manage Properties</h1>
@@ -56,8 +56,7 @@ $properties = PropertyController::getAllWithOwners();
                         <span class="status-badge <?= $property['status'] === 'for_sale' ? 'status-active' : 'status-inactive' ?>">
                             <?= ucfirst(str_replace('_', ' ', $property['status'])) ?>
                         </span>
-                    </td>
-                    <td>
+                    </td>                    <td>
                         <a href="remove_property.php?id=<?= $property['id'] ?>"
                            class="btn btn-small btn-danger"
                            onclick="return confirm('Are you sure you want to delete this property?');">
@@ -71,6 +70,9 @@ $properties = PropertyController::getAllWithOwners();
     </div>
 </section>
 
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+<?php include_once '../../public/includes/dashboard_footer.php'; ?>
 </body>
 </html>
+
+
+

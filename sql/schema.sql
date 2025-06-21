@@ -207,7 +207,6 @@ CREATE TRIGGER trg_flag_keywords
 BEFORE INSERT ON messages
 FOR EACH ROW EXECUTE FUNCTION flag_keywords();
 
--- Insert default admin users
 INSERT INTO users (email, password, name, role) VALUES (
     'admin1@rem.com',
     '2y$10$tFk4rTTV0OYEUHls3XGwL.cr2qu01Bp8bX5VGmkNFMR9e3jVbpR0O',

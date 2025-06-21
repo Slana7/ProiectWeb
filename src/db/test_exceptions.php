@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/src/db/Database.php';
+require_once __DIR__ . '/Database.php';
 
 echo "=== Test for PL/pgSQL Exception Handling ===\n\n";
 

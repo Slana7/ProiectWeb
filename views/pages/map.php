@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
+require_once __DIR__ . '/../../src/config/config.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -15,7 +15,7 @@ if (!isset($_SESSION['user_id'])) {
     <title>Map View - <?= APP_NAME ?></title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">    <style>
+    <link rel="stylesheet" href="../../public/assets/css/style.css">    <style>
         body, html {
             margin: 0;
             padding: 0;
@@ -241,7 +241,7 @@ if (!isset($_SESSION['user_id'])) {
     </style>
 </head>
 <body>
-<?php include_once 'public/includes/dashboard_header.php'; ?>
+<?php include_once '../../public/includes/dashboard_header.php'; ?>
 
 <div class="map-layout">
     <div id="map"></div>
@@ -284,10 +284,13 @@ if (!isset($_SESSION['user_id'])) {
 
 <button id="filter-button" title="Open filters">🔍</button>
 
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+<?php include_once '../../public/includes/dashboard_footer.php'; ?>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-<script src="<?= BASE_URL ?>public/assets/js/map.js"></script>
+<script src="../../public/assets/js/map.js"></script>
 
 </body>
 </html>
+
+
+

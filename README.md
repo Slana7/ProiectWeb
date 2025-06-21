@@ -131,6 +131,36 @@ Built with PHP and PostgreSQL with PostGIS extension, REM offers a robust founda
 - **🔔 Smart Notifications**: Flagged messages for urgent content
 - **📧 Email Validation**: PL/pgSQL triggers for data integrity
 
+<!-- Project Structure -->
+### :file_folder: Project Structure
+
+REM follows a clean, organized architecture with simplified routing:
+
+```
+REM/
+├── index.php                 # Application entry point
+├── public/                   # Static assets and includes
+│   ├── assets/              # CSS, JS, images
+│   └── includes/            # Reusable header/footer components
+├── src/                     # Core application logic
+│   ├── config/              # Configuration files
+│   ├── controllers/         # Business logic controllers
+│   ├── models/              # Data models
+│   ├── services/            # Service layer
+│   ├── db/                  # Database connection
+│   └── utils/               # Utility functions
+├── views/                   # User interface
+│   └── pages/               # All application pages
+├── sql/                     # Database schema and migrations
+└── uploads/                 # User uploaded files
+```
+
+**Key Architectural Improvements:**
+- **Self-contained pages**: Each page handles both display and form processing
+- **Consistent routing**: No separate action files needed
+- **Better organization**: Related functionality grouped together
+- **Simplified debugging**: Everything for a feature is in one place
+
 <!-- Color Reference -->
 ### :art: Color Reference
 
@@ -421,9 +451,9 @@ This project is open source and available under the [MIT License](LICENSE).
 
 **Project Developer** - Real Estate Management System
 
-📧 Email: your.email@domain.com  
-🐙 GitHub: [@your-username](https://github.com/your-username)  
-🌐 Project Link: [https://github.com/your-username/REM-Real-Estate-Management](https://github.com/your-username/REM-Real-Estate-Management)
+📧 Email: rem.contact@example.com  
+🐙 GitHub: [@REM-Project](https://github.com/REM-Project)  
+🌐 Project Link: [https://github.com/REM-Project/REM-Real-Estate-Management](https://github.com/REM-Project/REM-Real-Estate-Management)
 
 **Local Development:**
 - 💻 Local URL: [http://localhost/REM/](http://localhost/REM/)
@@ -431,9 +461,9 @@ This project is open source and available under the [MIT License](LICENSE).
 - 🧪 Test Suite: `php test_exceptions.php`
 
 **For Support:**
-- 🐛 Bug Reports: [Create an Issue](https://github.com/your-username/REM-Real-Estate-Management/issues)
-- 💡 Feature Requests: [Start a Discussion](https://github.com/your-username/REM-Real-Estate-Management/discussions)
-- 📖 Documentation: [Wiki](https://github.com/your-username/REM-Real-Estate-Management/wiki)
+- 🐛 Bug Reports: [Create an Issue](https://github.com/REM-Project/REM-Real-Estate-Management/issues)
+- 💡 Feature Requests: [Start a Discussion](https://github.com/REM-Project/REM-Real-Estate-Management/discussions)
+- 📖 Documentation: [Wiki](https://github.com/REM-Project/REM-Real-Estate-Management/wiki)
 
 
 <!-- Acknowledgments -->

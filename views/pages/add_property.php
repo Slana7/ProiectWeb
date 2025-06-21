@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/controllers/PropertyController.php';
+require_once __DIR__ . '/../../src/config/config.php';
+require_once __DIR__ . '/../../src/controllers/PropertyController.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -11,41 +11,15 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$errors = [];
-$success = false;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $propertyData = [
-        'user_id' => $_SESSION['user_id'],
-        'title' => $_POST['title'] ?? '',
-        'description' => $_POST['description'] ?? '',
-        'price' => $_POST['price'] ?? '',
-        'area' => $_POST['area'] ?? '',
-        'status' => $_POST['status'] ?? 'for_sale',
-        'lat' => $_POST['lat'] ?? '',
-        'lng' => $_POST['lng'] ?? '',
-        'facilities' => $_POST['facilities'] ?? []
-    ];
-
-    $result = PropertyController::addProperty($propertyData);
-
-    if ($result['success']) {
-        $_SESSION['flash_message'] = $result['message'];
-        header('Location: dashboard.php');
-        exit;
-    } else {
-        $errors[] = $result['message'];
-    }
-}
-
 $facilities = PropertyController::getFacilities();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Property - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <style>
@@ -54,24 +28,21 @@ $facilities = PropertyController::getFacilities();
 </head>
 <body>
 
-<?php include_once 'public/includes/dashboard_header.php'; ?>
+<?php include_once '../../public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
     <h1>Add New Property</h1>
 </header>
 
 <section class="form-section">
-    <?php if (!empty($errors)): ?>
-        <div class="alert alert-error">
-            <ul>
-                <?php foreach ($errors as $error): ?>
-                    <li><?= htmlspecialchars($error) ?></li>
-                <?php endforeach; ?>
-            </ul>
+    <?php if (isset($_SESSION['flash_message'])): ?>
+        <div class="alert alert-info">
+            <?= htmlspecialchars($_SESSION['flash_message']) ?>
         </div>
+        <?php unset($_SESSION['flash_message']); ?>
     <?php endif; ?>
 
-    <form method="post" action="<?= $_SERVER['PHP_SELF'] ?>" class="property-form">
+    <form method="post" action="../../src/controllers/PropertyController.php?action=add_property" class="property-form">
         <label>Title:</label>
         <input type="text" name="title" required>
 
@@ -115,7 +86,7 @@ $facilities = PropertyController::getFacilities();
     &copy; <?= date('Y') ?> REM Project. All rights reserved.
 </footer>
 
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+<?php include_once '../../public/includes/dashboard_footer.php'; ?>
 
 <script>
     const map = L.map('map').setView([47.1585, 27.6014], 13);
@@ -124,9 +95,7 @@ $facilities = PropertyController::getFacilities();
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    let marker = null;
-
-    map.on('click', function(e) {
+    let marker = null;    map.on('click', function(e) {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
 
@@ -137,9 +106,11 @@ $facilities = PropertyController::getFacilities();
             marker.setLatLng(e.latlng);
         } else {
             marker = L.marker(e.latlng).addTo(map);
-        }
-    });
+        }    });
 </script>
 
 </body>
 </html>
+
+
+

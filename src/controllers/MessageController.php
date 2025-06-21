@@ -1,11 +1,17 @@
 <?php
 require_once __DIR__ . '/../models/Message.php';
 
+class MessageController {
+    public static function hasUnreadMessages($userId) {
+        return Message::hasUnreadMessages($userId);
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     session_start();
 
     if (!isset($_SESSION['user_id'])) {
-        header('Location: ../../login.php');
+        header('Location: ../../views/pages/login.php');
         exit;
     }
 
@@ -32,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Message::sendMessage($senderId, $receiverId, $propertyId, $content, $attachment);
         }
 
-        header("Location: ../../chat.php?with=$receiverId&property=$propertyId");
+        header("Location: ../../views/pages/chat.php?with=$receiverId&property=$propertyId");
         exit;
     }
 
@@ -44,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Message::markMessagesAsRead($otherUserId, $senderId, $propertyId);
         }
 
-        header("Location: ../../chat.php?with=$otherUserId&property=$propertyId");
+        header("Location: ../../views/pages/chat.php?with=$otherUserId&property=$propertyId");
         exit;
     }
 }

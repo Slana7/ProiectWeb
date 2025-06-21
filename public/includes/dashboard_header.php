@@ -1,32 +1,28 @@
 <?php
 require_once __DIR__ . '/../../src/config/config.php';
-require_once __DIR__ . '/../../src/db/Database.php';
 require_once __DIR__ . '/../../src/utils/AdminUtils.php';
-// session_start();
-$conn = Database::connect();
+require_once __DIR__ . '/../../src/controllers/MessageController.php';
 
 $hasUnread = false;
 
 if (isset($_SESSION['user_id'])) {
-    $conn = Database::connect();
-    $stmt = $conn->prepare("SELECT 1 FROM messages WHERE receiver_id = :uid AND is_read = FALSE LIMIT 1");
-    $stmt->execute(['uid' => $_SESSION['user_id']]);
-    $hasUnread = $stmt->fetchColumn() !== false;
+    $hasUnread = MessageController::hasUnreadMessages($_SESSION['user_id']);
 }
 ?>
 
 <div class="dashboard-layout">
-    <header class="mobile-header">
-        <div class="header-container">
+    <header class="mobile-header">        <div class="header-container">
             <div class="logo-mobile">
-                <a href="dashboard.php">REM</a>
-            </div>            <div class="burger-menu">
+                <a href="<?= BASE_URL ?>">REM</a>
+            </div>
+            <div class="burger-menu">
                 <div class="burger-icon">
                     <span></span>
                     <span></span>
                     <span></span>
                 </div>
-            </div>            <nav class="nav-menu">
+            </div>
+            <nav class="nav-menu">
                 <?php if (isAdmin()): ?>
                     <a href="admin_dashboard.php">Admin Dashboard</a>
                     <a href="admin_users.php">Users</a>

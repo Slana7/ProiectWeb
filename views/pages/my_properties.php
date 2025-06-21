@@ -1,6 +1,7 @@
 <?php
-require_once __DIR__ . '/src/config/config.php';
-require_once __DIR__ . '/src/controllers/PropertyController.php';
+require_once __DIR__ . '/../../src/config/config.php';
+require_once __DIR__ . '/../../src/controllers/PropertyController.php';
+require_once __DIR__ . '/../../src/utils/UIHelper.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -27,10 +28,10 @@ if (isset($_SESSION['flash_message'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Properties - <?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/style.css">
 </head>
 <body>
-<?php include_once 'public/includes/dashboard_header.php'; ?>
+<?php include_once '../../public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
     <h1>My Properties</h1>
@@ -56,23 +57,22 @@ if (isset($_SESSION['flash_message'])) {
             <?php foreach ($properties as $property): ?>
                 <div class="property-card">
                     <h3><?= htmlspecialchars($property['title']) ?></h3>
-                    <p class="property-price">€<?= number_format($property['price']) ?></p>
+                    <p class="property-price"><?= UIHelper::formatPrice($property['price']) ?></p>
                     <p class="property-area"><strong>Area:</strong> <?= $property['area'] ?> m²</p>
-                    <p class="property-status"><?= $property['status'] == 'for_sale' ? 'For Sale' : 'For Rent' ?></p>
-                      <div class="property-actions">
+                    <p class="property-status"><?= UIHelper::formatPropertyStatus($property['status']) ?></p>                    <div class="property-actions">
                         <a href="property_details.php?id=<?= $property['id'] ?>" class="btn-link">View Details</a>
+                        <a href="edit_property.php?id=<?= $property['id'] ?>" class="btn-link">Edit</a>
                         <a href="remove_property.php?id=<?= $property['id'] ?>" class="btn-danger">Remove</a>
                     </div>
                 </div>
             <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+        </div>    <?php endif; ?>
 </section>
 
-<footer class="dashboard-footer">
-    &copy; <?= date('Y') ?> REM Project. All rights reserved.
-</footer>
+<?= UIHelper::generateFooter() ?>
 
-<?php include_once 'public/includes/dashboard_footer.php'; ?>
+<?php include_once '../../public/includes/dashboard_footer.php'; ?>
 </body>
-</html> 
+</html>
+
+
