@@ -57,9 +57,7 @@ document.addEventListener('DOMContentLoaded', function()
     
     applyResponsiveLayout();
     
-    window.addEventListener('resize', applyResponsiveLayout);
-    
-    const burgerMenu = document.querySelector('.burger-menu');
+    window.addEventListener('resize', applyResponsiveLayout);    const burgerMenu = document.querySelector('.burger-menu');
     if (burgerMenu) {
         burgerMenu.addEventListener('click', function(e) {
             e.preventDefault();
@@ -82,86 +80,6 @@ document.addEventListener('DOMContentLoaded', function()
             }
         });
     }
-
-    const toggleList = document.getElementById('toggle-list');
-    if (toggleList) {
-        toggleList.addEventListener('click', function() {
-            const sidebar = document.getElementById('property-sidebar');
-            const filterPanel = document.getElementById('filter-panel');
-            const isMobile = window.innerWidth <= TABLET_BREAKPOINT;
-            
-            if (isMobile) {
-                if (sidebar) {
-                    const isVisible = sidebar.classList.contains('mobile-visible');
-                    sidebar.classList.toggle('mobile-visible');
-                    
-                    if (!isVisible) {
-                        showMobileOverlay();
-                    } else {
-                        hideMobileOverlay();
-                    }
-                }
-                if (filterPanel) {
-                    filterPanel.classList.remove('open');
-                }
-            } else {
-                if (sidebar) {
-                    sidebar.classList.toggle('hidden');
-                    setTimeout(function() {
-                        window.dispatchEvent(new Event('resize'));
-                    }, 300);
-                }
-            }
-        });
-    }
-    
-    const filterButton = document.getElementById('filter-button');
-    if (filterButton) {
-        filterButton.addEventListener('click', function() {
-            const filterPanel = document.getElementById('filter-panel');
-            const sidebar = document.getElementById('property-sidebar');
-            const isMobile = window.innerWidth <= TABLET_BREAKPOINT;
-            
-            if (filterPanel) {
-                if (isMobile) {
-                    if (sidebar) {
-                        sidebar.classList.remove('mobile-visible');
-                    }
-                    showMobileOverlay();
-                }
-                filterPanel.classList.add('open');
-            }
-        });
-    }
-    
-    const closeFilter = document.getElementById('close-filter');
-    if (closeFilter) {
-        closeFilter.addEventListener('click', function() {
-            const filterPanel = document.getElementById('filter-panel');
-            if (filterPanel) {
-                filterPanel.classList.remove('open');
-                filterPanel.scrollTop = 0;
-                hideMobileOverlay();
-            }
-        });
-    }
-    
-    document.addEventListener('click', function(event) {
-        const sidebar = document.getElementById('property-sidebar');
-        const filterPanel = document.getElementById('filter-panel');
-        const overlay = document.getElementById('mobile-overlay');
-        const isMobile = window.innerWidth <= TABLET_BREAKPOINT;
-        
-        if (isMobile && overlay && event.target === overlay) {
-            if (sidebar && sidebar.classList.contains('mobile-visible')) {
-                sidebar.classList.remove('mobile-visible');
-            }
-            if (filterPanel && filterPanel.classList.contains('open')) {
-                filterPanel.classList.remove('open');
-            }
-            hideMobileOverlay();
-        }
-    });
     
     document.addEventListener('click', function(event) {
         const navMenu = document.querySelector('.nav-menu');
@@ -176,8 +94,7 @@ document.addEventListener('DOMContentLoaded', function()
             }
         }
     });
-    
-    const navLinks = document.querySelectorAll('.nav-menu a');
+      const navLinks = document.querySelectorAll('.nav-menu a');
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
             const navMenu = document.querySelector('.nav-menu');
@@ -191,18 +108,21 @@ document.addEventListener('DOMContentLoaded', function()
         });
     });
     
-    const sidebar = document.getElementById('property-sidebar');
-    const filterPanel = document.getElementById('filter-panel');
-    
-    if (sidebar) {
-        sidebar.addEventListener('click', function(event) {
-            event.stopPropagation();
-        });
-    }
-    
-    if (filterPanel) {
-        filterPanel.addEventListener('click', function(event) {
-            event.stopPropagation();
-        });
+    const isMapPage = document.getElementById('map') !== null;
+    if (!isMapPage) {
+        const sidebar = document.getElementById('property-sidebar');
+        const filterPanel = document.getElementById('filter-panel');
+        
+        if (sidebar) {
+            sidebar.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        }
+        
+        if (filterPanel) {
+            filterPanel.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        }
     }
 });

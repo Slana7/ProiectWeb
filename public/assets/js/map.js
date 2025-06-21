@@ -9,6 +9,60 @@ const trafficLayer = L.layerGroup();
 const shopsLayer = L.layerGroup();
 const parkingLayer = L.layerGroup();
 
+function createMarketIcon() {
+    return L.divIcon({
+        className: 'custom-market-icon',
+        html: `
+            <div style="
+                background-color: #3498db; 
+                color: white;
+                width: 25px; 
+                height: 25px; 
+                border-radius: 50%; 
+                border: 2px solid white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 16px;
+                box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+            ">
+                🛒
+            </div>
+        `,
+        iconSize: [25, 25],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -10]
+    });
+}
+
+function createParkingIcon() {
+    return L.divIcon({
+        className: 'custom-parking-icon',
+        html: `
+            <div style="
+                background-color: #4CAF50; 
+                color: white;
+                width: 25px; 
+                height: 25px; 
+                border-radius: 50%; 
+                border: 2px solid white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 16px;
+                box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+            ">
+                P
+            </div>
+        `,
+        iconSize: [25, 25],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -10]
+    });
+}
+
 function fetchShops() {
     const overpassUrl = "https://overpass-api.de/api/interpreter";
     const bbox = "47.10,27.50,47.20,27.70";
@@ -44,32 +98,7 @@ function fetchShops() {
                 name = element.tags.name;
             }
             
-            const marketIcon = L.divIcon({
-                className: 'custom-market-icon',
-                html: `
-                    <div style="
-                        background-color: #3498db; 
-                        color: white;
-                        width: 25px; 
-                        height: 25px; 
-                        border-radius: 50%; 
-                        border: 2px solid white;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: bold;
-                        font-size: 16px;
-                        box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-                    ">
-                        🛒
-                    </div>
-                `,
-                iconSize: [25, 25],
-                iconAnchor: [12, 12],
-                popupAnchor: [0, -10]
-            });
-            
-            const marker = L.marker([lat, lng], { icon: marketIcon }).bindPopup(name);
+            const marker = L.marker([lat, lng], { icon: createMarketIcon() }).bindPopup(name);
             shopsLayer.addLayer(marker);
         });
     })
@@ -81,33 +110,8 @@ function fetchShops() {
             { lat: 47.159, lng: 27.607, name: "Carrefour Express" }
         ];
         
-        const marketIcon = L.divIcon({
-            className: 'custom-market-icon',
-            html: `
-                <div style="
-                    background-color: #3498db; 
-                    color: white;
-                    width: 25px; 
-                    height: 25px; 
-                    border-radius: 50%; 
-                    border: 2px solid white;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: bold;
-                    font-size: 16px;
-                    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-                ">
-                    🛒
-                </div>
-            `,
-            iconSize: [25, 25],
-            iconAnchor: [12, 12],
-            popupAnchor: [0, -10]
-        });
-        
         fallbackShops.forEach(shop => {
-            L.marker([shop.lat, shop.lng], { icon: marketIcon })
+            L.marker([shop.lat, shop.lng], { icon: createMarketIcon() })
                 .bindPopup(shop.name)
                 .addTo(shopsLayer);
         });
@@ -262,61 +266,30 @@ function fetchPollutionData() {
     
     console.log('Loading pollution data');
     
-    const industrialSources = [
-        { lat: 47.164, lng: 27.59, radius: 300, name: "CUG Industrial Zone", type: "Industrial Pollution", level: "High" },
-        { lat: 47.1695, lng: 27.5698, radius: 350, name: "Țuțora Industrial Zone", type: "Industrial Pollution", level: "High" },
-        { lat: 47.1580, lng: 27.6390, radius: 280, name: "Metallurgical Plant", type: "Industrial Pollution", level: "Medium" },
-        { lat: 47.1790, lng: 27.5590, radius: 250, name: "Furniture Factory", type: "Industrial Pollution", level: "Medium" }
+    const pollutionSources = [
+        // Industrial sources
+        { lat: 47.164, lng: 27.59, radius: 300, name: "CUG Industrial Zone", type: "Industrial Pollution", level: "High", color: 'red', fillColor: '#f03' },
+        { lat: 47.1695, lng: 27.5698, radius: 350, name: "Țuțora Industrial Zone", type: "Industrial Pollution", level: "High", color: 'red', fillColor: '#f03' },
+        { lat: 47.1580, lng: 27.6390, radius: 280, name: "Metallurgical Plant", type: "Industrial Pollution", level: "Medium", color: 'red', fillColor: '#f03' },
+        { lat: 47.1790, lng: 27.5590, radius: 250, name: "Furniture Factory", type: "Industrial Pollution", level: "Medium", color: 'red', fillColor: '#f03' },
+        
+        // Traffic sources
+        { lat: 47.1655, lng: 27.5900, radius: 200, name: "Independence Intersection", type: "Traffic Pollution", level: "High", color: 'orange', fillColor: '#ff8c00' },
+        { lat: 47.1565, lng: 27.5880, radius: 180, name: "Union Square", type: "Traffic Pollution", level: "High", color: 'orange', fillColor: '#ff8c00' },
+        { lat: 47.1730, lng: 27.5720, radius: 150, name: "Copou Intersection", type: "Traffic Pollution", level: "Medium", color: 'orange', fillColor: '#ff8c00' },
+        { lat: 47.1520, lng: 27.6020, radius: 170, name: "Tudor Vladimirescu Intersection", type: "Traffic Pollution", level: "High", color: 'orange', fillColor: '#ff8c00' },
+        { lat: 47.1620, lng: 27.5610, radius: 160, name: "Dacia Intersection", type: "Traffic Pollution", level: "Medium", color: 'orange', fillColor: '#ff8c00' },
+        
+        // Construction sources
+        { lat: 47.1610, lng: 27.5780, radius: 120, name: "Palas Construction Site", type: "Construction Pollution", level: "Temporary", color: 'purple', fillColor: '#9932cc' },
+        { lat: 47.1540, lng: 27.5940, radius: 100, name: "Residential Construction Site", type: "Construction Pollution", level: "Temporary", color: 'purple', fillColor: '#9932cc' }
     ];
     
-    const trafficSources = [
-        { lat: 47.1655, lng: 27.5900, radius: 200, name: "Independence Intersection", type: "Traffic Pollution", level: "High" },
-        { lat: 47.1565, lng: 27.5880, radius: 180, name: "Union Square", type: "Traffic Pollution", level: "High" },
-        { lat: 47.1730, lng: 27.5720, radius: 150, name: "Copou Intersection", type: "Traffic Pollution", level: "Medium" },
-        { lat: 47.1520, lng: 27.6020, radius: 170, name: "Tudor Vladimirescu Intersection", type: "Traffic Pollution", level: "High" },
-        { lat: 47.1620, lng: 27.5610, radius: 160, name: "Dacia Intersection", type: "Traffic Pollution", level: "Medium" }
-    ];
-    
-    const constructionSources = [
-        { lat: 47.1610, lng: 27.5780, radius: 120, name: "Palas Construction Site", type: "Construction Pollution", level: "Temporary" },
-        { lat: 47.1540, lng: 27.5940, radius: 100, name: "Residential Construction Site", type: "Construction Pollution", level: "Temporary" }
-    ];
-    
-    industrialSources.forEach(source => {
+    pollutionSources.forEach(source => {
         L.circle([source.lat, source.lng], { 
             radius: source.radius, 
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.3,
-            weight: 2
-        }).bindPopup(`
-            <strong>${source.name}</strong><br>
-            Type: ${source.type}<br>
-            Level: ${source.level}<br>
-            <small>Updated: ${new Date().toLocaleTimeString()}</small>
-        `).addTo(pollutionLayer);
-    });
-    
-    trafficSources.forEach(source => {
-        L.circle([source.lat, source.lng], { 
-            radius: source.radius, 
-            color: 'orange',
-            fillColor: '#ff8c00',
-            fillOpacity: 0.3,
-            weight: 2
-        }).bindPopup(`
-            <strong>${source.name}</strong><br>
-            Type: ${source.type}<br>
-            Level: ${source.level}<br>
-            <small>Updated: ${new Date().toLocaleTimeString()}</small>
-        `).addTo(pollutionLayer);
-    });
-    
-    constructionSources.forEach(source => {
-        L.circle([source.lat, source.lng], { 
-            radius: source.radius, 
-            color: 'purple',
-            fillColor: '#9932cc',
+            color: source.color,
+            fillColor: source.fillColor,
             fillOpacity: 0.3,
             weight: 2
         }).bindPopup(`
@@ -365,32 +338,7 @@ function fetchParkingSpots() {
                 capacity = element.tags.capacity || "Unknown";
             }
             
-            const parkingIcon = L.divIcon({
-                className: 'custom-parking-icon',
-                html: `
-                    <div style="
-                        background-color: #4CAF50; 
-                        color: white;
-                        width: 25px; 
-                        height: 25px; 
-                        border-radius: 50%; 
-                        border: 2px solid white;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: bold;
-                        font-size: 16px;
-                        box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-                    ">
-                        P
-                    </div>
-                `,
-                iconSize: [25, 25],
-                iconAnchor: [12, 12],
-                popupAnchor: [0, -10]
-            });
-            
-            const marker = L.marker([lat, lng], { icon: parkingIcon }).bindPopup(`
+            const marker = L.marker([lat, lng], { icon: createParkingIcon() }).bindPopup(`
                 <strong>${name}</strong><br>
                 Capacity: ${capacity}<br>
                 ${element.tags.fee === "yes" ? "Paid" : "Free"}
@@ -408,33 +356,8 @@ function fetchParkingSpots() {
             { lat: 47.166, lng: 27.584, name: "Metropolitan Parking", capacity: "40", fee: "yes" }
         ];
         
-        const parkingIcon = L.divIcon({
-            className: 'custom-parking-icon',
-            html: `
-                <div style="
-                    background-color: #4CAF50; 
-                    color: white;
-                    width: 25px; 
-                    height: 25px; 
-                    border-radius: 50%; 
-                    border: 2px solid white;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: bold;
-                    font-size: 16px;
-                    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-                ">
-                    P
-                </div>
-            `,
-            iconSize: [25, 25],
-            iconAnchor: [12, 12],
-            popupAnchor: [0, -10]
-        });
-        
         fallbackParkings.forEach(parking => {
-            L.marker([parking.lat, parking.lng], { icon: parkingIcon })
+            L.marker([parking.lat, parking.lng], { icon: createParkingIcon() })
                 .bindPopup(`
                     <strong>${parking.name}</strong><br>
                     Capacity: ${parking.capacity}<br>
@@ -538,20 +461,44 @@ let allProperties = [];
 let markersGroup = L.layerGroup().addTo(map);
 
 function loadAndDisplayProperties() {
+    const list = document.getElementById('property-list');
+    
+    if (list) {
+        list.innerHTML = '<li style="text-align: center; color: #666;">Loading properties...</li>';
+    }
+    
     fetch('public/api/get_property.php')
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
         .then(data => {
-            allProperties = data;
-            updateDisplayedProperties();
+            if (Array.isArray(data)) {
+                allProperties = data;
+                updateDisplayedProperties();
+                
+                if (data.length === 0 && list) {
+                    list.innerHTML = '<li style="text-align: center; color: #666;">No properties found</li>';
+                }
+            } else {
+                throw new Error('Invalid data format received');
+            }
         })
         .catch(error => {
             console.error('Error loading properties:', error);
+            if (list) {
+                list.innerHTML = '<li style="text-align: center; color: #d32f2f;">Error loading properties. Please try again.</li>';
+            }
         });
 }
 
 function updateDisplayedProperties() {
     const list = document.getElementById('property-list');
-    if (list) list.innerHTML = '';
+    if (list) {
+        list.innerHTML = '';
+    }
 
     const selectedFacilities = Array.from(document.querySelectorAll('.facility-filter:checked'))
         .map(cb => cb.value);
@@ -604,7 +551,9 @@ function deg2rad(deg) {
 }
 
 function shouldDisplayProperty(property, selectedFacilities, minPrice, maxPrice) {
-    if (property.price < minPrice || property.price > maxPrice) return false;
+    if (property.price < minPrice || property.price > maxPrice) {
+        return false;
+    }
 
     if (selectedFacilities.length > 0) {
         if (!property.facilities) return false;
@@ -626,10 +575,22 @@ function displayMarker(property) {
     const list = document.getElementById('property-list');
     if (list) {
         const li = document.createElement('li');
-        const link = document.createElement('a');
-        link.href = `property_details.php?id=${property.id}`;
-        link.textContent = `${property.title} (€${property.price})`;
-        li.appendChild(link);
+        li.style.cursor = 'pointer';
+        li.innerHTML = `
+            <a href="property_details.php?id=${property.id}" style="text-decoration: none; color: inherit;">
+                <strong>${property.title}</strong><br>
+                <span style="color: #42a5f5; font-weight: bold;">€${property.price}</span>
+            </a>
+        `;
+        
+        li.addEventListener('click', (e) => {
+            if (!e.target.closest('a')) {
+                e.preventDefault();
+                map.setView([property.lat, property.lng], 16);
+                marker.openPopup();
+            }
+        });
+        
         list.appendChild(li);
     }
 }
@@ -642,10 +603,73 @@ document.getElementById('filter-near-me')?.addEventListener('change', updateDisp
 document.getElementById('min-price')?.addEventListener('input', updateDisplayedProperties);
 document.getElementById('max-price')?.addEventListener('input', updateDisplayedProperties);
 
-document.getElementById("filter-button")?.addEventListener("click", () => {
-    const panel = document.getElementById("filter-panel");
-    panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
+window.addEventListener('resize', () => {
+    if (map) {
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 100);
+    }
 });
 
 loadAllMapData();
 loadAndDisplayProperties();
+
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButton = document.getElementById('filter-button');
+    const filterPanel = document.getElementById('filter-panel');
+    const closeFilterButton = document.getElementById('close-filter');
+    
+    if (filterButton && filterPanel) {
+        filterButton.addEventListener('click', function() {
+            filterPanel.classList.add('open');
+        });
+    }
+    
+    if (closeFilterButton && filterPanel) {
+        closeFilterButton.addEventListener('click', function() {
+            filterPanel.classList.remove('open');
+        });
+    }
+    
+    const toggleButton = document.getElementById('toggle-list');
+    const propertySidebar = document.getElementById('property-sidebar');
+    
+    if (toggleButton && propertySidebar) {
+        toggleButton.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                propertySidebar.classList.toggle('mobile-visible');
+            } else {
+                propertySidebar.classList.toggle('hidden');
+                setTimeout(() => {
+                    if (map) {
+                        map.invalidateSize();
+                    }
+                }, 300);
+            }
+        });
+    }
+    
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+            if (e.target.closest('.mobile-header') || 
+                e.target.closest('.burger-menu') || 
+                e.target.closest('.burger-icon') || 
+                e.target.closest('.nav-menu')) {
+                return;
+            }
+            
+            const isClickInsidePanel = filterPanel && filterPanel.contains(e.target);
+            const isClickInsideSidebar = propertySidebar && propertySidebar.contains(e.target);
+            const isFilterButton = e.target === filterButton;
+            const isToggleButton = e.target === toggleButton;
+            
+            if (!isClickInsidePanel && !isFilterButton && filterPanel && filterPanel.classList.contains('open')) {
+                filterPanel.classList.remove('open');
+            }
+            
+            if (!isClickInsideSidebar && !isToggleButton && propertySidebar && propertySidebar.classList.contains('mobile-visible')) {
+                propertySidebar.classList.remove('mobile-visible');
+            }
+        }
+    });
+});

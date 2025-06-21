@@ -15,8 +15,7 @@ if (!isset($_SESSION['user_id'])) {
     <title>Map View - <?= APP_NAME ?></title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">
-    <style>
+    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/css/style.css">    <style>
         body, html {
             margin: 0;
             padding: 0;
@@ -27,6 +26,57 @@ if (!isset($_SESSION['user_id'])) {
             padding: 0 !important;
             margin: 0 !important;
             overflow: hidden;
+        }
+
+        @media screen and (max-width: 768px) {
+            .sidebar {
+                display: none !important;
+            }
+        }
+
+        @media screen and (min-width: 769px) {
+            .sidebar {
+                display: flex !important;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .dashboard-layout {
+                display: block !important;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .mobile-header {
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 2000;
+                height: 60px;
+                display: block;
+            }
+        }
+
+        @media screen and (min-width: 769px) {
+            .mobile-header {
+                display: none !important;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .mobile-header {
+                display: block !important;
+            }
+            
+            .map-layout {
+                margin-top: 60px;
+                height: calc(100vh - 60px);
+            }
+            
+            #map {
+                height: calc(100vh - 60px);
+            }
         }
 
         #map {
@@ -57,11 +107,19 @@ if (!isset($_SESSION['user_id'])) {
         #property-list {
             list-style: none;
             padding-left: 0;
-        }
-
-        #property-list li {
-            padding: 0.5rem 0;
+        }        #property-list li {
+            padding: 0.75rem 0;
             border-bottom: 1px solid #eee;
+            transition: background-color 0.2s ease;
+        }
+        
+        #property-list li:hover {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        
+        #property-list li:last-child {
+            border-bottom: none;
         }
 
         .map-layout {
@@ -102,9 +160,7 @@ if (!isset($_SESSION['user_id'])) {
             font-size: 24px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             cursor: pointer;
-        }
-
-        #filter-panel {
+        }        #filter-panel {
             position: absolute;
             right: 0;
             top: 0;
@@ -115,6 +171,7 @@ if (!isset($_SESSION['user_id'])) {
             padding: 1.5rem;
             z-index: 1000;
             overflow-y: auto;
+            display: none;
             opacity: 0;
             transform: translateX(100%);
             transition: all 0.3s ease;
@@ -150,7 +207,35 @@ if (!isset($_SESSION['user_id'])) {
 
         @media (max-width: 768px) {
             #property-sidebar {
-                display: none !important;
+                position: fixed;
+                top: 60px;
+                left: -100%;
+                width: 300px;
+                height: calc(100vh - 60px);
+                z-index: 1001;
+                transition: left 0.3s ease;
+                border-left: none;
+                border-right: 1px solid #ddd;
+                flex: none;
+            }
+            
+            #property-sidebar.mobile-visible {
+                left: 0;
+            }
+            
+            #filter-panel {
+                width: 90%;
+                max-width: 350px;
+            }
+            
+            .map-layout {
+                position: relative;
+                flex-direction: column;
+            }
+            
+            #map {
+                height: 100vh;
+                width: 100%;
             }
         }
     </style>
@@ -203,17 +288,6 @@ if (!isset($_SESSION['user_id'])) {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 <script src="<?= BASE_URL ?>public/assets/js/map.js"></script>
-<script>
-    document.getElementById("filter-button")?.addEventListener("click", () => {
-        document.getElementById("property-sidebar").classList.add("hidden");
-        document.getElementById("filter-panel").classList.add("open");
-    });
 
-    document.getElementById("close-filter")?.addEventListener("click", () => {
-        document.getElementById("filter-panel").classList.remove("open");
-        document.getElementById("filter-panel").scrollTop = 0;
-        document.getElementById("property-sidebar").classList.remove("hidden");
-    });
-</script>
 </body>
 </html>
