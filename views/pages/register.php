@@ -28,16 +28,25 @@ require_once __DIR__ . '/../../src/config/config.php';
 
 <div class="auth-page">
     <div class="auth-card">
-        <h2>Create an Account</h2>        <?php if (isset($_GET['error'])): ?>
-            <?php if ($_GET['error'] === 'invalid_email'): ?>
-                <p class="error">Invalid email format. Please provide a valid email address.</p>
-            <?php elseif ($_GET['error'] === 'duplicate_email'): ?>
-                <p class="error">An account with this email address already exists.</p>
+        <h2>Create an Account</h2>
+        <?php if (isset($_GET['error'])): ?>
+            <?php if ($_GET['error'] === 'empty'): ?>
+                <p class="error">Please fill in all fields.</p>
+            <?php elseif ($_GET['error'] === 'notfound'): ?>
+                <p class="error">No account found with this email.</p>
+            <?php elseif ($_GET['error'] === 'invalid'): ?>
+                <p class="error">Incorrect password. Please try again.</p>
+            <?php elseif ($_GET['error'] === 'email_taken'): ?>
+                <p class="error">Email already in use. Please use a different one.</p>
             <?php elseif ($_GET['error'] === 'database'): ?>
                 <p class="error">A database error occurred. Please try again later.</p>
             <?php else: ?>
-                <p class="error">Registration failed. Please try again.</p>
+                <p class="error">Login failed. Please try again.</p>
             <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['success']) && $_GET['success'] === 'registered'): ?>
+            <p class="success">Account created! You can now log in.</p>
         <?php endif; ?>
 
         <form method="post" action="../../src/controllers/AuthController.php?action=register" class="auth-form">
@@ -45,9 +54,11 @@ require_once __DIR__ . '/../../src/config/config.php';
             <input type="email" name="email" placeholder="Email Address" required>
             <input type="password" name="password" placeholder="Password" required>
             <input type="submit" value="Register" class="btn-primary">
-        </form>        <p class="switch-link">Already have an account?
+        </form>
+        <p class="switch-link">Already have an account?
             <a href="login.php">Login here</a>
-        </p>    </div>
+        </p>
+    </div>
 </div>
 
 <script src="../../public/assets/js/responsive.js"></script>
