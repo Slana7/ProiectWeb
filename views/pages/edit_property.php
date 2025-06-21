@@ -1,67 +1,28 @@
 <?php
-require_once __DIR__ . '/../../src/config/config.php';
+
+require_once __DIR__ . "/../../src/config/config.php";
 require_once __DIR__ . '/../../src/controllers/PropertyController.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+
+$property = null;
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $controller = new PropertyController();
+    $property = $controller->getPropertyById($id);
 }
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
+$facilities = [];
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $controller = new PropertyController();
+    $property = $controller->getPropertyById($id);
+    $facilities = $controller->getFacilitiesByPropertyId($id);
 }
 
-$propertyId = $_GET['id'] ?? null;
-$userId = $_SESSION['user_id'];
+$propertyFacilities = array_map(fn($f) => $f['name'], $facilities);
 
-if (!$propertyId) {
-    $_SESSION['flash_message'] = 'No property specified for editing';
-    header('Location: my_properties.php');
-    exit;
-}
-
-$property = PropertyController::getPropertyById($propertyId);
-
-if (!$property) {
-    $_SESSION['flash_message'] = 'Property not found';
-    header('Location: my_properties.php');
-    exit;
-}
-
-if ($property['user_id'] != $userId) {
-    $_SESSION['flash_message'] = 'You do not have permission to edit this property';
-    header('Location: my_properties.php');
-    exit;
-}
-
-$errors = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $propertyData = [
-        'title' => $_POST['title'] ?? '',
-        'description' => $_POST['description'] ?? '',
-        'price' => $_POST['price'] ?? '',
-        'area' => $_POST['area'] ?? '',
-        'status' => $_POST['status'] ?? 'for_sale',
-        'lat' => $_POST['lat'] ?? $property['lat'],
-        'lng' => $_POST['lng'] ?? $property['lng'],
-        'facilities' => $_POST['facilities'] ?? []
-    ];
-
-    $result = PropertyController::updateProperty($propertyId, $propertyData, $userId, false);
-
-    if ($result['success']) {
-        $_SESSION['flash_message'] = $result['message'];
-        header('Location: my_properties.php');
-        exit;
-    } else {
-        $errors[] = $result['message'];
-        $property = PropertyController::getPropertyById($propertyId);
-    }
-}
-
-$facilities = PropertyController::getFacilities();
-$propertyFacilities = $property['facilities'] ?? [];
 ?>
 <!DOCTYPE html>
 <html>
@@ -129,7 +90,8 @@ $propertyFacilities = $property['facilities'] ?? [];
                     <?= htmlspecialchars($facility['name']) ?>
                 </label>
             <?php endforeach; ?>
-        </div>        <div class="button-group">
+        </div>
+        <div class="button-group">
             <input type="submit" value="Update Property" class="btn-primary">
             <a href="my_properties.php" class="btn-secondary">Cancel</a>
         </div>
