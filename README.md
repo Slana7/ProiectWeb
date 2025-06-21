@@ -130,7 +130,6 @@ Acest proiect este open-source sub licența MIT.
 
 ## Contact
 
-Email: rem.contact@example.com  
 GitHub: [REM-Project](https://github.com/REM-Project/REM-Real-Estate-Management)
 
 ---
