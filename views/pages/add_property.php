@@ -65,8 +65,8 @@ $facilities = PropertyController::getFacilities();
         <p>Click on the map to set the property location</p>
         <div id="map"></div>
 
-        <input type="hidden" name="lat" id="lat" required>
-        <input type="hidden" name="lng" id="lng" required>
+        <input type="hidden" name="lat" id="lat">
+        <input type="hidden" name="lng" id="lng">
 
         <label>Facilities:</label>
         <div class="checkbox-group">

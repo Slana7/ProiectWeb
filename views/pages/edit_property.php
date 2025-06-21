@@ -55,7 +55,7 @@ $propertyFacilities = array_map(fn($f) => $f['name'], $facilities);
         </div>
     <?php endif; ?>
 
-    <form method="post" action="<?= $_SERVER['PHP_SELF'] ?>?id=<?= $propertyId ?>" class="property-form">
+    <form method="post" action="<?= $_SERVER['PHP_SELF'] ?>?id=<?= $id ?>" class="property-form">
         <label>Title:</label>
         <input type="text" name="title" value="<?= htmlspecialchars($property['title']) ?>" required>
 
