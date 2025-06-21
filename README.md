@@ -3,10 +3,9 @@
   <h1>REM - Real Estate Management</h1>
   
   <p>
-    O platformă completă pentru gestionarea anunțurilor imobiliare, cu hărți interactive, mesagerie și analiză de prețuri.
+    Platformă web avansată pentru gestionarea anunțurilor imobiliare, cu funcționalități moderne de analiză, cartografiere și comunicare.
   </p>
   
-  <!-- Badges -->
   <p>
     <img src="https://img.shields.io/badge/PHP-8.0+-777BB4?style=flat&logo=php&logoColor=white" alt="PHP" />
     <img src="https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white" alt="PostgreSQL" />
@@ -19,27 +18,55 @@
 
 ---
 
-## Descriere
+## Abstract
 
-REM permite:
-- Adăugarea, editarea și ștergerea proprietăților cu detalii și localizare pe hartă
-- Căutare și filtrare avansată după preț, facilități, zonă și alte criterii
-- Vizualizare proprietăți pe hartă interactivă cu date în timp real (trafic, poluare, facilități din apropiere)
-- Sistem de mesagerie între utilizatori pentru întrebări și negocieri
-- Salvarea proprietăților favorite
-- Analiză statistică și comparații de prețuri
-- Autentificare și înregistrare securizată
-- Administrare utilizatori și anunțuri (rol admin)
-- Notificări și validare email
+REM (Real Estate Management) este o aplicație web dezvoltată pentru a facilita gestionarea, analiza și vizualizarea anunțurilor imobiliare. Platforma integrează funcționalități de cartografiere interactivă, analiză statistică, comunicare între utilizatori și administrare avansată, adresând atât nevoile utilizatorilor finali, cât și ale administratorilor.
 
 ---
 
-## Tehnologii folosite
+## Table of Contents
+
+- [Descriere generală](#descriere-generală)
+- [Funcționalități principale](#funcționalități-principale)
+- [Arhitectură și tehnologii](#arhitectură-și-tehnologii)
+- [Structura proiectului](#structura-proiectului)
+- [Instrucțiuni de instalare](#instrucțiuni-de-instalare)
+- [Utilizare](#utilizare)
+- [Testare și validare](#testare-și-validare)
+- [Roadmap](#roadmap)
+- [Licență](#licență)
+- [Contact](#contact)
+- [Referințe](#referințe)
+
+---
+
+## Descriere generală
+
+REM oferă un cadru complet pentru publicarea, gestionarea și analiza anunțurilor imobiliare, integrând date geospațiale și instrumente de comunicare. Platforma este destinată atât utilizatorilor individuali, cât și agențiilor imobiliare, oferind suport pentru operațiuni CRUD, filtrare avansată, vizualizare pe hartă și analiză de piață.
+
+---
+
+## Funcționalități principale
+
+- **Gestionare proprietăți:** Adăugare, editare, ștergere și vizualizare anunțuri cu detalii extinse și localizare geospațială.
+- **Cartografiere interactivă:** Vizualizare proprietăți pe hartă cu Leaflet.js, integrare date externe (trafic, poluare, facilități).
+- **Filtrare și căutare avansată:** După preț, facilități, zonă, suprafață, status și alți parametri.
+- **Mesagerie internă:** Sistem de comunicare între utilizatori pentru întrebări și negocieri.
+- **Favorite:** Salvarea și gestionarea proprietăților preferate.
+- **Analiză statistică:** Grafică și comparații de prețuri, evoluții și tendințe.
+- **Administrare:** Panou dedicat pentru administratori (gestionare utilizatori, anunțuri, moderare).
+- **Securitate:** Autentificare, înregistrare, validare email, sesiuni securizate.
+- **Notificări:** Sistem de notificări și validări automate.
+
+---
+
+## Arhitectură și tehnologii
 
 - **Frontend:** HTML5, CSS3, JavaScript (ES6+), Leaflet.js, Chart.js
 - **Backend:** PHP 8+, PDO, sesiuni PHP
 - **Bază de date:** PostgreSQL 14+ cu extensia PostGIS, PL/pgSQL
 - **API-uri externe:** Overpass API (OpenStreetMap), OpenWeatherMap
+- **Structură MVC:** Separare clară între modele, controllere și view-uri pentru mentenanță și scalabilitate.
 
 ---
 
@@ -66,7 +93,7 @@ REM/
 
 ---
 
-## Instalare rapidă
+## Instrucțiuni de instalare
 
 1. **Clonează proiectul**
    ```bash
@@ -81,7 +108,7 @@ REM/
    psql -d REM -f sql/schema.sql
    ```
 
-3. **Configurează fișierul `.env` cu datele tale**
+3. **Configurează fișierul `.env` cu datele tale de conectare la baza de date**
 
 4. **Pornește serverul**
    ```bash
@@ -98,15 +125,17 @@ REM/
 - Caută și filtrează proprietăți pe hartă
 - Salvează favorite și contactează proprietarii
 - Analizează prețurile și vezi date în timp real pe hartă
+- Accesează panoul de administrare pentru management avansat
 
 ---
 
-## Testare
+## Testare și validare
 
-Pentru a testa funcțiile PL/pgSQL și constrângerile bazei de date:
-```bash
-php test_exceptions.php
-```
+- Pentru a testa funcțiile PL/pgSQL și constrângerile bazei de date:
+  ```bash
+  php test_exceptions.php
+  ```
+- Testare manuală a funcționalităților principale se poate realiza din interfața web, cu utilizatori de test.
 
 ---
 
@@ -130,7 +159,16 @@ Acest proiect este open-source sub licența MIT.
 
 ## Contact
 
+Email: rem.contact@example.com  
 GitHub: [REM-Project](https://github.com/REM-Project/REM-Real-Estate-Management)
+
+---
+
+## Referințe
+
+- [Leaflet.js Documentation](https://leafletjs.com/)
+- [PostGIS Documentation](https://postgis.net/documentation/)
+- [OpenStreetMap Wiki](https://wiki.openstreetmap.org/)
 
 ---
 
