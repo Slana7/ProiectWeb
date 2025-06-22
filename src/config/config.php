@@ -5,7 +5,6 @@ EnvLoader::load(__DIR__ . '/../../.env');
 
 date_default_timezone_set('Europe/Bucharest');
 
-// Auto-detect BASE_URL based on environment
 $base_url = getenv('BASE_URL') ?: '/';
 if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/REM/') !== false) {
     $base_url = '/REM/';

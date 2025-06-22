@@ -1,27 +1,22 @@
 <?php
 require_once __DIR__ . '/src/config/config.php';
 
-// Start session only if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Handle direct access to static files
 $request_uri = $_SERVER['REQUEST_URI'] ?? '/';
 $parsed_url = parse_url($request_uri);
 $path = $parsed_url['path'];
 
-// Remove trailing slash except for root
 if ($path !== '/' && substr($path, -1) === '/') {
     $path = rtrim($path, '/');
 }
 
-// If requesting a static file that exists, let it be served
 if (preg_match('/\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/', $path)) {
     return false;
 }
 
-// Default behavior - show welcome page or redirect if logged in
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['user_role'] === 'admin') {
         header("Location: " . BASE_URL . "views/pages/admin_dashboard.php");

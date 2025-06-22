@@ -74,7 +74,6 @@ document.getElementById('profileForm').onsubmit = async function(e) {
         new_password: form.new_password.value.trim() || null
     };
     
-    // Basic validation
     if (!data.name) {
         alert('Name is required');
         return;

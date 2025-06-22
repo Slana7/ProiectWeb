@@ -10,7 +10,6 @@ class ProfileController {
     }    public static function updateUser($userId, $name, $email, $newPassword = null) {
         $conn = Database::connect();
         
-        // Check if email is already taken by another user
         $stmt = $conn->prepare("SELECT id FROM users WHERE email = :email AND id != :user_id");
         $stmt->execute(['email' => $email, 'user_id' => $userId]);
         if ($stmt->fetch()) {
