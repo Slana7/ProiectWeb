@@ -5,7 +5,7 @@ function isAdmin() {
 
 function requireAdmin() {
     if (!isAdmin()) {
-        header('Location: ' . BASE_URL . 'dashboard.php');
+        header('Location: ' . BASE_URL . 'views/pages/dashboard.php');
         exit;
     }
 }

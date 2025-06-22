@@ -74,7 +74,7 @@ if (isset($_SESSION['user_id'])) {
 document.querySelectorAll('#logoutBtnMobile, #logoutBtnDesktop').forEach(btn => {
     btn.onclick = async function(e) {
         e.preventDefault();
-        await fetch('/REM/src/api/auth.php?action=logout', { method: 'POST' });
+        await fetch('<?= BASE_URL ?>src/api/auth.php?action=logout', { method: 'POST' });
         window.location.href = 'login.php';
     };
 });

@@ -76,10 +76,15 @@ if ($method === 'POST' && $action === 'register') {
             'email' => $email,
             'password' => $hash
         ]);
-        echo json_encode(['success' => true]);
-    } catch (PDOException $e) {
+        echo json_encode(['success' => true]);    } catch (PDOException $e) {
         echo json_encode(['success' => false, 'error' => 'database']);
     }
+    exit;
+}
+
+if ($method === 'GET' && $action === 'logout') {
+    session_destroy();
+    header('Location: ' . BASE_URL . 'views/pages/login.php');
     exit;
 }
 

@@ -27,7 +27,7 @@ require_once __DIR__ . '/../../src/config/config.php';
     </style>
 </head>
 <body>
-<?php include_once '../../public/includes/auth_header.php'; ?>
+<?php include_once __DIR__ . '/../../public/includes/auth_header.php'; ?>
 
 <div class="auth-page">
     <div class="auth-card">
@@ -51,8 +51,7 @@ require_once __DIR__ . '/../../src/config/config.php';
 <script>
 document.getElementById('loginForm').onsubmit = async function(e) {
     e.preventDefault();
-    const form = e.target;
-    const data = {
+    const form = e.target;    const data = {
         email: form.email.value,
         password: form.password.value
     };
@@ -60,7 +59,7 @@ document.getElementById('loginForm').onsubmit = async function(e) {
     msgDiv.innerHTML = '';
 
     try {
-        const res = await fetch('/REM/src/api/auth.php?action=login', {
+        const res = await fetch('../../src/api/auth.php?action=login', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)

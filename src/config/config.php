@@ -5,7 +5,13 @@ EnvLoader::load(__DIR__ . '/../../.env');
 
 date_default_timezone_set('Europe/Bucharest');
 
-define('BASE_URL', getenv('BASE_URL') ?: '/REM/');
+// Auto-detect BASE_URL based on environment
+$base_url = getenv('BASE_URL') ?: '/';
+if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/REM/') !== false) {
+    $base_url = '/REM/';
+}
+define('BASE_URL', $base_url);
+
 define('APP_NAME', getenv('APP_NAME') ?: 'REM');
 define('DEBUG_MODE', getenv('DEBUG_MODE') === 'true');
 

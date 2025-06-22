@@ -22,7 +22,7 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 <body>
 
-<?php include_once '../../public/includes/dashboard_header.php'; ?>
+<?php include_once __DIR__ . '/../../public/includes/dashboard_header.php'; ?>
 
 <header class="top-bar">
     <h1>Add New Property</h1>
@@ -139,6 +139,7 @@ document.getElementById('addPropertyForm').onsubmit = async function(e) {
 };
 </script>
 
+<?php include_once __DIR__ . '/../../public/includes/dashboard_footer.php'; ?>
 </body>
 </html>
 
