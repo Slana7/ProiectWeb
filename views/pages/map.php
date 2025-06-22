@@ -203,9 +203,7 @@ if (!isset($_SESSION['user_id'])) {
             border: none;
             cursor: pointer;
             color: #333;
-        }
-
-        @media (max-width: 768px) {
+        }        @media (max-width: 768px) {
             #property-sidebar {
                 position: fixed;
                 top: 60px;
@@ -224,8 +222,22 @@ if (!isset($_SESSION['user_id'])) {
             }
             
             #filter-panel {
+                position: fixed;
                 width: 90%;
                 max-width: 350px;
+                height: calc(100vh - 60px);
+                top: 60px;
+                right: -100%;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: 1rem 1.5rem;
+                box-sizing: border-box;
+                transition: right 0.3s ease;
+            }
+            
+            #filter-panel.open {
+                right: 0;
+                transform: none;
             }
             
             .map-layout {

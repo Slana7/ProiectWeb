@@ -64,27 +64,48 @@ if (isset($_SESSION['flash_message'])) {
                 <div class="form-submit-section">
                     <input type="submit" value="Update Profile" class="btn-primary">
                 </div>
-            </form>
-            <script>
+            </form>            <script>
 document.getElementById('profileForm').onsubmit = async function(e) {
     e.preventDefault();
     const form = e.target;
     const data = {
-        name: form.name.value,
-        email: form.email.value,
-        new_password: form.new_password.value
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        new_password: form.new_password.value.trim() || null
     };
-    const res = await fetch('../../src/api/profile.php', {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    });
-    const result = await res.json();
-    if (result.success) {
-        alert('Profile updated!');
-        window.location.reload();
-    } else {
-        alert(result.error || 'Failed to update profile');
+    
+    // Basic validation
+    if (!data.name) {
+        alert('Name is required');
+        return;
+    }
+    if (!data.email) {
+        alert('Email is required');
+        return;
+    }
+    
+    try {
+        const res = await fetch('../../src/api/profile.php', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Network error');
+        }
+        
+        const result = await res.json();
+        if (result.success) {
+            alert('Profile updated successfully!');
+            window.location.reload();
+        } else {
+            alert(result.error || 'Failed to update profile');
+        }
+    } catch (error) {
+        console.error('Profile update error:', error);
+        alert('Error: ' + error.message);
     }
 };
 </script>

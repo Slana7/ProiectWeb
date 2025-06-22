@@ -56,31 +56,42 @@ const userInfoDiv = document.getElementById('userInfo');
 const msgDiv = document.getElementById('api-message');
 
 async function loadUserInfo() {
-    const res = await fetch(`../../src/api/admin.php?action=user&id=${userId}`);
-    const user = await res.json();
-    console.log(result);
-    if (!user || user.error) {
-        userInfoDiv.innerHTML = '<p class="error">User not found or cannot be deleted.</p>';
+    try {
+        const res = await fetch(`../../src/api/admin.php?action=user&id=${userId}`);
+        const user = await res.json();
+        console.log(user);
+        
+        if (!user || user.error) {
+            userInfoDiv.innerHTML = '<p class="error">User not found or cannot be deleted.</p>';
+            document.getElementById('deleteUserForm').style.display = 'none';
+            return;
+        }
+        
+        if (user.role === 'admin') {
+            userInfoDiv.innerHTML = '<p class="error">You cannot delete another admin.</p>';
+            document.getElementById('deleteUserForm').style.display = 'none';
+            return;
+        }
+        
+        userInfoDiv.innerHTML = `
+            <h3>⚠️ Delete User Confirmation</h3>
+            <p>Are you sure you want to delete the user: <strong>${escapeHtml(user.name)}</strong> (${escapeHtml(user.email)})?</p>
+            <p><strong>This action will permanently remove:</strong></p>
+            <ul>
+                <li>The user account</li>
+                <li>All their properties</li>
+                <li>All their messages and conversations</li>
+                <li>All properties they saved as favorites</li>
+                <li>All their property interests</li>
+                <li>All related data and associations</li>
+            </ul>
+            <p class="error"><strong>⚠️ This action cannot be undone!</strong></p>
+        `;
+    } catch (error) {
+        console.error('Error loading user info:', error);
+        userInfoDiv.innerHTML = '<p class="error">Error loading user information. Please try again.</p>';
         document.getElementById('deleteUserForm').style.display = 'none';
-        return;
     }
-    if (user.role === 'admin') {
-        userInfoDiv.innerHTML = '<p class="error">You cannot delete another admin.</p>';
-        document.getElementById('deleteUserForm').style.display = 'none';
-        return;
-    }
-    userInfoDiv.innerHTML = `
-        <h3>⚠️ Delete User Confirmation</h3>
-        <p>Are you sure you want to delete the user: <strong>${escapeHtml(user.name)}</strong> (${escapeHtml(user.email)})?</p>
-        <p><strong>This action will:</strong></p>
-        <ul>
-            <li>Permanently delete the user account</li>
-            <li>Remove all their properties</li>
-            <li>Delete all their messages and conversations</li>
-            <li>Remove them from all favorites</li>
-        </ul>
-        <p><strong>This action cannot be undone!</strong></p>
-    `;
 }
 
 function escapeHtml(text) {
@@ -91,25 +102,43 @@ function escapeHtml(text) {
 
 document.getElementById('deleteUserForm').onsubmit = async function(e) {
     e.preventDefault();
-    if (!confirm('Are you sure you want to permanently delete this user?')) return;
+    if (!confirm('Are you sure you want to permanently delete this user and all their data?')) return;
 
-    const res = await fetch(`../../src/api/admin.php`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            action: 'delete_user',
-            id: userId
-        })
-    });
+    // Disable the form to prevent double submission
+    const submitBtn = this.querySelector('input[type="submit"]');
+    const originalText = submitBtn.value;
+    submitBtn.disabled = true;
+    submitBtn.value = 'Deleting...';
 
-    const result = await res.json();
-    if (result.success) {
-        msgDiv.innerHTML = '<div class="alert success">User deleted successfully.</div>';
-        setTimeout(() => window.location.href = 'admin_users.php?success=user_deleted', 1200);
-    } else {
-        msgDiv.innerHTML = '<div class="alert error">' + (result.error || 'Failed to delete user') + '</div>';
+    try {
+        const res = await fetch(`../../src/api/admin.php`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: 'delete_user',
+                id: userId
+            })
+        });
+
+        const result = await res.json();
+        
+        if (result.success) {
+            msgDiv.innerHTML = '<div class="alert success">User deleted successfully. Redirecting...</div>';
+            setTimeout(() => window.location.href = 'admin_users.php?success=user_deleted', 1500);
+        } else {
+            msgDiv.innerHTML = '<div class="alert error">Error: ' + (result.error || 'Failed to delete user') + '</div>';
+            // Re-enable the form
+            submitBtn.disabled = false;
+            submitBtn.value = originalText;
+        }
+    } catch (error) {
+        console.error('Delete user error:', error);
+        msgDiv.innerHTML = '<div class="alert error">Network error. Please try again.</div>';
+        // Re-enable the form
+        submitBtn.disabled = false;
+        submitBtn.value = originalText;
     }
 };
 

@@ -91,13 +91,14 @@ function escapeHtml(text) {
 
 document.getElementById('removePropertyForm').onsubmit = async function(e) {
     e.preventDefault();
-    if (!confirm('Are you sure you want to permanently remove this property?')) return;
-    const res = await fetch(`../../src/api/property.php?id=${propertyId}`, {
+    if (!confirm('Are you sure you want to permanently remove this property?')) return;    const res = await fetch(`../../src/api/property.php?id=${propertyId}`, {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ is_admin: isAdmin })
-    });
-    const result = await res.json();
+        body: JSON.stringify({ 
+            is_admin: isAdmin,
+            user_id: userId
+        })
+    });    const result = await res.json();
     if (result.success) {
         msgDiv.innerHTML = '<div class="alert success">Property removed successfully.</div>';
         setTimeout(() => window.location.href = isAdmin ? 'admin_properties.php' : 'my_properties.php', 1200);

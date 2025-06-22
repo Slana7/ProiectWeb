@@ -98,9 +98,7 @@ class PropertyService {
 
         if (!$property) {
             return ['success' => false, 'message' => 'Property not found'];
-        }
-
-        if (!$isAdmin && $property['user_id'] !== $userId) {
+        }        if (!$isAdmin && $property['user_id'] != $userId) {
             return ['success' => false, 'message' => 'Unauthorized'];
         }
 

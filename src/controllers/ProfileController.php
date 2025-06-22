@@ -7,20 +7,21 @@ class ProfileController {
         $stmt = $conn->prepare("SELECT id, name, email FROM users WHERE id = :id");
         $stmt->execute(['id' => $userId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public static function updateUser($userId, $name, $email, $newPassword = null) {
+    }    public static function updateUser($userId, $name, $email, $newPassword = null) {
         $conn = Database::connect();
+        
+        // Check if email is already taken by another user
         $stmt = $conn->prepare("SELECT id FROM users WHERE email = :email AND id != :user_id");
         $stmt->execute(['email' => $email, 'user_id' => $userId]);
         if ($stmt->fetch()) {
             return ['success' => false, 'error' => 'Email already in use'];
         }
+        
         try {
-            if ($newPassword) {
+            if (!empty($newPassword)) {
                 $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
                 $stmt = $conn->prepare("UPDATE users SET name = :name, email = :email, password = :password WHERE id = :id");
-                $success = $stmt->execute([
+                $result = $stmt->execute([
                     'name' => $name,
                     'email' => $email,
                     'password' => $hashedPassword,
@@ -28,19 +29,21 @@ class ProfileController {
                 ]);
             } else {
                 $stmt = $conn->prepare("UPDATE users SET name = :name, email = :email WHERE id = :id");
-                $success = $stmt->execute([
+                $result = $stmt->execute([
                     'name' => $name,
                     'email' => $email,
                     'id' => $userId
                 ]);
             }
-            if ($success) {
+            
+            if ($result && $stmt->rowCount() > 0) {
                 return ['success' => true];
             } else {
-                return ['success' => false, 'error' => 'Failed to update profile'];
+                return ['success' => false, 'error' => 'No changes were made or user not found'];
             }
         } catch (PDOException $e) {
-            return ['success' => false, 'error' => 'Database error'];
+            error_log("Profile update error: " . $e->getMessage());
+            return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
         }
     }
 }

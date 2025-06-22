@@ -66,9 +66,8 @@ async function loadUsers() {
                         ${capitalize(user.role)}
                     </span>
                 </td>
-                <td>${user.property_count}</td>
-                <td>
-                    ${user.role !== 'admin' ? `<button class="btn btn-small btn-danger" onclick="deleteUser(${user.id})">Delete</button>` : ''}
+                <td>${user.property_count}</td>                <td>
+                    ${user.role !== 'admin' ? `<a href="delete_user.php?id=${user.id}" class="btn btn-small btn-danger">Delete</a>` : ''}
                 </td>
             `;
             tbody.appendChild(tr);
@@ -85,21 +84,6 @@ function escapeHtml(text) {
 }
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-async function deleteUser(id) {
-    if (!confirm('Are you sure you want to delete this user?')) return;
-    const res = await fetch(`../../src/api/user.php?id=${id}`, {
-    method: 'DELETE'
-    });
-    const result = await res.json();
-    const msgDiv = document.getElementById('api-message');
-    if (result.success) {
-        msgDiv.innerHTML = '<div class="alert success">User deleted successfully.</div>';
-        loadUsers();
-    } else {
-        msgDiv.innerHTML = '<div class="alert error">' + (result.error || 'Failed to delete user') + '</div>';
-    }
 }
 
 loadUsers();

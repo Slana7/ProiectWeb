@@ -8,9 +8,7 @@ class UserService {
 
         $stmt = $conn->prepare("SELECT role FROM users WHERE id = :id");
         $stmt->execute([':id' => $userId]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$user || $user['role'] === 'admin') {
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);        if (!$user || $user['role'] === 'admin') {
             return ['success' => false, 'error' => 'forbidden'];
         }
 
@@ -21,10 +19,19 @@ class UserService {
             $stmt->execute([':id' => $userId]);
             $propertyIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
+            $stmt = $conn->prepare("DELETE FROM saved_properties WHERE user_id = :id");
+            $stmt->execute([':id' => $userId]);
+
+            $stmt = $conn->prepare("DELETE FROM interested WHERE user_id = :id");
+            $stmt->execute([':id' => $userId]);
+
             if (!empty($propertyIds)) {
                 $inClause = implode(',', array_fill(0, count($propertyIds), '?'));
 
                 $stmt = $conn->prepare("DELETE FROM saved_properties WHERE property_id IN ($inClause)");
+                $stmt->execute($propertyIds);
+
+                $stmt = $conn->prepare("DELETE FROM interested WHERE property_id IN ($inClause)");
                 $stmt->execute($propertyIds);
 
                 $stmt = $conn->prepare("DELETE FROM property_facility WHERE property_id IN ($inClause)");
@@ -35,18 +42,20 @@ class UserService {
             $stmt->execute([':id' => $userId]);
 
             $stmt = $conn->prepare("DELETE FROM properties WHERE user_id = :id");
-            $stmt->execute([':id' => $userId]);
-
-            $stmt = $conn->prepare("DELETE FROM users WHERE id = :id");
+            $stmt->execute([':id' => $userId]);            $stmt = $conn->prepare("DELETE FROM users WHERE id = :id");
             $stmt->execute([':id' => $userId]);
 
             $conn->commit();
             return ['success' => true];
-
         } catch (PDOException $e) {
             $conn->rollBack();
-            error_log("Delete user error: " . $e->getMessage());
-            return ['success' => false, 'error' => $e->getMessage()];
+            error_log("Delete user error for user ID $userId: " . $e->getMessage());
+            error_log("SQL State: " . $e->getCode());
+            return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+        } catch (Exception $e) {
+            $conn->rollBack();
+            error_log("General error deleting user ID $userId: " . $e->getMessage());
+            return ['success' => false, 'error' => 'An error occurred while deleting the user'];
         }
     }
 

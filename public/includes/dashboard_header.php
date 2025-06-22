@@ -38,9 +38,8 @@ if (isset($_SESSION['user_id'])) {
                         <?php if (!empty($hasUnread)): ?>
                         <span class="unread-dot"></span>
                         <?php endif; ?>
-                    </a>
-                <?php endif; ?>
-                <a href="#" id="logoutBtn">Logout</a>
+                    </a>                <?php endif; ?>
+                <a href="#" id="logoutBtnMobile">Logout</a>
             </nav>
         </div>
     </header>
@@ -66,13 +65,13 @@ if (isset($_SESSION['user_id'])) {
                     <?php endif; ?>
                 </a>
             <?php endif; ?>
-            <a href="#" id="logoutBtn">Logout</a>
+            <a href="#" id="logoutBtnDesktop">Logout</a>
         </nav>
     </aside>
 
     <main class="main-content">
 <script>
-document.querySelectorAll('#logoutBtn').forEach(btn => {
+document.querySelectorAll('#logoutBtnMobile, #logoutBtnDesktop').forEach(btn => {
     btn.onclick = async function(e) {
         e.preventDefault();
         await fetch('/REM/src/api/auth.php?action=logout', { method: 'POST' });

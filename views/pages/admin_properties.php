@@ -90,19 +90,8 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-async function deleteProperty(id) {
-    const res = await fetch(`../../src/api/property.php?id=${id}`, {
-        method: 'DELETE',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ is_admin: true })
-    });
-    const result = await res.json();
-    if (result.success) {
-        alert('Property deleted!');
-        loadProperties();
-    } else {
-        alert(result.error || 'Failed to delete property');
-    }
+function deleteProperty(id) {
+    window.location.href = `remove_property.php?id=${id}`;
 }
 
 loadProperties();
