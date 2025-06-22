@@ -3,7 +3,6 @@ require_once __DIR__ . '/../../src/config/config.php';
 require_once __DIR__ . '/../../src/controllers/PropertyController.php';
 require_once __DIR__ . '/../../src/utils/UIHelper.php';
 
-// Backend logic using existing controllers
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -47,12 +46,11 @@ $lng = $details['lng'];
     <p><strong>Posted at:</strong> <?= UIHelper::formatDate($details['posted_at'], 'd-m-Y H:i') ?></p>    <?php if (isset($_SESSION['user_id'])): ?>
         <?php
         $isSaved = PropertyController::isPropertySavedByUser($id, $_SESSION['user_id']);
-        ?>        <form method="post" action="../../src/controllers/PropertyController.php?action=toggle_favorite">
-            <input type="hidden" name="property_id" value="<?= $id ?>">
-            <button type="submit" name="action" value="<?= $isSaved ? 'Unsave' : 'Save' ?>" class="favorite-heart <?= $isSaved ? 'saved' : '' ?>">
-                ♥
-            </button>
-        </form>
+        ?>
+        <button id="favoriteBtn" class="favorite-heart <?= $isSaved ? 'saved' : '' ?>" aria-label="Toggle favorite">
+            ♥
+        </button>
+        <span id="favoriteMsg"></span>
 
         <?php if ($_SESSION['user_id'] !== $details['user_id']): ?>
             <a href="chat.php?property=<?= $details['id'] ?>&with=<?= $details['user_id'] ?>" class="btn-link">Contact landlord</a>
@@ -125,6 +123,42 @@ $lng = $details['lng'];
     <?php else: ?>
         <p style="margin-top:1rem; font-style:italic;">📌 There are no nearby properties available for chart comparison.</p>    <?php endif; ?>
 </section>
+
+<section id="propertyDetails"></section>
+<script>
+async function loadProperty() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    const res = await fetch('../../src/api/property.php?id=' + id);
+    const property = await res.json();
+}
+loadProperty();
+</script>
+<script>
+const favoriteBtn = document.getElementById('favoriteBtn');
+const favoriteMsg = document.getElementById('favoriteMsg');
+let isSaved = <?= $isSaved ? 'true' : 'false' ?>;
+const propertyId = <?= (int)$id ?>;
+
+favoriteBtn.onclick = async function(e) {
+    e.preventDefault();
+    const action = isSaved ? 'remove' : 'add';
+    const res = await fetch('../../src/api/favorites.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ property_id: propertyId, action })
+    });
+    const result = await res.json();
+    if (result.success) {
+        isSaved = !isSaved;
+        favoriteBtn.classList.toggle('saved', isSaved);
+        favoriteMsg.textContent = isSaved ? 'Added to favorites!' : 'Removed from favorites!';
+        setTimeout(() => favoriteMsg.textContent = '', 1500);
+    } else {
+        favoriteMsg.textContent = result.error || 'Error!';
+    }
+};
+</script>
 
 <?= UIHelper::generateFooter() ?>
 

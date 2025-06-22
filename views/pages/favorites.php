@@ -42,6 +42,15 @@ $favorites = PropertyController::getFavoritesByUserId($userId);
         </div>    <?php endif; ?>
 </section>
 
+<section id="favoritesList"></section>
+<script>
+async function loadFavorites() {
+    const res = await fetch('../../src/api/favorites.php');
+    const favorites = await res.json();
+}
+loadFavorites();
+</script>
+
 <?= UIHelper::generateFooter() ?>
 
 <?php include_once '../../public/includes/dashboard_footer.php'; ?>

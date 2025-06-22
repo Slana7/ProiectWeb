@@ -51,7 +51,7 @@ if (isset($_SESSION['flash_message'])) {
             <?php if (isset($_GET['error']) && $_GET['error'] === 'email_taken'): ?>
                 <p class="error">Email already in use. Please choose another.</p>
             <?php endif; ?>
-              <form method="post" action="../../src/controllers/ProfileController.php?action=update_profile" class="property-form">
+              <form id="profileForm" class="property-form">
                 <label>Name:</label>
                 <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>" required>
 
@@ -65,6 +65,29 @@ if (isset($_SESSION['flash_message'])) {
                     <input type="submit" value="Update Profile" class="btn-primary">
                 </div>
             </form>
+            <script>
+document.getElementById('profileForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = {
+        name: form.name.value,
+        email: form.email.value,
+        new_password: form.new_password.value
+    };
+    const res = await fetch('../../src/api/profile.php', {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (result.success) {
+        alert('Profile updated!');
+        window.location.reload();
+    } else {
+        alert(result.error || 'Failed to update profile');
+    }
+};
+</script>
         </section>
     </div>
 

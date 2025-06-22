@@ -270,4 +270,45 @@ class PropertyService {
             return [];
         }
     }
+    public static function createProperty($data) {
+    $conn = Database::connect();
+
+    try {
+        $stmt = $conn->prepare("
+            INSERT INTO properties (user_id, title, description, price, area, status, location)
+            VALUES (:uid, :title, :description, :price, :area, :status, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326))
+        ");
+        $stmt->execute([
+            'uid' => $_SESSION['user_id'],
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'price' => $data['price'],
+            'area' => $data['area'],
+            'status' => $data['status'],
+            'lat' => $data['lat'],
+            'lng' => $data['lng']
+        ]);
+        $propertyId = $conn->lastInsertId();
+
+        if (!empty($data['facilities'])) {
+            $facilityStmt = $conn->prepare("
+                INSERT INTO property_facility (property_id, facility_id)
+                SELECT :pid, id FROM facilities WHERE name = :fname
+            ");
+            foreach ($data['facilities'] as $facilityName) {
+                $facilityStmt->execute([
+                    'pid' => $propertyId,
+                    'fname' => $facilityName
+                ]);
+            }
+        }
+
+        return ['success' => true, 'id' => $propertyId];
+
+    } catch (PDOException $e) {
+        error_log('DB error in createProperty: ' . $e->getMessage());
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
 }

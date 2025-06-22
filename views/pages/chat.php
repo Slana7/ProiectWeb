@@ -1,9 +1,5 @@
 <?php
 require_once __DIR__ . '/../../src/config/config.php';
-require_once __DIR__ . '/../../src/controllers/MessageController.php';
-require_once __DIR__ . '/../../src/models/Message.php';
-
-// Backend logic using existing controllers
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -19,12 +15,7 @@ if (!$propertyId || !$receiverId) {
     header("Location: chat_overview.php");
     exit;
 }
-
-// Use Message model for now since MessageController doesn't have these methods yet
-Message::markMessagesAsRead($receiverId, $userId, $propertyId);
-$messages = Message::getConversationWithUsernames($userId, $receiverId, $propertyId);
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -46,52 +37,96 @@ $messages = Message::getConversationWithUsernames($userId, $receiverId, $propert
 </header>
 
 <section class="chat-window">
-    <div class="messages">
-        <?php foreach ($messages as $msg): ?>
-            <?php
-                $isMine = $msg['sender_id'] == $userId;
-                $formattedTime = date('H:i', strtotime($msg['sent_at']));
-            ?>
-            <div class="message-wrapper <?= $isMine ? 'mine' : 'theirs' ?>">
-                <div class="message-card <?= $msg['is_flagged'] ? 'flagged' : '' ?>">
-                    <?php if ($msg['is_flagged']): ?>
-                        <div class="flag-label">⚠️ Important</div>
-                    <?php endif; ?>
-                    <div class="sender-name"><?= htmlspecialchars($msg['sender_name']) ?></div>
-                    <div class="message-content">
-                        <p><?= nl2br(htmlspecialchars($msg['content'])) ?></p>
-                        <?php if ($msg['attachment']): ?>
-                            <?php
-                                $ext = strtolower(pathinfo($msg['attachment'], PATHINFO_EXTENSION));
-                                $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                            ?>                            <?php if ($isImage): ?>
-                                <img src="../../uploads/<?= htmlspecialchars($msg['attachment']) ?>" alt="Attachment" class="chat-image">
-                            <?php else: ?>
-                                <a class="attachment-link" href="../../uploads/<?= htmlspecialchars($msg['attachment']) ?>" target="_blank">📎 Attachment</a>
-                            <?php endif; ?>
-                        <?php endif; ?>
-                    </div>
-                    <div class="timestamp"><?= $formattedTime ?></div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
+    <div class="messages" id="messages"></div>
 
-    <form class="chat-form" action="../../src/controllers/MessageController.php?action=send" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="property_id" value="<?= $propertyId ?>">
-        <input type="hidden" name="receiver_id" value="<?= $receiverId ?>">
+    <form class="chat-form" id="chatForm" enctype="multipart/form-data" autocomplete="off">
+        <input type="hidden" name="property_id" value="<?= htmlspecialchars($propertyId) ?>">
+        <input type="hidden" name="receiver_id" value="<?= htmlspecialchars($receiverId) ?>">
         <textarea name="content" placeholder="Write a message..." required></textarea>
         <input type="file" name="attachment">
         <button type="submit" class="btn-primary">Send</button>
     </form>
 </section>
 
-<script>    document.addEventListener("DOMContentLoaded", function () {
-        const messagesContainer = document.querySelector(".messages");
-        if (messagesContainer) {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+<script>
+const userId = <?= (int)$userId ?>;
+const propertyId = <?= (int)$propertyId ?>;
+const receiverId = <?= (int)$receiverId ?>;
+const messagesDiv = document.getElementById('messages');
+
+async function loadMessages(scrollToBottom = true) {
+    const res = await fetch(`../../src/api/messages.php?property=${propertyId}&with=${receiverId}`);
+    const messages = await res.json();
+    messagesDiv.innerHTML = '';
+    messages.forEach(msg => {
+        const isMine = msg.sender_id == userId;
+        const formattedTime = msg.sent_at ? msg.sent_at.substring(11, 16) : '';
+        const wrapper = document.createElement('div');
+        wrapper.className = 'message-wrapper ' + (isMine ? 'mine' : 'theirs');
+        wrapper.innerHTML = `
+            <div class="message-card ${msg.is_flagged ? 'flagged' : ''}">
+                ${msg.is_flagged ? '<div class="flag-label">⚠️ Important</div>' : ''}
+                <div class="sender-name">${escapeHtml(msg.sender_name)}</div>
+                <div class="message-content">
+                    <p>${escapeHtml(msg.content).replace(/\n/g, '<br>')}</p>
+                    ${msg.attachment ? renderAttachment(msg.attachment) : ''}
+                </div>
+                <div class="timestamp">${formattedTime}</div>
+            </div>
+        `;
+        messagesDiv.appendChild(wrapper);
     });
+    if (scrollToBottom) {
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+}
+
+async function markAsRead() {
+    await fetch('../../src/api/messages.php?action=mark_read', {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ with: receiverId, property: propertyId })
+    });
+}
+
+document.getElementById('chatForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const res = await fetch('../../src/api/messages.php', {
+        method: 'POST',
+        body: formData
+    });
+    const result = await res.json();
+    if (result.success) {
+        form.content.value = '';
+        form.attachment.value = '';
+        await loadMessages();
+    } else {
+        alert(result.error || 'Failed to send message');
+    }
+};
+
+function renderAttachment(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+    if (isImage) {
+        return `<img src="../../uploads/${encodeURIComponent(filename)}" alt="Attachment" class="chat-image">`;
+    } else {
+        return `<a class="attachment-link" href="../../uploads/${encodeURIComponent(filename)}" target="_blank">📎 Attachment</a>`;
+    }
+}
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+(async function() {
+    await loadMessages();
+    await markAsRead();
+    setInterval(loadMessages, 5000);
+})();
 </script>
 
 <?php include_once '../../public/includes/dashboard_footer.php'; ?>

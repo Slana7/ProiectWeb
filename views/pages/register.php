@@ -21,6 +21,10 @@ require_once __DIR__ . '/../../src/config/config.php';
         .switch-link {
             text-align: center;
         }
+        .error, .success {
+            text-align: center;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -29,27 +33,8 @@ require_once __DIR__ . '/../../src/config/config.php';
 <div class="auth-page">
     <div class="auth-card">
         <h2>Create an Account</h2>
-        <?php if (isset($_GET['error'])): ?>
-            <?php if ($_GET['error'] === 'empty'): ?>
-                <p class="error">Please fill in all fields.</p>
-            <?php elseif ($_GET['error'] === 'notfound'): ?>
-                <p class="error">No account found with this email.</p>
-            <?php elseif ($_GET['error'] === 'invalid'): ?>
-                <p class="error">Incorrect password. Please try again.</p>
-            <?php elseif ($_GET['error'] === 'email_taken'): ?>
-                <p class="error">Email already in use. Please use a different one.</p>
-            <?php elseif ($_GET['error'] === 'database'): ?>
-                <p class="error">A database error occurred. Please try again later.</p>
-            <?php else: ?>
-                <p class="error">Login failed. Please try again.</p>
-            <?php endif; ?>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['success']) && $_GET['success'] === 'registered'): ?>
-            <p class="success">Account created! You can now log in.</p>
-        <?php endif; ?>
-
-        <form method="post" action="../../src/controllers/AuthController.php?action=register" class="auth-form">
+        <div id="api-message"></div>
+        <form id="registerForm" class="auth-form" autocomplete="off">
             <input type="text" name="name" placeholder="Full Name" required>
             <input type="email" name="email" placeholder="Email Address" required>
             <input type="password" name="password" placeholder="Password" required>
@@ -62,6 +47,39 @@ require_once __DIR__ . '/../../src/config/config.php';
 </div>
 
 <script src="../../public/assets/js/responsive.js"></script>
+<script>
+document.getElementById('registerForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = {
+        name: form.name.value,
+        email: form.email.value,
+        password: form.password.value
+    };
+    const msgDiv = document.getElementById('api-message');
+    msgDiv.innerHTML = '';
+    try {
+        const res = await fetch('../../src/api/auth.php?action=register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (result.success) {
+            msgDiv.innerHTML = '<p class="success">Account created! You can now log in.</p>';
+            setTimeout(() => window.location.href = 'login.php', 1200);
+        } else {
+            let errorMsg = 'Registration failed. Please try again.';
+            if (result.error === 'empty') errorMsg = 'Please fill in all fields.';
+            else if (result.error === 'email_taken') errorMsg = 'Email already in use. Please use a different one.';
+            else if (result.error === 'database') errorMsg = 'A database error occurred. Please try again later.';
+            msgDiv.innerHTML = '<p class="error">' + errorMsg + '</p>';
+        }
+    } catch (err) {
+        msgDiv.innerHTML = '<p class="error">Network error. Please try again.</p>';
+    }
+};
+</script>
 </body>
 </html>
 

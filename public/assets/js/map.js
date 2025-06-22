@@ -467,7 +467,7 @@ function loadAndDisplayProperties() {
         list.innerHTML = '<li style="text-align: center; color: #666;">Loading properties...</li>';
     }
     
-    fetch('../../src/api/get_property.php')
+    fetch('../../src/api/properties.php')
         .then(res => {
             if (!res.ok) {
                 throw new Error(`HTTP error! status: ${res.status}`);

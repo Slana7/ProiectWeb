@@ -55,4 +55,14 @@ class UserService {
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public static function getUserById(int $id): ?array {
+    $conn = Database::connect();
+
+    $stmt = $conn->prepare("SELECT id, name, email, role FROM users WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $user ?: null;
+}
+
 }

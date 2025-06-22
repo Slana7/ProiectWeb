@@ -40,7 +40,7 @@ if (isset($_SESSION['user_id'])) {
                         <?php endif; ?>
                     </a>
                 <?php endif; ?>
-                <a href="<?= BASE_URL ?>src/controllers/AuthController.php?action=logout">Logout</a>
+                <a href="#" id="logoutBtn">Logout</a>
             </nav>
         </div>
     </header>
@@ -66,8 +66,17 @@ if (isset($_SESSION['user_id'])) {
                     <?php endif; ?>
                 </a>
             <?php endif; ?>
-            <a href="<?= BASE_URL ?>src/controllers/AuthController.php?action=logout">Logout</a>
+            <a href="#" id="logoutBtn">Logout</a>
         </nav>
     </aside>
 
     <main class="main-content">
+<script>
+document.querySelectorAll('#logoutBtn').forEach(btn => {
+    btn.onclick = async function(e) {
+        e.preventDefault();
+        await fetch('/REM/src/api/auth.php?action=logout', { method: 'POST' });
+        window.location.href = 'login.php';
+    };
+});
+</script>
