@@ -42,7 +42,6 @@ requireAdmin();
                 </tr>
             </thead>
             <tbody id="propertiesTbody">
-                <!-- Proprietățile vor fi încărcate dinamic -->
             </tbody>
         </table>
     </div>
@@ -92,7 +91,6 @@ function capitalize(str) {
 }
 
 async function deleteProperty(id) {
-    if (!confirm('Are you sure you want to delete this property?')) return;
     const res = await fetch(`../../src/api/property.php?id=${id}`, {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json'},

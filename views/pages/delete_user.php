@@ -58,6 +58,7 @@ const msgDiv = document.getElementById('api-message');
 async function loadUserInfo() {
     const res = await fetch(`../../src/api/admin.php?action=user&id=${userId}`);
     const user = await res.json();
+    console.log(result);
     if (!user || user.error) {
         userInfoDiv.innerHTML = '<p class="error">User not found or cannot be deleted.</p>';
         document.getElementById('deleteUserForm').style.display = 'none';

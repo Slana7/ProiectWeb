@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../db/Database.php';
 
 class UserService {
-    
+
     public static function deleteUserCompletely($userId) {
         $conn = Database::connect();
 
@@ -17,11 +17,19 @@ class UserService {
         try {
             $conn->beginTransaction();
 
-            $stmt = $conn->prepare("DELETE FROM saved_properties WHERE property_id IN (SELECT id FROM properties WHERE user_id = :id)");
+            $stmt = $conn->prepare("SELECT id FROM properties WHERE user_id = :id");
             $stmt->execute([':id' => $userId]);
+            $propertyIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-            $stmt = $conn->prepare("DELETE FROM property_facility WHERE property_id IN (SELECT id FROM properties WHERE user_id = :id)");
-            $stmt->execute([':id' => $userId]);
+            if (!empty($propertyIds)) {
+                $inClause = implode(',', array_fill(0, count($propertyIds), '?'));
+
+                $stmt = $conn->prepare("DELETE FROM saved_properties WHERE property_id IN ($inClause)");
+                $stmt->execute($propertyIds);
+
+                $stmt = $conn->prepare("DELETE FROM property_facility WHERE property_id IN ($inClause)");
+                $stmt->execute($propertyIds);
+            }
 
             $stmt = $conn->prepare("DELETE FROM messages WHERE sender_id = :id OR receiver_id = :id");
             $stmt->execute([':id' => $userId]);
@@ -34,10 +42,11 @@ class UserService {
 
             $conn->commit();
             return ['success' => true];
+
         } catch (PDOException $e) {
             $conn->rollBack();
             error_log("Delete user error: " . $e->getMessage());
-            return ['success' => false, 'error' => 'delete_failed'];
+            return ['success' => false, 'error' => $e->getMessage()];
         }
     }
 
@@ -55,14 +64,14 @@ class UserService {
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public static function getUserById(int $id): ?array {
-    $conn = Database::connect();
+        $conn = Database::connect();
 
-    $stmt = $conn->prepare("SELECT id, name, email, role FROM users WHERE id = :id");
-    $stmt->execute([':id' => $id]);
+        $stmt = $conn->prepare("SELECT id, name, email, role FROM users WHERE id = :id");
+        $stmt->execute([':id' => $id]);
 
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $user ?: null;
-}
-
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user ?: null;
+    }
 }
