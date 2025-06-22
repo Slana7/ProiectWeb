@@ -101,9 +101,10 @@ document.getElementById('profileForm').onsubmit = async function(e) {
                     <h3>Export My Properties</h3>
                     <p>Download all your listed properties with complete details.</p>
                     <div class="export-buttons">
-                        <a href="<?= BASE_URL ?>src/controllers/ExportController.php?type=my_properties&format=csv" class="btn-export btn-csv">CSV</a>
-                        <a href="<?= BASE_URL ?>src/controllers/ExportController.php?type=my_properties&format=json" class="btn-export btn-json">JSON</a>
-                        <a href="<?= BASE_URL ?>src/controllers/ExportController.php?type=my_properties&format=pdf" class="btn-export btn-pdf">PDF</a>
+                        <a href="<?= BASE_URL ?>src/api/export.php?type=my_properties&format=csv" class="btn-export btn-csv">CSV</a>
+                        <a href="<?= BASE_URL ?>src/api/export.php?type=my_properties&format=json" class="btn-export btn-json">JSON</a>
+                        <a href="<?= BASE_URL ?>views/pages/export_pdf_preview.php?type=my_properties" class="btn-export btn-pdf">PDF</a>
+
                     </div>
                 </div>
                 
@@ -111,9 +112,10 @@ document.getElementById('profileForm').onsubmit = async function(e) {
                     <h3>Export Favorite Properties</h3>
                     <p>Download your saved favorite properties including owner contact information.</p>
                     <div class="export-buttons">
-                        <a href="<?= BASE_URL ?>src/controllers/ExportController.php?type=favorites&format=csv" class="btn-export btn-csv">CSV</a>
-                        <a href="<?= BASE_URL ?>src/controllers/ExportController.php?type=favorites&format=json" class="btn-export btn-json">JSON</a>
-                        <a href="<?= BASE_URL ?>src/controllers/ExportController.php?type=favorites&format=pdf" class="btn-export btn-pdf">PDF</a>
+                       <a href="<?= BASE_URL ?>src/api/export.php?type=favorites&format=csv" class="btn-export btn-csv">CSV</a>
+                        <a href="<?= BASE_URL ?>src/api/export.php?type=favorites&format=json" class="btn-export btn-json">JSON</a>
+                        <a href="<?= BASE_URL ?>views/pages/export_pdf_preview.php?type=favorites" class="btn-export btn-pdf">PDF</a>
+
                     </div>
                 </div>
             </div>

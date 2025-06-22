@@ -1,8 +1,12 @@
 <?php
 session_start();
-require_once __DIR__ . '/../config/config.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require_once __DIR__ . '/../controllers/ExportController.php';
-session_start();
+require_once __DIR__ . '/../services/PropertyService.php';
+require_once __DIR__ . '/../db/Database.php';
+
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
@@ -25,26 +29,36 @@ if (!in_array($format, ['csv', 'json', 'pdf'])) {
     exit;
 }
 
+$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+          strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
 $data = ExportController::getExportData($userId, $type);
 $filename = ExportController::getExportFilename($userId, $type);
 
 switch ($format) {
     case 'csv':
         header('Content-Type: text/csv; charset=UTF-8');
-        header('Content-Disposition: attachment; filename="' . $filename . '.csv"');
+        if (!$isAjax) {
+            header('Content-Disposition: attachment; filename="' . $filename . '.csv"');
+        }
         echo ExportController::generateCSV($data);
         break;
+
     case 'json':
         header('Content-Type: application/json; charset=UTF-8');
-        header('Content-Disposition: attachment; filename="' . $filename . '.json"');
+        if (!$isAjax) {
+            header('Content-Disposition: attachment; filename="' . $filename . '.json"');
+        }
         echo ExportController::generateJSON($data);
         break;
+
     case 'pdf':
         header('Content-Type: application/json; charset=UTF-8');
         echo json_encode(ExportController::getPDFData($data, $type));
         break;
+
     default:
         http_response_code(400);
         echo json_encode(['error' => 'Unsupported format']);
-        exit;
+        break;
 }

@@ -117,4 +117,3 @@ if (!in_array($exportType, ['favorites', 'my_properties'])) {
 </html>
 
 
-
