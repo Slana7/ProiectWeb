@@ -131,32 +131,68 @@ class PropertyService {
         }
     }
     
-    public static function updateProperty($propertyId, $data, $userId, $isAdmin = false) {
-        $conn = Database::connect();
-        try {
-            $stmt = $conn->prepare("
-                UPDATE properties 
-                SET title = :title, description = :description, price = :price, 
-                    area = :area, status = :status 
-                WHERE id = :id
-            ");
-            $success = $stmt->execute([
-                'title' => $data['title'],
-                'description' => $data['description'],
-                'price' => $data['price'],
-                'area' => $data['area'],
-                'status' => $data['status'],
-                'id' => $propertyId
-            ]);
-            
-            return $success 
-                ? ['success' => true, 'message' => 'Property updated successfully']
-                : ['success' => false, 'message' => 'Failed to update property'];
-        } catch (PDOException $e) {
-            error_log("Error updating property: " . $e->getMessage());
-            return ['success' => false, 'message' => 'Database error'];
-        }
+   public static function updateProperty($propertyId, $data, $userId, $isAdmin = false) {
+    $conn = Database::connect();
+
+    $stmt = $conn->prepare("SELECT user_id FROM properties WHERE id = :id");
+    $stmt->execute(['id' => $propertyId]);
+    $property = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$property) {
+        return ['success' => false, 'message' => 'Property not found'];
     }
+
+    if (!$isAdmin && $property['user_id'] != $userId) {
+        return ['success' => false, 'message' => 'Unauthorized'];
+    }
+
+    try {
+        $conn->beginTransaction();
+
+        $stmt = $conn->prepare("
+            UPDATE properties 
+            SET title = :title, description = :description, price = :price, 
+                area = :area, status = :status,
+                location = ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)
+            WHERE id = :id
+        ");
+        $stmt->execute([
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'price' => $data['price'],
+            'area' => $data['area'],
+            'status' => $data['status'],
+            'lat' => $data['lat'],
+            'lng' => $data['lng'],
+            'id' => $propertyId
+        ]);
+
+        $stmt = $conn->prepare("DELETE FROM property_facility WHERE property_id = :pid");
+        $stmt->execute(['pid' => $propertyId]);
+
+        if (!empty($data['facilities'])) {
+            $facilityStmt = $conn->prepare("
+                INSERT INTO property_facility (property_id, facility_id)
+                SELECT :pid, id FROM facilities WHERE name = :fname
+            ");
+            foreach ($data['facilities'] as $facilityName) {
+                $facilityStmt->execute([
+                    'pid' => $propertyId,
+                    'fname' => $facilityName
+                ]);
+            }
+        }
+
+        $conn->commit();
+        return ['success' => true, 'message' => 'Property updated successfully'];
+
+    } catch (PDOException $e) {
+        $conn->rollBack();
+        error_log("Error updating property: " . $e->getMessage());
+        return ['success' => false, 'message' => 'Database error'];
+    }
+}
+
 
     public static function isPropertySavedByUser($propertyId, $userId) {
         $conn = Database::connect();

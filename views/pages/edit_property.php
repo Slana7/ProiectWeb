@@ -105,8 +105,13 @@ async function loadPropertyAndFacilities() {
 
     const facilitiesGroup = document.getElementById('facilitiesGroup');
     facilitiesGroup.innerHTML = '';
+
+    const savedFacilityNames = new Set(
+        (property.facilities || []).map(f => f.name)
+    );
+
     facilities.forEach(facility => {
-        const checked = property.facilities && property.facilities.includes(facility.name) ? 'checked' : '';
+        const checked = savedFacilityNames.has(facility.name) ? 'checked' : '';
         facilitiesGroup.innerHTML += `
             <label>
                 <input type="checkbox" name="facilities[]" value="${escapeHtml(facility.name)}" ${checked}>
@@ -145,16 +150,16 @@ document.getElementById('editPropertyForm').onsubmit = async function(e) {
     const facilities = Array.from(form.querySelectorAll('input[name="facilities[]"]:checked')).map(cb => cb.value);
 
     const data = {
-        title: form.title.value,
-        description: form.description.value,
-        price: form.price.value,
-        area: form.area.value,
-        status: form.status.value,
-        lat: form.lat.value,
-        lng: form.lng.value,
-        facilities: facilities
+    title: form.title.value,
+    description: form.description.value,
+    price: form.price.value,
+    area: form.area.value,
+    status: form.status.value,
+    lat: form.lat.value,
+    lng: form.lng.value,
+    facilities: facilities,
+    user_id: <?= $_SESSION['user_id'] ?? 1 ?> 
     };
-
     const res = await fetch(`../../src/api/property.php?id=${propertyId}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
@@ -162,7 +167,7 @@ document.getElementById('editPropertyForm').onsubmit = async function(e) {
     });
     const result = await res.json();
     const msgDiv = document.getElementById('api-message');
-    if (result.success) {
+    if (result.success || result.message === 'Property updated') {
         msgDiv.innerHTML = '<div class="alert alert-success">Property updated successfully!</div>';
         setTimeout(() => window.location.href = 'my_properties.php', 1200);
     } else {
