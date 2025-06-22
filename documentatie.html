@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ro" prefix="schema: http://schema.org/">
+<head>
+  <meta charset="UTF-8">
+  <title>REM - Real Estate Management</title>
+  <meta name="description" content="Platformă web avansată pentru gestionarea anunțurilor imobiliare, cu funcționalități moderne de analiză, cartografiere și comunicare.">
+  <meta name="license" content="MIT">
+  <meta name="author" content="Slana7">
+  <meta name="keywords" content="real estate, imobiliare, PHP, PostgreSQL, PostGIS, Leaflet, web app">
+  <link rel="stylesheet" href="https://unpkg.com/scholarly/dist/scholarly.min.css">
+</head>
+<body typeof="schema:ScholarlyArticle">
+
+<header>
+  <h1 property="schema:name">REM - Real Estate Management</h1>
+  <p property="schema:description">
+    Platformă web avansată pentru gestionarea anunțurilor imobiliare, cu funcționalități moderne de analiză, cartografiere și comunicare.
+  </p>
+  <div>
+    <img src="https://img.shields.io/badge/PHP-8.0+-777BB4?style=flat&logo=php&logoColor=white" alt="PHP" />
+    <img src="https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black" alt="JavaScript" />
+    <img src="https://img.shields.io/badge/Leaflet-199900?style=flat&logo=leaflet&logoColor=white" alt="Leaflet" />
+    <img src="https://img.shields.io/badge/PostGIS-008000?style=flat&logo=postgresql&logoColor=white" alt="PostGIS" />
+    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="license" />
+  </div>
+  <address>
+    <span property="schema:author" typeof="schema:Person">
+      <span property="schema:name">Slana7</span>
+    </span>
+    <br>
+    <a href="mailto:rem.contact@example.com" property="schema:email">rem.contact@example.com</a>
+    <br>
+    <a href="https://github.com/REM-Project/REM-Real-Estate-Management" property="schema:url">GitHub</a>
+  </address>
+</header>
+
+<article>
+  <section id="abstract">
+    <h2>Abstract</h2>
+    <p>
+      <span property="schema:abstract">
+        REM (Real Estate Management) este o aplicație web dezvoltată pentru a facilita gestionarea, analiza și vizualizarea anunțurilor imobiliare. Platforma integrează funcționalități de cartografiere interactivă, analiză statistică, comunicare între utilizatori și administrare avansată, adresând atât nevoile utilizatorilor finali, cât și ale administratorilor. Acest proiect a fost realizat în context academic, ca suport pentru studierea tehnologiilor web moderne și a bazelor de date geospațiale.
+      </span>
+    </p>
+  </section>
+
+  <nav>
+    <h2>Cuprins</h2>
+    <ol>
+      <li><a href="#descriere">Descriere generală</a></li>
+      <li><a href="#cerinte-functionale">Cerințe funcționale</a></li>
+      <li><a href="#cerinte-nefunctionale">Cerințe nefuncționale</a></li>
+      <li><a href="#interactiune-utilizator">Interacțiunea cu utilizatorul</a></li>
+      <li><a href="#functionalitati">Funcționalități principale</a></li>
+      <li><a href="#arhitectura">Arhitectură și tehnologii</a></li>
+      <li><a href="#structura">Structura proiectului</a></li>
+      <li><a href="#instalare">Instrucțiuni de instalare</a></li>
+      <li><a href="#utilizare">Utilizare</a></li>
+      <li><a href="#testare">Testare și validare</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#licenta">Licență</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#referinte">Referințe</a></li>
+    </ol>
+  </nav>
+
+  <section id="descriere">
+    <h2>Descriere generală</h2>
+    <p>
+      REM oferă un cadru complet pentru publicarea, gestionarea și analiza anunțurilor imobiliare, integrând date geospațiale și instrumente de comunicare. Platforma este destinată atât utilizatorilor individuali, cât și agențiilor imobiliare, oferind suport pentru operațiuni CRUD, filtrare avansată, vizualizare pe hartă și analiză de piață.
+    </p>
+  </section>
+
+  <section id="cerinte-functionale">
+    <h2>Cerințe funcționale</h2>
+    <ol>
+      <li>Utilizatorul poate crea un cont și se poate autentifica.</li>
+      <li>Utilizatorul poate adăuga, edita și șterge anunțuri imobiliare.</li>
+      <li>Utilizatorul poate vizualiza proprietăți pe hartă și filtra după criterii diverse.</li>
+      <li>Utilizatorul poate salva proprietăți favorite.</li>
+      <li>Utilizatorul poate trimite și primi mesaje legate de anunțuri.</li>
+      <li>Administratorul poate gestiona utilizatori și anunțuri.</li>
+      <li>Sistemul validează datele introduse și notifică utilizatorul la erori.</li>
+    </ol>
+  </section>
+
+  <section id="cerinte-nefunctionale">
+    <h2>Cerințe nefuncționale</h2>
+    <ul>
+      <li>Aplicația trebuie să fie accesibilă de pe dispozitive mobile și desktop.</li>
+      <li>Datele utilizatorilor trebuie să fie protejate prin autentificare și criptare parole.</li>
+      <li>Răspunsul la orice acțiune nu trebuie să depășească 2 secunde.</li>
+      <li>Interfața trebuie să fie intuitivă și ușor de folosit.</li>
+    </ul>
+  </section>
+
+  <section id="interactiune-utilizator">
+    <h2>Interacțiunea cu utilizatorul</h2>
+    <ul>
+      <li>Utilizatorul accesează pagina principală și poate naviga către login sau înregistrare.</li>
+      <li>După autentificare, utilizatorul vede lista proprietăților și poate folosi filtrele din interfață.</li>
+      <li>La adăugarea unui anunț, utilizatorul completează un formular cu validare instant.</li>
+      <li>Feedback-ul (succes/eroare) este afișat vizual, iar utilizatorul este redirecționat corespunzător.</li>
+      <li>Mesajele și notificările sunt vizibile în dashboard-ul personal.</li>
+    </ul>
+  </section>
+
+  <section id="functionalitati">
+    <h2>Funcționalități principale</h2>
+    <ul>
+      <li><b>Gestionare proprietăți:</b> Adăugare, editare, ștergere și vizualizare anunțuri cu detalii extinse și localizare geospațială.</li>
+      <li><b>Cartografiere interactivă:</b> Vizualizare proprietăți pe hartă cu Leaflet.js, integrare date externe (trafic, poluare, facilități).</li>
+      <li><b>Filtrare și căutare avansată:</b> După preț, facilități, zonă, suprafață, status și alți parametri.</li>
+      <li><b>Mesagerie internă:</b> Sistem de comunicare între utilizatori pentru întrebări și negocieri.</li>
+      <li><b>Favorite:</b> Salvarea și gestionarea proprietăților preferate.</li>
+      <li><b>Analiză statistică:</b> Grafică și comparații de prețuri, evoluții și tendințe.</li>
+      <li><b>Administrare:</b> Panou dedicat pentru administratori (gestionare utilizatori, anunțuri, moderare).</li>
+      <li><b>Securitate:</b> Autentificare, înregistrare, validare email, sesiuni securizate.</li>
+      <li><b>Notificări:</b> Sistem de notificări și validări automate.</li>
+    </ul>
+  </section>
+
+  <section id="arhitectura">
+    <h2>Arhitectură și tehnologii</h2>
+    <ul>
+      <li><b>Frontend:</b> HTML5, CSS3, JavaScript (ES6+), Leaflet.js, Chart.js</li>
+      <li><b>Backend:</b> PHP 8+, PDO, sesiuni PHP</li>
+      <li><b>Bază de date:</b> PostgreSQL 14+ cu extensia PostGIS, PL/pgSQL</li>
+      <li><b>API-uri externe:</b> Overpass API (OpenStreetMap), OpenWeatherMap</li>
+      <li><b>Structură MVC:</b> Separare clară între modele, controllere și view-uri pentru mentenanță și scalabilitate.</li>
+    </ul>
+  </section>
+
+  <section id="structura">
+    <h2>Structura proiectului</h2>
+    <pre>
+REM/
+├── index.php
+├── public/
+│   ├── assets/         # CSS, JS, imagini
+│   └── includes/       # Header, footer, componente reutilizabile
+├── src/
+│   ├── config/         # Configurări aplicație
+│   ├── controllers/    # Logica de business
+│   ├── models/         # Modele pentru DB
+│   ├── services/       # Servicii suplimentare
+│   ├── db/             # Conexiune la baza de date
+│   └── utils/          # Funcții utilitare
+├── views/
+│   └── pages/          # Pagini și șabloane HTML
+├── sql/                # Scripturi pentru schema bazei de date
+└── uploads/            # Fișiere încărcate de utilizatori
+    </pre>
+  </section>
+
+  <section id="instalare">
+    <h2>Instrucțiuni de instalare</h2>
+    <ol>
+      <li><b>Clonează proiectul</b>
+        <pre><code>git clone https://github.com/Slana7/ProiectWeb.git
+cd ProiectWeb</code></pre>
+      </li>
+      <li><b>Creează baza de date și activează PostGIS</b>
+        <pre><code>createdb REM
+psql -d REM -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+psql -d REM -f sql/schema.sql</code></pre>
+      </li>
+      <li><b>Configurează fișierul <code>.env</code> cu datele tale de conectare la baza de date</b></li>
+      <li><b>Pornește serverul</b>
+        <pre><code>php -S localhost:8000
+# sau folosește XAMPP/WAMP și accesează http://localhost/REM/</code></pre>
+      </li>
+    </ol>
+  </section>
+
+  <section id="utilizare">
+    <h2>Utilizare</h2>
+    <ul>
+      <li>Înregistrează-te sau autentifică-te</li>
+      <li>Adaugă și gestionează anunțuri imobiliare</li>
+      <li>Caută și filtrează proprietăți pe hartă</li>
+      <li>Salvează favorite și contactează proprietarii</li>
+      <li>Analizează prețurile și vezi date în timp real pe hartă</li>
+      <li>Accesează panoul de administrare pentru management avansat</li>
+    </ul>
+  </section>
+
+  <section id="testare">
+    <h2>Testare și validare</h2>
+    <ul>
+      <li>Pentru a testa funcțiile PL/pgSQL și constrângerile bazei de date:
+        <pre><code>php test_exceptions.php</code></pre>
+      </li>
+      <li>Testare manuală a funcționalităților principale se poate realiza din interfața web, cu utilizatori de test.</li>
+    </ul>
+  </section>
+
+  <section id="roadmap">
+    <h2>Roadmap</h2>
+    <ul>
+      <li>[x] Management proprietăți (CRUD)</li>
+      <li>[x] Hărți interactive și date geospațiale</li>
+      <li>[x] Mesagerie și favorite</li>
+      <li>[x] Analiză prețuri și filtrare avansată</li>
+      <li>[ ] Notificări pe email</li>
+      <li>[ ] Integrare plăți și programare vizionări</li>
+      <li>[ ] Aplicație mobilă</li>
+    </ul>
+  </section>
+
+  <section id="licenta">
+    <h2>Licență</h2>
+    <p>
+      Acest proiect este open-source sub licența MIT.
+    </p>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <ul>
+      <li>Email: <a href="mailto:rem.contact@example.com">rem.contact@example.com</a></li>
+      <li>GitHub: <a href="https://github.com/REM-Project/REM-Real-Estate-Management">REM-Project</a></li>
+    </ul>
+  </section>
+
+  <section id="referinte">
+    <h2>Referințe</h2>
+    <ul>
+      <li><a href="https://leafletjs.com/">Leaflet.js Documentation</a></li>
+      <li><a href="https://postgis.net/documentation/">PostGIS Documentation</a></li>
+      <li><a href="https://wiki.openstreetmap.org/">OpenStreetMap Wiki</a></li>
+      <li><a href="https://www.php.net/manual/en/">PHP Manual</a></li>
+    </ul>
+  </section>
+
+  <footer>
+    <p><i>Proiect academic dezvoltat pentru gestionarea modernă a anunțurilor imobiliare.</i></p>
+  </footer>
+</article>
