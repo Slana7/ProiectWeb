@@ -300,24 +300,6 @@ if (!isset($_SESSION['user_id'])) {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 <script src="../../public/assets/js/map.js"></script>
-<script>
-fetch('../../src/api/properties.php')
-  .then(res => res.json())
-  .then(properties => {
-    properties.forEach(property => {
-      const listItem = document.createElement('li');
-      listItem.textContent = property.title;
-      listItem.dataset.id = property.id;
-      listItem.addEventListener('click', () => {
-        map.setView([property.lat, property.lng], 15);
-        L.marker([property.lat, property.lng]).addTo(map)
-          .bindPopup(`<strong>${property.title}</strong><br>Price: ${property.price}€`)
-          .openPopup();
-      });
-      document.getElementById('property-list').appendChild(listItem);
-    });
-  });
-</script>
 
 </body>
 </html>

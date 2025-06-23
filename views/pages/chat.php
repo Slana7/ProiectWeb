@@ -20,9 +20,19 @@ if (!$propertyId || !$receiverId) {
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat - <?= APP_NAME ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Chat - <?= APP_NAME ?></title>
     <link rel="stylesheet" href="../../public/assets/css/style.css">
+    <style>
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ef5350;
+            margin: 10px 0;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 <?php include_once '../../public/includes/dashboard_header.php'; ?>
@@ -55,29 +65,45 @@ const receiverId = <?= (int)$receiverId ?>;
 const messagesDiv = document.getElementById('messages');
 
 async function loadMessages(scrollToBottom = true) {
-    const res = await fetch(`../../src/api/messages.php?property=${propertyId}&with=${receiverId}`);
-    const messages = await res.json();
-    messagesDiv.innerHTML = '';
-    messages.forEach(msg => {
-        const isMine = msg.sender_id == userId;
-        const formattedTime = msg.sent_at ? msg.sent_at.substring(11, 16) : '';
-        const wrapper = document.createElement('div');
-        wrapper.className = 'message-wrapper ' + (isMine ? 'mine' : 'theirs');
-        wrapper.innerHTML = `
-            <div class="message-card ${msg.is_flagged ? 'flagged' : ''}">
-                ${msg.is_flagged ? '<div class="flag-label">⚠️ Important</div>' : ''}
-                <div class="sender-name">${escapeHtml(msg.sender_name)}</div>
-                <div class="message-content">
-                    <p>${escapeHtml(msg.content).replace(/\n/g, '<br>')}</p>
-                    ${msg.attachment ? renderAttachment(msg.attachment) : ''}
+    try {
+        const res = await fetch(`../../src/api/messages.php?property=${propertyId}&with=${receiverId}`);
+        const text = await res.text();
+        console.log("Raw API response:", text);
+        
+        let messages;
+        try {
+            messages = JSON.parse(text);
+        } catch (parseError) {
+            console.error("JSON parse error:", parseError);
+            console.error("Response text:", text.substring(0, 500));
+            throw new Error("Invalid JSON response from server");
+        }
+        
+        messagesDiv.innerHTML = '';
+        messages.forEach(msg => {
+            const isMine = msg.sender_id == userId;
+            const formattedTime = msg.sent_at ? msg.sent_at.substring(11, 16) : '';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper ' + (isMine ? 'mine' : 'theirs');
+            wrapper.innerHTML = `
+                <div class="message-card ${msg.is_flagged ? 'flagged' : ''}">
+                    ${msg.is_flagged ? '<div class="flag-label">⚠️ Important</div>' : ''}
+                    <div class="sender-name">${escapeHtml(msg.sender_name)}</div>
+                    <div class="message-content">
+                        <p>${escapeHtml(msg.content).replace(/\n/g, '<br>')}</p>
+                        ${msg.attachment ? renderAttachment(msg.attachment) : ''}
+                    </div>
+                    <div class="timestamp">${formattedTime}</div>
                 </div>
-                <div class="timestamp">${formattedTime}</div>
-            </div>
-        `;
-        messagesDiv.appendChild(wrapper);
-    });
-    if (scrollToBottom) {
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            `;
+            messagesDiv.appendChild(wrapper);
+        });
+        if (scrollToBottom) {
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    } catch (error) {
+        console.error("Error loading messages:", error);
+        messagesDiv.innerHTML = '<div class="error-message">Failed to load messages. Check console for details.</div>';
     }
 }
 
@@ -93,17 +119,36 @@ document.getElementById('chatForm').onsubmit = async function(e) {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
-    const res = await fetch('../../src/api/messages.php', {
-        method: 'POST',
-        body: formData
-    });
-    const result = await res.json();
-    if (result.success) {
-        form.content.value = '';
-        form.attachment.value = '';
-        await loadMessages();
-    } else {
-        alert(result.error || 'Failed to send message');
+    
+    try {
+        const res = await fetch('../../src/api/messages.php', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const text = await res.text();
+        console.log("Send message response:", text);
+        
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (parseError) {
+            console.error("JSON parse error on send:", parseError);
+            console.error("Response text:", text.substring(0, 500));
+            alert('Server error. Check console for details.');
+            return;
+        }
+        
+        if (result.success) {
+            form.content.value = '';
+            form.attachment.value = '';
+            await loadMessages();
+        } else {
+            alert(result.error || 'Failed to send message');
+        }
+    } catch (error) {
+        console.error("Error sending message:", error);
+        alert('Network error. Please try again.');
     }
 };
 

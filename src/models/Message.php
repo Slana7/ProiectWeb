@@ -1,20 +1,24 @@
 <?php
 require_once __DIR__ . '/../db/Database.php';
 
-class Message {
-    public static function sendMessage($senderId, $receiverId, $propertyId, $content, $attachment = null) {
-        $conn = Database::connect();
-        $stmt = $conn->prepare("
-            INSERT INTO messages (sender_id, receiver_id, property_id, content, attachment, sent_at, is_read, is_flagged)
-            VALUES (:sender, :receiver, :property, :content, :attachment, NOW(), FALSE, FALSE)
-        ");
-        return $stmt->execute([
-            'sender' => $senderId,
-            'receiver' => $receiverId,
-            'property' => $propertyId,
-            'content' => $content,
-            'attachment' => $attachment
-        ]);
+class Message {    public static function sendMessage($senderId, $receiverId, $propertyId, $content, $attachment = null) {
+        try {
+            $conn = Database::connect();
+            $stmt = $conn->prepare("
+                INSERT INTO messages (sender_id, receiver_id, property_id, content, attachment, sent_at, is_read, is_flagged)
+                VALUES (:sender, :receiver, :property, :content, :attachment, NOW(), FALSE, FALSE)
+            ");
+            return $stmt->execute([
+                'sender' => $senderId,
+                'receiver' => $receiverId,
+                'property' => $propertyId,
+                'content' => $content,
+                'attachment' => $attachment
+            ]);
+        } catch (PDOException $e) {
+            error_log("Error sending message: " . $e->getMessage());
+            return false;
+        }
     }
 
     public static function getConversation($userId1, $userId2, $propertyId) {
@@ -45,28 +49,31 @@ class Message {
             'to' => $toUser,
             'prop' => $propertyId
         ]);
+    }    public static function getConversationWithUsernames($userId, $receiverId, $propertyId) {
+        try {
+            $conn = Database::connect();
+
+            $stmt = $conn->prepare("
+                SELECT m.*, 
+                       us.name AS sender_name
+                FROM messages m
+                JOIN users us ON us.id = m.sender_id
+                WHERE m.property_id = :pid
+                  AND ((m.sender_id = :uid AND m.receiver_id = :rid) 
+                    OR (m.sender_id = :rid AND m.receiver_id = :uid))
+                ORDER BY m.sent_at ASC
+            ");
+            $stmt->execute([
+                'pid' => $propertyId,
+                'uid' => $userId,
+                'rid' => $receiverId
+            ]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error fetching conversation: " . $e->getMessage());
+            return [];
+        }
     }
-
-    public static function getConversationWithUsernames($userId, $receiverId, $propertyId) {
-    $conn = Database::connect();
-
-    $stmt = $conn->prepare("
-        SELECT m.*, 
-               us.name AS sender_name
-        FROM messages m
-        JOIN users us ON us.id = m.sender_id
-        WHERE m.property_id = :pid
-          AND ((m.sender_id = :uid AND m.receiver_id = :rid) 
-            OR (m.sender_id = :rid AND m.receiver_id = :uid))
-        ORDER BY m.sent_at ASC
-    ");
-    $stmt->execute([
-        'pid' => $propertyId,
-        'uid' => $userId,
-        'rid' => $receiverId
-    ]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 public static function getConversationsWithLastMessage($userId) {
     $conn = Database::connect();
 
