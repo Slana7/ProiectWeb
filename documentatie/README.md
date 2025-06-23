@@ -17,7 +17,8 @@
 </div>
 
 ---
-
+##Demo Video
+YouTube(https://www.youtube.com/watch?v=EQ9Xip7KBk0&ab_channel=TeodoraNechita)
 ## Abstract
 
 REM (Real Estate Management) este o aplicație web dezvoltată pentru a facilita gestionarea, analiza și vizualizarea anunțurilor imobiliare. Platforma integrează funcționalități de cartografiere interactivă, analiză statistică, comunicare între utilizatori și administrare avansată, adresând atât nevoile utilizatorilor finali, cât și ale administratorilor.
