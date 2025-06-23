@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <title>Documentație REM – stil aplicație</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/scholarly-article@latest/scholarly.min.css">
+  
+<style>
+  :root {
+    --primary: #42a5f5;       /* accent butoane */
+    --primary-light: #e3f2fd;
+    --primary-dark: #1e88e5;
+    --secondary: #1e2a38;     /* fundal navbar */
+    --text: #162312;          /* text dark */
+    --bg: #f2f4f7;            /* fundal general */
+    --white: #ffffff;
+    --shadow: rgba(0, 0, 0, 0.1);
+  }
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  article {
+    background-color: var(--white);
+    margin: 2rem auto;
+    padding: 2rem;
+    max-width: 1000px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px var(--shadow);
+  }
+  h1, h2, h3 {
+    color: var(--primary-dark);
+    font-family: 'Lora', serif;
+  }
+  h1 {
+    text-align: center;
+    border-bottom: 4px solid var(--primary);
+    padding-bottom: 1rem;
+  }
+  section {
+    margin-bottom: 2rem;
+  }
+  .diagram {
+    background: var(--primary-light);
+    padding: 1rem;
+    border-left: 4px solid var(--primary);
+    margin: 1rem 0;
+    font-family: monospace;
+  }
+  ul, ol { padding-left: 2rem; }
+  code {
+    background-color: #eee;
+    padding: 0.2rem 0.4rem;
+    border-radius: 5px;
+  }
+</style>
+
+</head>
+<body>
+<article>
+  <h1>Documentație Tehnică – REM (Real Estate Management)</h1>
+<section><h2>Scopul Aplicației</h2>
+      REM este o aplicație web care facilitează gestionarea anunțurilor imobiliare.
+      Utilizatorii pot posta proprietăți, le pot salva ca favorite și pot comunica direct
+      prin sistemul de mesaje. Harta integrată permite filtrarea după locație și facilități.
+    </section><section><h2>Arhitectura Generală</h2>
+      Aplicația urmează modelul MVC:
+      <ul>
+        <li><strong>Model:</strong> Clase PHP care interacționează cu baza de date (User, Property, Message etc.)</li>
+        <li><strong>View:</strong> Fișiere PHP din folderul <code>views/</code> care generează interfața HTML</li>
+        <li><strong>Controller:</strong> Fișiere din <code>src/Controllers</code> care preiau cererile utilizatorilor</li>
+      </ul>
+    </section><section><h2>Baza de Date</h2>
+      Aplicația folosește o bază de date relațională MySQL/PostgreSQL. Tabele esențiale:
+      <ul>
+        <li><code>users</code> – conturi utilizatori</li>
+        <li><code>properties</code> – anunțuri imobiliare</li>
+        <li><code>favorites</code> – relație many-to-many între users și properties</li>
+        <li><code>messages</code> – conversații între utilizatori</li>
+      </ul>
+    </section><section><h2>Fluxuri Principale</h2>
+      <ol>
+        <li><strong>Autentificare:</strong> Utilizatorul completează email/parolă, datele sunt validate de AuthController</li>
+        <li><strong>Adăugare anunț:</strong> Datele sunt transmise către PropertyController și salvate în baza de date</li>
+        <li><strong>Mesaje:</strong> MessageController preia și salvează conversațiile între utilizatori</li>
+      </ol>
+    </section><section><h2>Tehnologii Folosite</h2>
+      <ul>
+        <li><strong>Backend:</strong> PHP (fără framework)</li>
+        <li><strong>Frontend:</strong> HTML, CSS, JavaScript</li>
+        <li><strong>Geolocalizare:</strong> Leaflet.js pentru hărți interactive</li>
+        <li><strong>Bază de date:</strong> PostgreSQL sau MySQL</li>
+      </ul>
+    </section><section><h2>Îmbunătățiri Viitoare</h2>
+      <ul>
+        <li>Refactorizare în Laravel/Symfony pentru o arhitectură scalabilă</li>
+        <li>API REST pentru integrare cu aplicații mobile</li>
+        <li>Notificări în timp real (ex: WebSockets pentru mesaje noi)</li>
+        <li>Testare automată (unit și integrare)</li>
+      </ul>
+    </section>
+</article>
+</body>
+</html>
